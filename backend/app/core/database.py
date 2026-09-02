@@ -32,10 +32,36 @@ def get_engine() -> AsyncEngine:
             connect_args=connect_args,
         )
 
-    # Neon / asyncpg SSL normalization:
-    # asyncpg does NOT recognize 'sslmode', it requires 'ssl='
-    if "sslmode=" in db_url:
-        db_url = db_url.replace("sslmode=", "ssl=")
+    # Neon / asyncpg parameter cleanup:
+    # asyncpg does NOT accept libpq arguments (e.g. channel_binding, sslmode, gssencmode)
+    if "postgresql+asyncpg://" in db_url and "?" in db_url:
+        import urllib.parse
+        parsed = urllib.parse.urlsplit(db_url)
+        q_params = urllib.parse.parse_qsl(parsed.query, keep_blank_values=True)
+        safe_params = []
+        has_ssl = False
+        for k, v in q_params:
+            if k == "sslmode":
+                safe_params.append(("ssl", v if v != "require" else "require"))
+                has_ssl = True
+            elif k in {"channel_binding", "gssencmode", "target_session_attrs"}:
+                # Strip unsupported libpq keyword arguments
+                continue
+            elif k == "ssl":
+                safe_params.append((k, v))
+                has_ssl = True
+            else:
+                safe_params.append((k, v))
+        if not has_ssl:
+            safe_params.append(("ssl", "require"))
+        new_query = urllib.parse.urlencode(safe_params)
+        db_url = urllib.parse.urlunsplit((
+            parsed.scheme,
+            parsed.netloc,
+            parsed.path,
+            new_query,
+            parsed.fragment,
+        ))
 
     # PostgreSQL / Neon settings with pooled connections & recycling
     return create_async_engine(

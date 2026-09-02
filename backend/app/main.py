@@ -34,11 +34,12 @@ app = FastAPI(
     redoc_url="/redoc" if not settings.is_production else None,
 )
 
-# 18. Strict CORS Middleware
+# 18. Strict CORS Middleware (supports explicit origins, Vercel deployments, and wildcard)
 has_wildcard = "*" in settings.cors_origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
+    allow_origin_regex=r"^https?://.*\.vercel\.app$" if not has_wildcard else None,
     allow_credentials=not has_wildcard,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
@@ -46,6 +47,24 @@ app.add_middleware(
 
 # GZip compression for responses > 1KB (reduces network payload size by ~70%)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+
+class NormalizePathMiddleware:
+    """Collapses consecutive duplicate slashes in URLs (e.g. //api/v1/analyze -> /api/v1/analyze)"""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] in {"http", "websocket"}:
+            path = scope.get("path", "")
+            if "//" in path:
+                import re
+                scope["path"] = re.sub(r"/+", "/", path)
+        await self.app(scope, receive, send)
+
+
+app.add_middleware(NormalizePathMiddleware)
 
 
 @app.middleware("http")

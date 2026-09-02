@@ -157,9 +157,10 @@ export function formatDuration(seconds: number): string {
 }
 
 /** API base URL: defaults to localhost:8000 or VITE_API_URL in production */
-export const API_BASE_URL =
+export const API_BASE_URL = (
   (typeof import.meta !== "undefined" && import.meta.env && import.meta.env["VITE_API_URL"]) ||
-  "http://localhost:8000";
+  "http://localhost:8000"
+).replace(/\/+$/, "");
 
 interface BackendMediaItem {
   id: string;
