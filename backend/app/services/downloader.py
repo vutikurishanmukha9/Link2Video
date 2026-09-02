@@ -1,3 +1,4 @@
+import re
 from typing import AsyncGenerator
 import httpx
 from fastapi.responses import StreamingResponse
@@ -7,6 +8,7 @@ from app.core.exceptions import ExtractionFailedException, NoMediaFoundException
 from app.core.logging import logger
 from app.models.media import MediaItemModel
 from app.schemas.media import DownloadResponse
+from app.utils.security import validate_safe_outbound_url
 
 
 class DownloaderService:
@@ -42,6 +44,7 @@ class DownloaderService:
             direct_url=item.source_url,
             filename=filename,
             content_type=content_type,
+            size=item.file_size if item.file_size and item.file_size > 0 else None,
         )
 
     async def stream_media(
@@ -51,6 +54,19 @@ class DownloaderService:
     ) -> StreamingResponse:
         """Stream media file directly with Content-Disposition attachment for reliable browser downloads."""
         target = await self.get_download_target(media_id, db)
+
+        # 1. SSRF defense: Validate initial destination URL against internal/metadata IPs
+        validate_safe_outbound_url(target.direct_url)
+
+        # 2. SSRF defense: Validate redirect destinations so upstream cannot redirect into internal network
+        async def on_redirect_response(response: httpx.Response) -> None:
+            if response.is_redirect and response.has_redirect_location and response.next_request:
+                validate_safe_outbound_url(str(response.next_request.url))
+
+        # 3. Header injection defense: Sanitize filename against CRLF and quotes
+        safe_filename = re.sub(r"[^a-zA-Z0-9._-]", "_", target.filename).strip(".")
+        if not safe_filename:
+            safe_filename = f"media_{media_id}.mp4"
 
         async def stream_generator() -> AsyncGenerator[bytes, None]:
             headers = {
@@ -66,6 +82,7 @@ class DownloaderService:
                 timeout=60.0,
                 follow_redirects=True,
                 headers=headers,
+                event_hooks={"response": [on_redirect_response]},
             )
             try:
                 async with client.stream("GET", target.direct_url) as resp:
@@ -90,10 +107,13 @@ class DownloaderService:
                 await client.aclose()
 
         headers = {
-            "Content-Disposition": f'attachment; filename="{target.filename}"',
+            "Content-Disposition": f'attachment; filename="{safe_filename}"',
             "Content-Type": target.content_type,
             "X-Content-Type-Options": "nosniff",
         }
+        if target.size and target.size > 0:
+            headers["Content-Length"] = str(target.size)
+
         return StreamingResponse(
             stream_generator(),
             media_type=target.content_type,

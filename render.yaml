@@ -14,7 +14,7 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: REDIS_URL
-        sync: false
+        value: ""
       - key: CORS_ORIGINS
         value: '["*"]'
       - key: ALLOWED_HOSTS

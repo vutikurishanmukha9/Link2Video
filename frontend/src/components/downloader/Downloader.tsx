@@ -64,7 +64,8 @@ export function Downloader() {
     abortRef.current = controller;
 
     setPhase({ kind: "analyzing" });
-    timer.current = setTimeout(async () => {
+    // Execute extraction immediately on submit with 0ms artificial delay
+    (async () => {
       const outcome = await extractMedia(currentDetection.platform, targetUrl, controller.signal);
       if (controller.signal.aborted) return;
       setPhase(
@@ -72,7 +73,7 @@ export function Downloader() {
           ? { kind: "error", code: outcome }
           : { kind: "result", result: outcome },
       );
-    }, 500);
+    })();
   }, []);
 
   return (

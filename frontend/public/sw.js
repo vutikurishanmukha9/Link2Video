@@ -1,8 +1,12 @@
-const CACHE_NAME = "link2download-v1";
+const CACHE_NAME = "link2download-v2";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
   "/favicon.svg",
+  "/favicon.png",
+  "/favicon.ico",
+  "/logo-icon.png",
+  "/wordmark.png",
   "/pwa-192x192.png",
   "/pwa-512x512.png",
   "/apple-touch-icon.png",
@@ -40,8 +44,10 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Stale-while-revalidate strategy for same-origin pages and assets
-  if (url.origin === self.location.origin) {
+  // Stale-while-revalidate for same-origin pages/assets and Google Fonts
+  const isGoogleFont =
+    url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
+  if (url.origin === self.location.origin || isGoogleFont) {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
         const fetchPromise = fetch(event.request)

@@ -26,9 +26,11 @@ class Settings(BaseSettings):
 
     # CORS Allowed Origins
     FRONTEND_URL: str = "http://localhost:3000,http://localhost:5173"
+    CORS_ORIGINS: str = ""
 
     # Rate Limiting & Caching Defaults
     RATE_LIMIT_ANALYZE: int = 10
+    RATE_LIMIT_DOWNLOAD: int = 30
     RATE_LIMIT_WINDOW_SECONDS: int = 60
     CACHE_TTL_SECONDS: int = 600
 
@@ -39,11 +41,21 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def cors_origins(self) -> List[str]:
-        origins = [url.strip() for url in self.FRONTEND_URL.split(",") if url.strip()]
-        if "http://localhost:3000" not in origins:
-            origins.append("http://localhost:3000")
-        if "http://localhost:5173" not in origins:
-            origins.append("http://localhost:5173")
+        raw = self.CORS_ORIGINS or self.FRONTEND_URL
+        if raw.strip().startswith("[") and raw.strip().endswith("]"):
+            import json
+            try:
+                parsed = json.loads(raw)
+                if isinstance(parsed, list):
+                    return [str(o).strip() for o in parsed if str(o).strip()]
+            except Exception:
+                pass
+        origins = [url.strip() for url in raw.split(",") if url.strip()]
+        if "*" not in origins:
+            if "http://localhost:3000" not in origins:
+                origins.append("http://localhost:3000")
+            if "http://localhost:5173" not in origins:
+                origins.append("http://localhost:5173")
         return origins
 
     @computed_field

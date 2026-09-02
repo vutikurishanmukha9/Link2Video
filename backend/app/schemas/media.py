@@ -19,3 +19,4 @@ class DownloadResponse(BaseModel):
     direct_url: str
     filename: str
     content_type: str
+    size: Optional[int] = None

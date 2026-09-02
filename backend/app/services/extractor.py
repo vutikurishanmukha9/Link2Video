@@ -20,8 +20,10 @@ def _safe_extract(url: str, custom_opts: Optional[Dict[str, Any]] = None) -> Dic
         "quiet": True,
         "no_warnings": True,
         "skip_download": True,
-        "extract_flat": False,
-        "socket_timeout": 15,
+        "noplaylist": True,
+        "extract_flat": "in_playlist",
+        "playlist_items": "1",
+        "socket_timeout": 10,
         "nocheckcertificate": True,
         "ignoreerrors": False,
         "no_color": True,
@@ -36,12 +38,12 @@ def _safe_extract(url: str, custom_opts: Optional[Dict[str, Any]] = None) -> Dic
         },
     }
 
-    # High-end smart client rotation for YouTube to bypass datacenter IP bot-challenges
+    # High-end smart client rotation for YouTube to bypass datacenter IP bot-challenges and speed up parsing
     if "youtube.com" in url or "youtu.be" in url:
         opts["extractor_args"] = {
             "youtube": {
                 "player_client": ["android", "ios", "mweb", "web"],
-                "player_skip": ["configs", "webpage"],
+                "player_skip": ["configs", "webpage", "js"],
             }
         }
 

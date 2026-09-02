@@ -1,0 +1,13 @@
+.git
+.gitignore
+.env
+.dev.vars
+node_modules
+frontend
+backend/.venv
+backend/__pycache__
+backend/.pytest_cache
+*.db
+*.sqlite
+*.sqlite3
+*.log

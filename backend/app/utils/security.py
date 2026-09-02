@@ -107,3 +107,42 @@ def validate_and_guard_url(
             raise InvalidURLException(f"Could not resolve host '{hostname}'.")
 
     return cleaned
+
+
+def validate_safe_outbound_url(url: str) -> str:
+    """
+    Validate that an outbound media stream URL is public HTTP/HTTPS and
+    does not point to local/private networks or cloud metadata services (e.g. AWS/GCP 169.254.169.254).
+    """
+    if not url or not isinstance(url, str):
+        raise InvalidURLException("Outbound target URL cannot be empty.")
+
+    parsed = urllib.parse.urlsplit(url.strip())
+    if parsed.scheme.lower() not in {"http", "https"}:
+        raise InvalidURLException(f"Blocked unsafe protocol scheme: '{parsed.scheme}'.")
+
+    hostname = parsed.hostname
+    if not hostname:
+        raise InvalidURLException("Outbound URL must contain a valid hostname.")
+
+    hostname = hostname.lower()
+    if hostname in {"localhost", "127.0.0.1", "::1", "0.0.0.0", "169.254.169.254", "metadata.google.internal"}:
+        raise InvalidURLException("Access to internal host address is strictly forbidden.")
+
+    if is_ip_private_or_reserved(hostname):
+        raise InvalidURLException("Access to private IP address is forbidden.")
+
+    try:
+        addr_info = socket.getaddrinfo(hostname, None)
+        for item in addr_info:
+            ip_addr = item[4][0]
+            if is_ip_private_or_reserved(ip_addr):
+                raise InvalidURLException(
+                    f"Outbound host '{hostname}' resolves to internal IP {ip_addr} (SSRF blocked)."
+                )
+    except socket.gaierror:
+        # If hostname cannot be resolved (e.g. unit test mocks or offline environment), block known internal/local TLDs
+        if hostname.endswith((".internal", ".local", ".localhost", ".corp", ".lan")):
+            raise InvalidURLException(f"Blocked unresolvable internal host '{hostname}'.")
+
+    return url

@@ -68,6 +68,7 @@ export function MediaFrame({ item, compact = false }: Props) {
             src={item.previewUrl}
             alt=""
             loading="lazy"
+            referrerPolicy="no-referrer"
             onError={() => setImgError(true)}
             className="h-full w-full object-cover opacity-90 transition-opacity duration-150 hover:opacity-100"
           />
@@ -227,6 +228,7 @@ export function MediaFrame({ item, compact = false }: Props) {
             <img
               src={item.previewUrl}
               alt={item.title || "Post image preview"}
+              referrerPolicy="no-referrer"
               onLoad={() => setImgLoaded(true)}
               onError={() => setImgError(true)}
               className={`h-full w-full object-contain transition-opacity duration-200 ${

@@ -38,3 +38,23 @@ class ExtractionErrorModel(Base):
         index=True,
         nullable=False,
     )
+
+
+class ExtractionCacheModel(Base):
+    """Persistent extraction cache table stored directly in PostgreSQL (Neon DB)."""
+    __tablename__ = "extraction_cache"
+
+    url_hash: Mapped[str] = mapped_column(String(64), primary_key=True, index=True)
+    normalized_url: Mapped[str] = mapped_column(Text, nullable=False)
+    platform: Mapped[str] = mapped_column(String(50), nullable=False)
+    payload_json: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    expires_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        index=True,
+        nullable=False,
+    )

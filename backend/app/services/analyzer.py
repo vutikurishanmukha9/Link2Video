@@ -1,6 +1,7 @@
+import asyncio
 import time
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Dict, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import (
     AppException,
@@ -28,6 +29,9 @@ from app.utils.validators import generate_request_id
 
 
 class AnalyzerService:
+    def __init__(self) -> None:
+        self._in_flight: Dict[str, asyncio.Future] = {}
+
     async def analyze(
         self,
         raw_url: str,
@@ -59,12 +63,12 @@ class AnalyzerService:
         # 4. Check Rate Limit
         await rate_limiter.check_rate_limit(client_ip, action="analyze")
 
-        # 5. Check Redis Cache
-        cached_result = await cache_service.get_extraction(normalized_url)
+        # 5. Check Multi-Tier Cache (Tier 1 In-Memory + Tier 2 Neon PostgreSQL)
+        cached_result = await cache_service.get_extraction(normalized_url, db=db)
         if cached_result:
             duration_ms = int((time.time() - start_time) * 1000)
             logger.info(
-                "Serving extraction from cache",
+                "Serving extraction from multi-tier cache",
                 extra={
                     "request_id": request_id,
                     "platform": adapter.slug,
@@ -89,24 +93,51 @@ class AnalyzerService:
                 ),
             )
 
-        # 6 & 7. Execute Platform Adapter Extraction
-        try:
-            extraction = await adapter.analyze(normalized_url)
-        except AppException as e:
-            await self._record_request(
-                db, request_id, normalized_url, adapter.slug, status="failed", error=e
+        # 6. Single-Flight Deduplication: if another request is currently scraping this URL, join it
+        if normalized_url in self._in_flight:
+            logger.info(
+                "Joining existing in-flight extraction request",
+                extra={"request_id": request_id, "url": normalized_url},
             )
-            await self._log_error(db, request_id, adapter.slug, e.code.value, e.message)
-            raise
-        except Exception as e:
-            app_err = ExtractionFailedException(f"Upstream extraction error: {str(e)}")
-            await self._record_request(
-                db, request_id, normalized_url, adapter.slug, status="failed", error=app_err
-            )
-            await self._log_error(
-                db, request_id, adapter.slug, app_err.code.value, app_err.message
-            )
-            raise app_err
+            try:
+                extraction = await asyncio.shield(self._in_flight[normalized_url])
+            except AppException:
+                raise
+            except Exception as e:
+                raise ExtractionFailedException(f"Upstream extraction error: {str(e)}")
+        else:
+            loop = asyncio.get_running_loop()
+            flight_future = loop.create_future()
+            self._in_flight[normalized_url] = flight_future
+
+            # 7. Execute Platform Adapter Extraction
+            try:
+                extraction = await adapter.analyze(normalized_url)
+                if not flight_future.done():
+                    flight_future.set_result(extraction)
+            except Exception as exc:
+                if not flight_future.done():
+                    flight_future.set_exception(exc)
+                    try:
+                        flight_future.exception()
+                    except Exception:
+                        pass
+                if isinstance(exc, AppException):
+                    await self._record_request(
+                        db, request_id, normalized_url, adapter.slug, status="failed", error=exc
+                    )
+                    await self._log_error(db, request_id, adapter.slug, exc.code.value, exc.message)
+                    raise
+                app_err = ExtractionFailedException(f"Upstream extraction error: {str(exc)}")
+                await self._record_request(
+                    db, request_id, normalized_url, adapter.slug, status="failed", error=app_err
+                )
+                await self._log_error(
+                    db, request_id, adapter.slug, app_err.code.value, app_err.message
+                )
+                raise app_err
+            finally:
+                self._in_flight.pop(normalized_url, None)
 
         # 8. Validate extraction result
         if not extraction.media:
@@ -117,9 +148,9 @@ class AnalyzerService:
             await self._log_error(db, request_id, adapter.slug, err.code.value, err.message)
             raise err
 
-        # 9. Cache Result
+        # 9. Cache Result in In-Memory and Neon PostgreSQL
         cache_payload = extraction.model_dump()
-        await cache_service.set_extraction(normalized_url, cache_payload)
+        await cache_service.set_extraction(normalized_url, cache_payload, platform=adapter.slug, db=db)
 
         # 10. Store Request Metadata & Media Items in PostgreSQL (Neon)
         await self._record_request(

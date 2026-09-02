@@ -47,7 +47,9 @@ async def cleanup_test_db():
 async def prepare_db():
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    # Ensure in-memory redis client for tests
+    # Ensure in-memory redis client and clear memory cache for tests
+    from app.services.cache import cache_service
+    cache_service._memory_store.clear()
     redis_manager.client = InMemoryRedisClient()
     yield
     async with test_engine.begin() as conn:
