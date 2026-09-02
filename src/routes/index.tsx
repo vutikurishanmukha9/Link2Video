@@ -1,24 +1,57 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Nav } from "@/components/site/Nav";
+import { Footer } from "@/components/site/Footer";
+import { Features, Platforms, HowItWorks } from "@/components/site/Sections";
+import { Downloader } from "@/components/downloader/Downloader";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+const TITLE = "Conduit — Download media from any public post";
+const DESCRIPTION =
+  "Paste a public Instagram, X, Facebook, LinkedIn or Reddit post URL and retrieve the available photos and videos. No account required.";
+
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div id="top" className="min-h-screen">
+      <Nav />
+
+      <main>
+        <section id="downloader" className="shell scroll-mt-20 pt-12 pb-2 sm:pt-16">
+          <div className="max-w-[720px]">
+            <p className="mono-meta tracking-[0.08em] text-text-muted uppercase">Download media</p>
+            <h1 className="display-tight mt-3 text-[34px] leading-[1.05] sm:text-[44px] lg:text-[52px]">
+              One link.
+              <br />
+              Everywhere.
+            </h1>
+            <p className="mt-4 max-w-[52ch] text-[16px] leading-relaxed text-text-secondary">
+              Paste a public post URL and retrieve the available photos or videos.
+            </p>
+          </div>
+
+          <div className="mt-8">
+            <Downloader />
+          </div>
+        </section>
+
+        <Features />
+        <Platforms />
+        <HowItWorks />
+      </main>
+
+      <Footer />
     </div>
   );
 }
