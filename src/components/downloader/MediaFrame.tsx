@@ -10,7 +10,7 @@ export function MediaFrame({ item, compact = false }: { item: MediaItem; compact
   return (
     <div
       className="relative flex h-full w-full items-center justify-center overflow-hidden bg-panel-elevated"
-      style={{ aspectRatio: `${item.width} / ${item.height}` }}
+      style={compact ? undefined : { aspectRatio: `${item.width} / ${item.height}` }}
       role="img"
       aria-label={`${item.kind === "video" ? "Video" : "Image"} preview, ${item.width} by ${item.height}`}
     >
