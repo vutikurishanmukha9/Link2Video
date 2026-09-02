@@ -38,15 +38,6 @@ def _safe_extract(url: str, custom_opts: Optional[Dict[str, Any]] = None) -> Dic
         },
     }
 
-    # High-end smart client rotation for YouTube to bypass datacenter IP bot-challenges and speed up parsing
-    if "youtube.com" in url or "youtu.be" in url:
-        opts["extractor_args"] = {
-            "youtube": {
-                "player_client": ["android", "ios", "mweb", "web"],
-                "player_skip": ["configs", "webpage", "js"],
-            }
-        }
-
     if custom_opts:
         opts.update(custom_opts)
 
@@ -76,13 +67,13 @@ class RealMediaExtractor:
             err_msg = str(e).lower()
             logger.info(f"Extractor caught error for {url}: {err_msg}")
 
-            if any(k in err_msg for k in ["login", "private", "members-only", "age-restricted", "confirm you're not a bot", "sign in", "empty media response", "restricted"]):
+            if any(k in err_msg for k in ["private account", "this account is private", "login required", "members-only", "age-restricted", "sign in to confirm"]):
                 raise PrivateContentException(
                     message="This content is private, restricted, or requires an account to view."
                 )
-            if any(k in err_msg for k in ["not found", "404", "deleted", "does not exist", "video unavailable", "unable to download json"]):
+            if any(k in err_msg for k in ["not found", "404", "deleted", "does not exist", "video unavailable", "no video formats found"]):
                 raise NoMediaFoundException(
-                    message="The requested post or video was not found or has been removed."
+                    message="The requested post or video was not found or has no downloadable media."
                 )
             if any(k in err_msg for k in ["rate limit", "429", "too many requests"]):
                 raise RateLimitExceededException(
