@@ -39,10 +39,11 @@ has_wildcard = "*" in settings.cors_origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
-    allow_origin_regex=r"^https?://.*\.vercel\.app$" if not has_wildcard else None,
+    allow_origin_regex=r"^https?://.*\.vercel\.app$",
     allow_credentials=not has_wildcard,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # GZip compression for responses > 1KB (reduces network payload size by ~70%)

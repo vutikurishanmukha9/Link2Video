@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = ""
 
     # CORS Allowed Origins
-    FRONTEND_URL: str = "http://localhost:3000,http://localhost:5173"
+    FRONTEND_URL: str = "https://link2download.vercel.app,http://localhost:3000,http://localhost:5173"
     CORS_ORIGINS: str = ""
 
     # Rate Limiting & Caching Defaults
@@ -47,15 +47,19 @@ class Settings(BaseSettings):
             try:
                 parsed = json.loads(raw)
                 if isinstance(parsed, list):
-                    return [str(o).strip() for o in parsed if str(o).strip()]
+                    res = [str(o).strip() for o in parsed if str(o).strip()]
+                    if "https://link2download.vercel.app" not in res:
+                        res.append("https://link2download.vercel.app")
+                    return res
             except Exception:
                 pass
         origins = [url.strip() for url in raw.split(",") if url.strip()]
-        if "*" not in origins:
-            if "http://localhost:3000" not in origins:
-                origins.append("http://localhost:3000")
-            if "http://localhost:5173" not in origins:
-                origins.append("http://localhost:5173")
+        if "https://link2download.vercel.app" not in origins:
+            origins.append("https://link2download.vercel.app")
+        if "http://localhost:3000" not in origins:
+            origins.append("http://localhost:3000")
+        if "http://localhost:5173" not in origins:
+            origins.append("http://localhost:5173")
         return origins
 
     @computed_field
