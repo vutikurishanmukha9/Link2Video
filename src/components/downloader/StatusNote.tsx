@@ -1,7 +1,7 @@
 import { AlertCircle } from "lucide-react";
 import { FAILURE_COPY, type FailureCode } from "@/lib/downloader";
 
-export function StatusNote({ code, hint }: { code: FailureCode; hint?: string }) {
+export function StatusNote({ code, hint }: { code: FailureCode; hint?: string | undefined }) {
   const copy = FAILURE_COPY[code];
   return (
     <div

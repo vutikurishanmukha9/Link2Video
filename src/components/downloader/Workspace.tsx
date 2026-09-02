@@ -10,9 +10,10 @@ import {
 } from "@/lib/downloader";
 
 export function Workspace({ result }: { result: PostResult }) {
-  const [activeId, setActiveId] = useState(result.media[0].id);
+  const [activeId, setActiveId] = useState(result.media[0]?.id ?? "");
   const [done, setDone] = useState<string[]>([]);
   const active = result.media.find((m) => m.id === activeId) ?? result.media[0];
+  if (!active) return null;
   const platform = PLATFORM_BY_ID[result.platform];
 
   const markDone = (id: string) => setDone((d) => (d.includes(id) ? d : [...d, id]));

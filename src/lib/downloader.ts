@@ -14,7 +14,7 @@ export interface MediaItem {
   width: number;
   height: number;
   bytes: number;
-  durationSeconds?: number;
+  durationSeconds?: number | undefined;
 }
 
 export interface PostResult {

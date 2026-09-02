@@ -8,7 +8,7 @@ type Phase =
   | { kind: "idle" }
   | { kind: "analyzing" }
   | { kind: "result"; result: PostResult }
-  | { kind: "error"; code: FailureCode; hint?: string };
+  | { kind: "error"; code: FailureCode; hint?: string | undefined };
 
 export function Downloader() {
   const [url, setUrl] = useState("");
