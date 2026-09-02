@@ -7,24 +7,48 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-.output
-.vinxi
+# Node / Frontend build outputs
+node_modules/
+dist/
+dist-ssr/
+.output/
+.vinxi/
 .tanstack/**
-.nitro
+.nitro/
 *.local
 
-# Wrangler / Cloudflare
-.wrangler/
+# Python / Backend build & test artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Local databases
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+dev.db
+test_suite.db
+
+# Environment variables
+.env
 .dev.vars
 
-# Editor directories and files
+# Editor and OS files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj

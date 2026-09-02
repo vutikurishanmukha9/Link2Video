@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: link2download-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_NAME
+        value: Link2Download
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: CORS_ORIGINS
+        value: '["*"]'
+      - key: ALLOWED_HOSTS
+        value: "*"
