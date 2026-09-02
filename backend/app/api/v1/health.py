@@ -9,7 +9,7 @@ from app.core.redis import get_redis
 router = APIRouter()
 
 
-@router.get("/health", summary="Health check")
+@router.api_route("/health", methods=["GET", "HEAD"], summary="Health check")
 async def health_check() -> Dict[str, str]:
     """
     Production health check endpoint for Render monitoring.

@@ -32,6 +32,11 @@ def get_engine() -> AsyncEngine:
             connect_args=connect_args,
         )
 
+    # Neon / asyncpg SSL normalization:
+    # asyncpg does NOT recognize 'sslmode', it requires 'ssl='
+    if "sslmode=" in db_url:
+        db_url = db_url.replace("sslmode=", "ssl=")
+
     # PostgreSQL / Neon settings with pooled connections & recycling
     return create_async_engine(
         db_url,
