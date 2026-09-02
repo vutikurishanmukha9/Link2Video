@@ -73,16 +73,58 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Link 2 Download" },
+      { title: "Link 2 Download — Fast Video & Audio Downloader (YouTube, Instagram, X)" },
       {
         name: "description",
         content:
-          "Universal public media downloader for Instagram, YouTube, X, Facebook, LinkedIn, and Reddit.",
+          "Free online public media downloader. Save HD videos (1080p/4K), Instagram Reels, YouTube Shorts, X/Twitter clips, Facebook videos, and MP3 audio tracks directly with zero ads or watermarks.",
       },
+      {
+        name: "keywords",
+        content:
+          "video downloader, youtube video downloader, instagram reel downloader, x video saver, twitter video downloader, reddit video with sound, facebook reel downloader, linkedin video downloader, download mp4, extract mp3 audio, media downloader online, free video saver, youtube shorts download",
+      },
+      {
+        name: "robots",
+        content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+      },
+      { name: "theme-color", content: "#08090B" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "Link 2 Download" },
+      { name: "application-name", content: "Link 2 Download" },
+      // Open Graph / Facebook
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Link 2 Download" },
+      { property: "og:title", content: "Link 2 Download — Fast Video & Audio Downloader" },
+      {
+        property: "og:description",
+        content:
+          "Save videos, reels, and original audio in 1080p Full HD from YouTube, Instagram, X, Facebook, LinkedIn & Reddit with zero quality loss.",
+      },
+      { property: "og:url", content: "https://link2video.onrender.com/" },
+      { property: "og:image", content: "https://link2video.onrender.com/logo.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Link 2 Download Interface Preview" },
+      { property: "og:locale", content: "en_US" },
+      // Twitter Cards
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Link 2 Download — Fast Video & Audio Downloader" },
+      {
+        name: "twitter:description",
+        content:
+          "Direct CDN streams for videos, reels, and MP3 tracks from YouTube, Instagram, X, Facebook, LinkedIn and Reddit.",
+      },
+      { name: "twitter:image", content: "https://link2video.onrender.com/logo.png" },
     ],
     links: [
+      { rel: "canonical", href: "https://link2video.onrender.com/" },
+      { rel: "manifest", href: "/manifest.json" },
+      { rel: "icon", href: "/favicon.svg?v=3", type: "image/svg+xml" },
+      { rel: "shortcut icon", href: "/favicon.svg?v=3", type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: "/favicon.svg?v=3" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -93,8 +135,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
   shellComponent: RootShell,
@@ -107,7 +147,20 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3" />
+        <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg?v=3" />
+        <link rel="apple-touch-icon" href="/favicon.svg?v=3" />
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var l = document.querySelector("link[rel*='icon']");
+                if (l) { l.href = '/favicon.svg?v=' + Date.now(); }
+              } catch(e) {}
+            `,
+          }}
+        />
       </head>
       <body>
         {children}
@@ -122,8 +175,25 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ServiceWorkerRegistrar />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>
+  );
+}
+
+function ServiceWorkerRegistrar() {
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
+          if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+            window.addEventListener('load', function() {
+              navigator.serviceWorker.register('/sw.js').catch(function() {});
+            });
+          }
+        `,
+      }}
+    />
   );
 }

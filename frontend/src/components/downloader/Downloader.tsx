@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { UrlCommandBar } from "./UrlCommandBar";
 import { StatusNote } from "./StatusNote";
 import { Workspace } from "./Workspace";
@@ -14,16 +14,41 @@ export function Downloader() {
   const [url, setUrl] = useState("");
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const detection = detect(url);
 
   const reset = useCallback(() => {
-    if (timer.current) clearTimeout(timer.current);
+    if (timer.current) {
+      clearTimeout(timer.current);
+      timer.current = null;
+    }
+    if (abortRef.current) {
+      abortRef.current.abort();
+      abortRef.current = null;
+    }
     setUrl("");
     setPhase({ kind: "idle" });
   }, []);
 
+  // Listen for global reset (triggered by clicking the logo or pressing ESC)
+  useEffect(() => {
+    const handleGlobalReset = () => {
+      reset();
+    };
+    window.addEventListener("app:reset", handleGlobalReset);
+    return () => window.removeEventListener("app:reset", handleGlobalReset);
+  }, [reset]);
+
   const runAnalyze = useCallback((targetUrl: string) => {
-    if (timer.current) clearTimeout(timer.current);
+    if (timer.current) {
+      clearTimeout(timer.current);
+      timer.current = null;
+    }
+    if (abortRef.current) {
+      abortRef.current.abort();
+      abortRef.current = null;
+    }
+
     const currentDetection = detect(targetUrl);
 
     if (currentDetection.status === "invalid" || currentDetection.status === "empty") {
@@ -35,9 +60,13 @@ export function Downloader() {
       return;
     }
 
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setPhase({ kind: "analyzing" });
     timer.current = setTimeout(async () => {
-      const outcome = await extractMedia(currentDetection.platform, targetUrl);
+      const outcome = await extractMedia(currentDetection.platform, targetUrl, controller.signal);
+      if (controller.signal.aborted) return;
       setPhase(
         typeof outcome === "string"
           ? { kind: "error", code: outcome }

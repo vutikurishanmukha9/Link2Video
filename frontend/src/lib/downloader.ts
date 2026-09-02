@@ -180,9 +180,22 @@ interface BackendMediaItem {
 export async function extractMedia(
   platform: Platform,
   url: string,
+  externalSignal?: AbortSignal,
 ): Promise<PostResult | FailureCode> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+  if (externalSignal) {
+    if (externalSignal.aborted) {
+      clearTimeout(timeoutId);
+      controller.abort();
+    } else {
+      externalSignal.addEventListener("abort", () => {
+        clearTimeout(timeoutId);
+        controller.abort();
+      });
+    }
+  }
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/v1/analyze`, {
@@ -234,6 +247,9 @@ export async function extractMedia(
     };
   } catch (err: unknown) {
     clearTimeout(timeoutId);
+    if (externalSignal?.aborted) {
+      return "extraction-failed";
+    }
     if (err instanceof Error && err.name === "AbortError") {
       return "request-timeout";
     }
