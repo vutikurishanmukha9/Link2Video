@@ -1,15 +1,9 @@
-const CACHE_NAME = "link2download-v2";
+const CACHE_NAME = "link2download-v3";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
   "/favicon.svg",
-  "/favicon.png",
-  "/favicon.ico",
-  "/logo-icon.png",
-  "/wordmark.png",
-  "/pwa-192x192.png",
-  "/pwa-512x512.png",
-  "/apple-touch-icon.png",
+  "/logo.png",
 ];
 
 self.addEventListener("install", (event) => {
