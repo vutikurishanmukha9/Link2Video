@@ -1,17 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <defs>
-    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="arrow" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#FF5500"/>
       <stop offset="100%" stop-color="#FF8800"/>
     </linearGradient>
-    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="100%" stop-color="#E2E8F0"/>
-    </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="#0F172A"/>
-  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#1E293B" stroke-width="2"/>
-  <!-- Download arrow and play indicator -->
-  <path d="M32 18v20M23 30l9 9 9-9" stroke="url(#g1)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M20 44h24" stroke="url(#g2)" stroke-width="4.5" stroke-linecap="round"/>
+  <rect width="64" height="64" rx="14" fill="#101A2E"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" stroke="#1E293B" stroke-width="1.5"/>
+  <path d="M32 19v26M22 35l10 10 10-10" stroke="url(#arrow)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
