@@ -73,7 +73,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Link 2 Download — Fast Video & Audio Downloader (YouTube, Instagram, X)" },
+      { title: "Link2Download - Download Any Video, Anywhere" },
       {
         name: "description",
         content:
@@ -97,7 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       // Open Graph / Facebook
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Link 2 Download" },
-      { property: "og:title", content: "Link 2 Download — Fast Video & Audio Downloader" },
+      { property: "og:title", content: "Link2Download - Download Any Video, Anywhere" },
       {
         property: "og:description",
         content:
@@ -111,7 +111,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:locale", content: "en_US" },
       // Twitter Cards
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Link 2 Download — Fast Video & Audio Downloader" },
+      { name: "twitter:title", content: "Link2Download - Download Any Video, Anywhere" },
       {
         name: "twitter:description",
         content:

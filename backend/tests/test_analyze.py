@@ -137,12 +137,26 @@ async def test_analyze_no_media_error(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_analyze_unsupported_platform(client: AsyncClient):
+async def test_analyze_invalid_scheme(client: AsyncClient):
     response = await client.post(
         "/api/v1/analyze",
-        json={"url": "https://www.tiktok.com/@creator/video/12345"},
+        json={"url": "ftp://server.example.com/video.mp4"},
     )
-    assert response.status_code == 422
+    assert response.status_code == 400
     data = response.json()
     assert data["success"] is False
-    assert data["error"]["code"] == ErrorCode.UNSUPPORTED_PLATFORM.value
+    assert data["error"]["code"] == ErrorCode.INVALID_URL.value
+
+
+@pytest.mark.asyncio
+async def test_analyze_universal_web_bcci(client: AsyncClient):
+    response = await client.post(
+        "/api/v1/analyze",
+        json={"url": "https://www.bcci.tv/videos/998877/ind-vs-eng-highlights"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["platform"]["slug"] == "web"
+    assert data["platform"]["name"] == "BCCI"
+    assert len(data["media"]) > 0

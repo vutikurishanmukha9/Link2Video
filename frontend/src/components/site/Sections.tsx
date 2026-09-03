@@ -125,40 +125,41 @@ const PLATFORM_DETAILS: Record<
     badgeText: "text-[#ff4500]",
     badgeBorder: "border-[#ff4500]/25",
     hoverBorder: "hover:border-[#ff4500]/50 hover:shadow-[0_8px_24px_rgba(255,69,0,0.08)]",
-    tags: ["v.redd.it", "Galleries", "GIFs", "Audio Track"],
-    description: "Clean extraction of hosted video chunks, audio muxing, and photo sets.",
-    qualityBadge: "Direct Mux",
+    tags: ["DASH Audio Mux", "Galleries", "MP4"],
+    description: "Automatic audio-video muxing for native Reddit video and gallery albums.",
+    qualityBadge: "Muxed 1080p",
+  },
+  web: {
+    badgeBg: "bg-emerald-500/10",
+    badgeText: "text-emerald-500",
+    badgeBorder: "border-emerald-500/25",
+    hoverBorder: "hover:border-emerald-500/50 hover:shadow-[0_8px_24px_rgba(16,185,129,0.08)]",
+    tags: ["BCCI Cricket", "IPL Highlights", "Google Drive", "Universal Web"],
+    description: "Download match highlights from BCCI, IPL, Google Drive, and 1,750+ video websites.",
+    qualityBadge: "Universal MP4",
   },
 };
 
 export function Platforms() {
   return (
-    <section
-      id="platforms"
-      aria-labelledby="platforms-title"
-      className="shell mt-12 scroll-mt-16 sm:mt-16"
-    >
-      {/* Enhanced Header with Section Badge & Live Uptime Metric */}
-      <div className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
+    <section id="platforms" aria-labelledby="platforms-heading" className="mt-16 sm:mt-24">
+      {/* Header with live operational count */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-border/60 pb-4">
         <div>
-          <span className="mono-meta inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-sunken px-2.5 py-0.5 text-[11px] tracking-[0.06em] text-text-muted uppercase">
-            Supported Ecosystem
-          </span>
-          <h2 id="platforms-title" className="display-tight mt-2 text-[26px] sm:text-[30px]">
-            Supported platforms & media formats
+          <h2 id="platforms-heading" className="text-[22px] sm:text-[26px] font-medium tracking-tight text-text">
+            Supported Platforms
           </h2>
-          <p className="mt-1 text-[14px] text-text-secondary sm:text-[15px]">
-            Direct high-speed parsing across every major social platform with no compression.
+          <p className="mt-1 text-[14px] text-text-secondary">
+            Engineered extraction adapters tuned for every major platform and web video stream.
           </p>
         </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[12px] font-medium text-text-secondary shadow-2xs">
+        <div className="flex items-center gap-2">
+          <span className="mono-meta inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-[12px] font-medium text-emerald-600 dark:text-emerald-400">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-positive opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-positive" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
             </span>
-            6 Networks Operational
+            Universal + 1,750+ Sites
           </span>
         </div>
       </div>

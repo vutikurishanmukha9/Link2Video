@@ -29,14 +29,10 @@ def is_ip_private_or_reserved(ip_str: str) -> bool:
     """Check if an IP address belongs to private, loopback, link-local, or multicast blocks."""
     try:
         ip = ipaddress.ip_address(ip_str)
-        return (
-            ip.is_private
-            or ip.is_loopback
-            or ip.is_link_local
-            or ip.is_multicast
-            or ip.is_reserved
-            or ip.is_unspecified
-        )
+        # `is_private` does not cover every non-public range (for example the
+        # carrier-grade NAT block 100.64.0.0/10). Outbound requests are safe
+        # only to globally-routable addresses.
+        return not ip.is_global
     except ValueError:
         return False
 
@@ -44,14 +40,16 @@ def is_ip_private_or_reserved(ip_str: str) -> bool:
 def validate_and_guard_url(
     raw_url: str,
     allowed_domains: Optional[List[str]] = None,
+    enforce_whitelist: bool = False,
     resolve_dns: bool = False,
 ) -> str:
     """
     Strict SSRF validation:
     1. Rejects dangerous schemes (file:, data:, javascript:, etc.)
     2. Rejects localhost, 127.0.0.1, internal IP literals
-    3. Rejects domains not on the approved platform list
-    4. Optionally resolves hostname and verifies resolved IP is not internal
+    3. Rejects invalid hosts, missing TLDs, and private TLDs (.local, .internal, .lan, etc.)
+    4. Optionally validates against explicit allowed domain whitelist if enforce_whitelist=True
+    5. Optionally resolves hostname and verifies resolved IP is not internal
     """
     if not raw_url or not isinstance(raw_url, str):
         raise InvalidURLException("URL cannot be empty.")
@@ -75,6 +73,8 @@ def validate_and_guard_url(
         raise InvalidURLException("URL must contain a valid hostname.")
 
     hostname = hostname.lower()
+    if parsed.username is not None or parsed.password is not None:
+        raise InvalidURLException("URLs with embedded credentials are not allowed.")
 
     # 2. Check direct IP address or localhost
     if hostname in {"localhost", "127.0.0.1", "::1", "0.0.0.0"}:
@@ -83,15 +83,24 @@ def validate_and_guard_url(
     if is_ip_private_or_reserved(hostname):
         raise InvalidURLException("Access to private internal IP addresses is forbidden.")
 
-    # 3. Approved domain whitelist check
-    allowed = allowed_domains or ALLOWED_PLATFORM_DOMAINS
-    matched = any(
-        hostname == domain or hostname.endswith(f".{domain}") for domain in allowed
-    )
-    if not matched:
-        raise UnsupportedPlatformException(
-            f"The domain '{hostname}' is not a supported social platform."
+    # 3. Host structure & private TLD defense
+    if "." not in hostname or hostname.endswith("."):
+        raise InvalidURLException(f"The host '{hostname}' is not a valid public web domain.")
+
+    tld = hostname.split(".")[-1]
+    if tld in {"local", "internal", "lan", "home", "corp", "test", "example", "invalid", "localhost", "onion"}:
+        raise InvalidURLException(f"Access to private TLD '.{tld}' is forbidden.")
+
+    # 4. Whitelist check (if explicit whitelist enforcement requested)
+    if enforce_whitelist or allowed_domains is not None:
+        allowed = allowed_domains or ALLOWED_PLATFORM_DOMAINS
+        matched = any(
+            hostname == domain or hostname.endswith(f".{domain}") for domain in allowed
         )
+        if not matched:
+            raise UnsupportedPlatformException(
+                f"The domain '{hostname}' is not on the approved domain whitelist."
+            )
 
     # 4. Optional DNS resolution check to prevent DNS rebinding attacks
     if resolve_dns:
@@ -126,6 +135,8 @@ def validate_safe_outbound_url(url: str) -> str:
         raise InvalidURLException("Outbound URL must contain a valid hostname.")
 
     hostname = hostname.lower()
+    if parsed.username is not None or parsed.password is not None:
+        raise InvalidURLException("Outbound URLs with embedded credentials are not allowed.")
     if hostname in {"localhost", "127.0.0.1", "::1", "0.0.0.0", "169.254.169.254", "metadata.google.internal"}:
         raise InvalidURLException("Access to internal host address is strictly forbidden.")
 

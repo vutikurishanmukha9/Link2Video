@@ -38,6 +38,30 @@ def test_detect_reddit():
     assert result[0].slug == "reddit"
 
 
-def test_unsupported_returns_none():
-    assert platform_detector.detect("https://tiktok.com/@user/123") is None
-    assert platform_detector.detect("https://vimeo.com/123") is None
+def test_detect_universal_web_bcci():
+    result = platform_detector.detect("https://www.bcci.tv/videos/556677/match-highlights")
+    assert result is not None
+    adapter, info = result
+    assert adapter.slug == "web"
+    assert info.name == "BCCI"
+
+
+def test_detect_universal_web_ipl():
+    result = platform_detector.detect("https://www.iplt20.com/video/12345/final-over-thriller")
+    assert result is not None
+    adapter, info = result
+    assert adapter.slug == "web"
+    assert info.name == "IPL"
+
+
+def test_detect_universal_web_google_drive():
+    result = platform_detector.detect("https://drive.google.com/file/d/1A2B3C4D/view")
+    assert result is not None
+    adapter, info = result
+    assert adapter.slug == "web"
+    assert info.name == "Google Drive"
+
+
+def test_invalid_scheme_returns_none():
+    assert platform_detector.detect("") is None
+    assert platform_detector.detect("ftp://example.com/video.mp4") is None

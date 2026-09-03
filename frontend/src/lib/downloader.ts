@@ -3,7 +3,7 @@
  * Everything here is API-ready: swap `mockExtract` for a server call later.
  */
 
-export type PlatformId = "instagram" | "x" | "facebook" | "linkedin" | "reddit" | "youtube";
+export type PlatformId = "instagram" | "x" | "facebook" | "linkedin" | "reddit" | "youtube" | "web";
 
 export type MediaKind = "image" | "video";
 
@@ -22,6 +22,7 @@ export interface MediaItem {
 
 export interface PostResult {
   platform: PlatformId;
+  platformName?: string;
   author: string;
   postedAt: string;
   caption: string;
@@ -81,6 +82,12 @@ export const PLATFORMS: Platform[] = [
     media: "Photos · Videos · GIFs",
     hosts: ["reddit.com", "redd.it"],
   },
+  {
+    id: "web",
+    name: "Web Video",
+    media: "BCCI · IPL · Google Drive · HD Streams",
+    hosts: [],
+  },
 ];
 
 export const PLATFORM_BY_ID: Record<PlatformId, Platform> = Object.fromEntries(
@@ -108,9 +115,39 @@ export function detect(raw: string): Detection {
   const url = parse(raw);
   if (!url || !url.hostname.includes(".")) return { status: "invalid" };
   const host = url.hostname.replace(/^www\./, "");
+  
+  // 1. Check known social media platforms
   const platform = PLATFORMS.find((p) => p.hosts.some((h) => host === h || host.endsWith(`.${h}`)));
-  if (!platform) return { status: "unsupported", host };
-  return { status: "detected", platform };
+  if (platform) {
+    return { status: "detected", platform };
+  }
+
+  // 2. Universal Web Video detection (BCCI, IPL, Google Drive, Vimeo, etc.)
+  let displayName = "Web Video";
+  if (host.includes("bcci.tv")) {
+    displayName = "BCCI";
+  } else if (host.includes("iplt20.com")) {
+    displayName = "IPL";
+  } else if (host.includes("drive.google.com")) {
+    displayName = "Google Drive";
+  } else if (host.includes("google.com")) {
+    displayName = "Google Video";
+  } else {
+    const parts = host.split(".");
+    const brand = parts[parts.length - 2];
+    if (brand) {
+      displayName = brand.length <= 4 ? brand.toUpperCase() : brand.charAt(0).toUpperCase() + brand.slice(1);
+    }
+  }
+
+  const webPlatform: Platform = {
+    id: "web",
+    name: displayName,
+    media: "Highlights · Videos · Streams",
+    hosts: [host],
+  };
+
+  return { status: "detected", platform: webPlatform };
 }
 
 export const FAILURE_COPY: Record<FailureCode, { title: string; detail: string }> = {
@@ -145,9 +182,11 @@ export const FAILURE_COPY: Record<FailureCode, { title: string; detail: string }
 };
 
 export function formatBytes(bytes: number): string {
+  if (!bytes || bytes <= 0) return "Adaptive Stream";
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(0)} KB`;
-  return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
+  if (bytes < 1024 ** 3) return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
+  return `${(bytes / 1024 ** 3).toFixed(2)} GB`;
 }
 
 export function formatDuration(seconds: number): string {
@@ -239,9 +278,11 @@ export async function extractMedia(
       return "no-media";
     }
 
+    const brandName = data.platform?.name || platform.name;
     return {
       platform: platform.id,
-      author: data.author || `@${platform.id}.user`,
+      platformName: brandName,
+      author: data.author || (platform.id === "web" ? brandName : `@${platform.id}.user`),
       postedAt: data.posted_at || "Recently",
       caption: data.caption || "",
       media,
@@ -272,8 +313,6 @@ export function triggerDownload(item: MediaItem) {
   const filename = `${item.id}.${item.format.toLowerCase()}`;
   const a = document.createElement("a");
   a.href = streamUrl;
-  a.target = "_blank";
-  a.rel = "noopener noreferrer";
   a.download = filename;
   document.body.appendChild(a);
   a.click();

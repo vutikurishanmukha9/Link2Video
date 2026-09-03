@@ -27,12 +27,19 @@ class Settings(BaseSettings):
     # CORS Allowed Origins
     FRONTEND_URL: str = "https://link2download.vercel.app,http://localhost:3000,http://localhost:5173"
     CORS_ORIGINS: str = ""
+    CORS_ORIGIN_REGEX: str = ""
+
+    # The universal extractor is intentionally opt-in to a curated set of public
+    # video hosts. Add comma-separated roots when supporting another host.
+    UNIVERSAL_ALLOWED_DOMAINS: str = "bcci.tv,iplt20.com,drive.google.com,vimeo.com,dailymotion.com"
+    TRUST_PROXY_HEADERS: bool = False
 
     # Rate Limiting & Caching Defaults
     RATE_LIMIT_ANALYZE: int = 10
     RATE_LIMIT_DOWNLOAD: int = 30
     RATE_LIMIT_WINDOW_SECONDS: int = 60
     CACHE_TTL_SECONDS: int = 600
+    CACHE_MAX_ITEMS: int = 1_000
 
     # Optional Provider Keys
     INSTAGRAM_API_KEY: str = ""
@@ -48,19 +55,16 @@ class Settings(BaseSettings):
                 parsed = json.loads(raw)
                 if isinstance(parsed, list):
                     res = [str(o).strip() for o in parsed if str(o).strip()]
-                    if "https://link2download.vercel.app" not in res:
-                        res.append("https://link2download.vercel.app")
                     return res
             except Exception:
                 pass
         origins = [url.strip() for url in raw.split(",") if url.strip()]
-        if "https://link2download.vercel.app" not in origins:
-            origins.append("https://link2download.vercel.app")
-        if "http://localhost:3000" not in origins:
-            origins.append("http://localhost:3000")
-        if "http://localhost:5173" not in origins:
-            origins.append("http://localhost:5173")
         return origins
+
+    @computed_field
+    @property
+    def universal_allowed_domains(self) -> List[str]:
+        return [domain.strip().lower() for domain in self.UNIVERSAL_ALLOWED_DOMAINS.split(",") if domain.strip()]
 
     @computed_field
     @property

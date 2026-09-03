@@ -39,7 +39,7 @@ has_wildcard = "*" in settings.cors_origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
-    allow_origin_regex=r"^https?://.*\.vercel\.app$",
+    allow_origin_regex=settings.CORS_ORIGIN_REGEX or None,
     allow_credentials=not has_wildcard,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -71,7 +71,8 @@ app.add_middleware(NormalizePathMiddleware)
 @app.middleware("http")
 async def request_context_middleware(request: Request, call_next):
     """Assigns unique request ID, enforces payload limits, and injects security headers."""
-    request_id = request.headers.get("X-Request-ID") or generate_request_id()
+    supplied_request_id = request.headers.get("X-Request-ID", "")
+    request_id = supplied_request_id if supplied_request_id.isascii() and supplied_request_id.replace("-", "").replace("_", "").isalnum() and len(supplied_request_id) <= 128 else generate_request_id()
     request.state.request_id = request_id
     start_time = time.time()
 
@@ -132,6 +133,8 @@ async def app_exception_handler(request: Request, exc: AppException):
         headers["Retry-After"] = str(settings.RATE_LIMIT_WINDOW_SECONDS)
         headers["X-RateLimit-Limit"] = str(settings.RATE_LIMIT_ANALYZE)
         headers["X-RateLimit-Remaining"] = "0"
+
+    logger.warning(f"Handled error: [{exc.code.value}] {exc.message}")
 
     return JSONResponse(
         status_code=exc.status_code,
@@ -198,3 +201,9 @@ async def root():
         "health": f"{settings.API_V1_STR}/health",
         "docs": "/docs" if not settings.is_production else None,
     }
+
+
+@app.api_route("/health", methods=["GET", "HEAD"], include_in_schema=False)
+async def health_root():
+    return {"status": "ok", "healthy": True}
+

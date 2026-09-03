@@ -36,6 +36,9 @@ class CacheService:
         if h in self._memory_store:
             val, exp = self._memory_store[h]
             if exp > now_ts:
+                # Keep actively used entries when enforcing the bounded cache.
+                self._memory_store.pop(h)
+                self._memory_store[h] = (val, exp)
                 return val
             del self._memory_store[h]
 
@@ -48,7 +51,7 @@ class CacheService:
                     ExtractionCacheModel.expires_at > now_dt,
                 )
                 result = await db.execute(stmt)
-                item = result.scalar_one_or_none()
+                item = result.scalars().first()
                 if item:
                     data = json.loads(item.payload_json)
                     # Warm Tier 1 in-memory cache
@@ -84,6 +87,10 @@ class CacheService:
 
         # 1. Save in Tier 1: In-Memory cache
         self._memory_store[h] = (data, now_ts + self.ttl)
+        # A public endpoint can receive an unbounded number of distinct URLs;
+        # cap the process-local cache so it cannot grow without limit.
+        while len(self._memory_store) > settings.CACHE_MAX_ITEMS:
+            self._memory_store.pop(next(iter(self._memory_store)))
 
         # 2. Save in Tier 2: Neon PostgreSQL persistent cache table
         if db is not None:

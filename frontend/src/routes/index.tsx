@@ -14,7 +14,7 @@ import {
   SITE_URL,
 } from "@/lib/seo-schema";
 
-const TITLE = "Link 2 Download — Fast Video & Audio Downloader (YouTube, Instagram, X)";
+const TITLE = "Link2Download - Download Any Video, Anywhere";
 const DESCRIPTION =
   "Free online public media downloader. Save HD videos (1080p/4K), Instagram Reels, YouTube Shorts, X/Twitter clips, Facebook videos, and MP3 audio tracks directly with zero ads or watermarks.";
 

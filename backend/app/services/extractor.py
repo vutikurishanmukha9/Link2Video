@@ -1,4 +1,5 @@
 import asyncio
+import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from yt_dlp import YoutubeDL
@@ -24,7 +25,6 @@ def _safe_extract(url: str, custom_opts: Optional[Dict[str, Any]] = None) -> Dic
         "extract_flat": "in_playlist",
         "playlist_items": "1",
         "socket_timeout": 10,
-        "nocheckcertificate": True,
         "ignoreerrors": False,
         "no_color": True,
         "http_headers": {
@@ -204,10 +204,41 @@ class RealMediaExtractor:
         height = entry.get("height") or (best_video.get("height") if best_video else 1920) or 1920
         duration = float(entry.get("duration") or 0.0) if entry.get("duration") else None
         file_size = int(entry.get("filesize") or entry.get("filesize_approx") or (best_video.get("filesize") if best_video else 0) or 0)
+
+        # For HLS streams (e.g., BCCI, IPL, MUX), filesize is not declared in playlist header.
+        # Estimate accurately from bitrate and duration.
+        if file_size <= 0 and duration and duration > 0:
+            tbr = (best_video.get("tbr") if best_video else None) or entry.get("tbr")
+            if not tbr and best_video:
+                vbr = best_video.get("vbr") or 0
+                abr = best_video.get("abr") or 0
+                if vbr or abr:
+                    tbr = vbr + abr
+            if tbr and float(tbr) > 0:
+                file_size = int((float(tbr) * 1000 / 8) * float(duration))
+            else:
+                # Standard H.264 bitrate fallback based on resolution
+                h_val = int(height)
+                w_val = int(width)
+                if h_val >= 1080 or w_val >= 1920:
+                    est_kbps = 3500
+                elif h_val >= 720 or w_val >= 1280:
+                    est_kbps = 2000
+                elif h_val >= 480:
+                    est_kbps = 1000
+                else:
+                    est_kbps = 600
+                file_size = int((est_kbps * 1000 / 8) * float(duration))
+
         ext = entry.get("ext") or (best_video.get("ext") if best_video else "mp4") or "mp4"
 
+        raw_id = entry.get("id") or f"{platform_slug}-{index}"
+        clean_id = re.sub(r"[^a-zA-Z0-9_-]", "_", str(raw_id).split("?")[0].replace(".m3u8", "").replace(".mp4", "")).strip("_")[:48]
+        if not clean_id:
+            clean_id = f"{platform_slug}_{index}"
+
         return MediaItemSchema(
-            id=str(entry_id),
+            id=clean_id,
             type=media_type,
             url=media_url,
             thumbnail_url=thumbnail_url or media_url,
@@ -215,6 +246,6 @@ class RealMediaExtractor:
             height=int(height),
             duration=duration,
             format=str(ext).lower(),
-            size=file_size if file_size > 0 else 2_000_000,
+            size=file_size if file_size > 0 else 0,
             title=entry.get("title"),
         )

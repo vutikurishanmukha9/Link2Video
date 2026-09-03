@@ -1,9 +1,16 @@
+import anyio
+import asyncio
+import os
 import re
-from typing import AsyncGenerator
+import shutil
+import tempfile
+import time
+from typing import AsyncGenerator, Optional
 import httpx
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from yt_dlp import YoutubeDL
 from app.core.exceptions import ExtractionFailedException, NoMediaFoundException
 from app.core.logging import logger
 from app.models.media import MediaItemModel
@@ -11,7 +18,99 @@ from app.schemas.media import DownloadResponse
 from app.utils.security import validate_safe_outbound_url
 
 
+def _get_ffmpeg_path() -> Optional[str]:
+    """Resolve ffmpeg binary from system PATH or imageio_ffmpeg static bundle."""
+    ffmpeg_sys = shutil.which("ffmpeg")
+    if ffmpeg_sys:
+        return ffmpeg_sys
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return None
+
+
+def _cleanup_old_temp_files(max_age_seconds: int = 7200) -> None:
+    """Housekeeping for temporary video cache files older than 2 hours."""
+    try:
+        temp_dir = tempfile.gettempdir()
+        now = time.time()
+        for fname in os.listdir(temp_dir):
+            if fname.startswith("dl_") and fname.endswith(".mp4"):
+                fpath = os.path.join(temp_dir, fname)
+                if os.path.isfile(fpath) and (now - os.path.getmtime(fpath)) > max_age_seconds:
+                    try:
+                        os.remove(fpath)
+                    except Exception:
+                        pass
+    except Exception:
+        pass
+
+
 class DownloaderService:
+    def __init__(self):
+        self._active_downloads: dict[str, asyncio.Task[str]] = {}
+
+    def _get_hls_temp_path(self, media_id: str) -> str:
+        clean_token = re.sub(r"[^a-zA-Z0-9_-]", "_", media_id)[:24]
+        return os.path.join(tempfile.gettempdir(), f"dl_{clean_token}_{clean_token}.mp4")
+
+    async def ensure_hls_assembled(self, media_id: str, stream_url: str) -> str:
+        """
+        Thread-safe and single-flight HLS downloader.
+        Ensures exactly ONE process downloads and muxes a given video.
+        Any concurrent callers (pre-warm or download click) join the same active task.
+        """
+        temp_path = self._get_hls_temp_path(media_id)
+
+        # 1. If already assembled and valid on disk, return immediately
+        if os.path.exists(temp_path) and os.path.getsize(temp_path) > 1024:
+            return temp_path
+
+        # 2. If already being assembled by pre-warm or another request, join and wait for it
+        if media_id in self._active_downloads:
+            logger.info(f"Joining existing in-flight HLS download for {media_id}")
+            return await self._active_downloads[media_id]
+
+        # 3. Create a single active download task
+        loop = asyncio.get_running_loop()
+
+        async def _do_download() -> str:
+            try:
+                _cleanup_old_temp_files()
+                ffmpeg_bin = _get_ffmpeg_path()
+                ydl_opts = {
+                    "outtmpl": temp_path,
+                    "format": "best",
+                    "quiet": True,
+                    "no_warnings": True,
+                    "concurrent_fragment_downloads": 4,
+                    "max_filesize": 524_288_000,
+                    "socket_timeout": 30,
+                    "retries": 2,
+                    "fragment_retries": 2,
+                }
+                if ffmpeg_bin:
+                    ydl_opts["ffmpeg_location"] = ffmpeg_bin
+                    ydl_opts["postprocessors"] = [{"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}]
+
+                def _sync_worker():
+                    with YoutubeDL(ydl_opts) as ydl:
+                        ydl.download([stream_url])
+
+                await loop.run_in_executor(None, _sync_worker)
+
+                if not os.path.exists(temp_path) or os.path.getsize(temp_path) < 1024:
+                    raise ExtractionFailedException("Unable to assemble video fragments into a playable MP4 file.")
+
+                return temp_path
+            finally:
+                self._active_downloads.pop(media_id, None)
+
+        task = asyncio.create_task(_do_download())
+        self._active_downloads[media_id] = task
+        return await task
+
     async def get_download_target(
         self,
         media_id: str,
@@ -23,7 +122,7 @@ class DownloaderService:
 
         stmt = select(MediaItemModel).where(MediaItemModel.media_id == base_id)
         result = await db.execute(stmt)
-        item = result.scalar_one_or_none()
+        item = result.scalars().first()
 
         if not item:
             raise NoMediaFoundException(f"Media item with ID '{media_id}' not found.")
@@ -51,22 +150,47 @@ class DownloaderService:
         self,
         media_id: str,
         db: AsyncSession,
-    ) -> StreamingResponse:
+    ) -> Response:
         """Stream media file directly with Content-Disposition attachment for reliable browser downloads."""
         target = await self.get_download_target(media_id, db)
 
         # 1. SSRF defense: Validate initial destination URL against internal/metadata IPs
         validate_safe_outbound_url(target.direct_url)
 
-        # 2. SSRF defense: Validate redirect destinations so upstream cannot redirect into internal network
-        async def on_redirect_response(response: httpx.Response) -> None:
-            if response.is_redirect and response.has_redirect_location and response.next_request:
-                validate_safe_outbound_url(str(response.next_request.url))
-
-        # 3. Header injection defense: Sanitize filename against CRLF and quotes
+        # 2. Header injection defense: Sanitize filename against CRLF and quotes
         safe_filename = re.sub(r"[^a-zA-Z0-9._-]", "_", target.filename).strip(".")
         if not safe_filename:
             safe_filename = f"media_{media_id}.mp4"
+
+        # 3. Special handling for HLS playlists (.m3u8 streams on BCCI, IPL, MUX, etc.)
+        # Download and mux fragments into a real, 100% playable standard MP4 file with faststart moov
+        if ".m3u8" in target.direct_url:
+            safe_mp4_name = safe_filename if safe_filename.endswith(".mp4") else f"{safe_filename}.mp4"
+            temp_path = await self.ensure_hls_assembled(media_id, target.direct_url)
+            file_size = os.path.getsize(temp_path)
+
+            async def file_stream_generator() -> AsyncGenerator[bytes, None]:
+                async with await anyio.open_file(temp_path, "rb") as f:
+                    while chunk := await f.read(65536):
+                        yield chunk
+
+            hls_headers = {
+                "Content-Disposition": f'attachment; filename="{safe_mp4_name}"',
+                "Content-Type": "video/mp4",
+                "Content-Length": str(file_size),
+                "X-Content-Type-Options": "nosniff",
+            }
+
+            return StreamingResponse(
+                file_stream_generator(),
+                media_type="video/mp4",
+                headers=hls_headers,
+            )
+
+        # 4. Direct progressive streams (MP4/Images)
+        async def on_redirect_response(response: httpx.Response) -> None:
+            if response.is_redirect and response.has_redirect_location and response.next_request:
+                validate_safe_outbound_url(str(response.next_request.url))
 
         async def stream_generator() -> AsyncGenerator[bytes, None]:
             headers = {
@@ -111,14 +235,22 @@ class DownloaderService:
             "Content-Type": target.content_type,
             "X-Content-Type-Options": "nosniff",
         }
-        if target.size and target.size > 0:
-            headers["Content-Length"] = str(target.size)
 
+        # Do NOT set Content-Length on StreamingResponse: Starlette uses chunked transfer encoding,
+        # which avoids RuntimeError: Response content shorter than Content-Length when sizes vary.
         return StreamingResponse(
             stream_generator(),
             media_type=target.content_type,
             headers=headers,
         )
+
+    async def prewarm_hls_download(self, media_id: str, stream_url: str) -> None:
+        """Pre-download and remux HLS stream in background so download is instantaneous when clicked."""
+        try:
+            await self.ensure_hls_assembled(media_id, stream_url)
+            logger.info(f"Pre-warmed HLS stream ready for media_id: {media_id}")
+        except Exception as e:
+            logger.debug(f"Pre-warming HLS stream deferred: {e}")
 
 
 downloader_service = DownloaderService()

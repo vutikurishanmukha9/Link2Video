@@ -41,13 +41,15 @@ export function Workspace({ result }: { result: PostResult }) {
   const platform = PLATFORM_BY_ID[result.platform];
 
   const handleDownloadSingle = (item = active, customFilename?: string) => {
+    const isHls = item.videoUrl?.includes(".m3u8") || result.platform === "web";
     setDownloadingIds((prev) => [...prev, item.id]);
     triggerDownload(item);
 
+    const waitTime = isHls ? 6000 : 800;
     setTimeout(() => {
       setDownloadingIds((prev) => prev.filter((id) => id !== item.id));
       setDownloadedIds((prev) => (prev.includes(item.id) ? prev : [...prev, item.id]));
-    }, 600);
+    }, waitTime);
   };
 
   const handleDownloadAll = () => {
@@ -308,7 +310,7 @@ export function Workspace({ result }: { result: PostResult }) {
                   className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#0071E3] px-4 text-[13.5px] font-medium text-white shadow-[0_4px_16px_rgba(0,113,227,0.4)] transition-all hover:bg-[#0077ED] active:scale-[0.98]"
                 >
                   <Download size={15} />
-                  Download Audio Stream ({formatBytes(active.bytes)})
+                  Download Audio Stream{active.bytes > 0 ? ` (${formatBytes(active.bytes)})` : ""}
                 </button>
               </div>
             </div>
@@ -489,7 +491,9 @@ export function Workspace({ result }: { result: PostResult }) {
               {isCurrentDownloading ? (
                 <>
                   <span className="h-2 w-2 animate-ping rounded-full bg-white" />
-                  Preparing file...
+                  {active.videoUrl?.includes(".m3u8") || result.platform === "web"
+                    ? "Packaging HD Video..."
+                    : "Preparing file..."}
                 </>
               ) : isCurrentDownloaded ? (
                 <>
@@ -499,11 +503,17 @@ export function Workspace({ result }: { result: PostResult }) {
               ) : (
                 <>
                   <Download size={16} strokeWidth={1.8} />
-                  Download {active.kind === "video" ? "Video" : "Image"} (
-                  {formatBytes(active.bytes)})
+                  Download {active.kind === "video" ? "Video" : "Image"}
+                  {active.bytes > 0 ? ` (${formatBytes(active.bytes)})` : ""}
                 </>
               )}
             </button>
+
+            {isCurrentDownloading && (active.videoUrl?.includes(".m3u8") || result.platform === "web") && (
+              <p className="animate-pulse text-center text-[11.5px] text-white/60">
+                Packaging video fragments into MP4 container. The download will appear in your browser download shelf shortly.
+              </p>
+            )}
 
             {/* Secondary Action: Frosted Glass Button */}
             <button
