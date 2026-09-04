@@ -37,13 +37,7 @@ class YouTubeAdapter(PlatformAdapter):
             )
 
         # Build YouTube anti-blocking options
-        custom_opts: Dict[str, Any] = {
-            "extractor_args": {
-                "youtube": {
-                    "player_client": ["android", "ios", "mweb", "tv"],
-                }
-            }
-        }
+        custom_opts: Dict[str, Any] = {}
 
         # Check for Node.js or Deno JS challenge solver
         if shutil.which("node"):
@@ -57,6 +51,20 @@ class YouTubeAdapter(PlatformAdapter):
         cookie_file = settings.get_youtube_cookie_file()
         if cookie_file:
             custom_opts["cookiefile"] = cookie_file
+            custom_opts["extractor_args"] = {
+                "youtube": {
+                    "player_client": ["web", "tv", "android", "ios"],
+                }
+            }
+        else:
+            # Datacenter IP bypass: Skip webpage & initial_data to bypass BotGuard bot challenges,
+            # and target mobile Android/iOS protobuf endpoints directly.
+            custom_opts["extractor_args"] = {
+                "youtube": {
+                    "player_client": ["android", "ios"],
+                    "player_skip": ["webpage", "configs", "initial_data"],
+                }
+            }
 
         # Add proxy if configured in environment
         if settings.YOUTUBE_PROXY:
@@ -64,6 +72,8 @@ class YouTubeAdapter(PlatformAdapter):
 
         # Add PO Token if configured
         if settings.YOUTUBE_PO_TOKEN:
+            if "youtube" not in custom_opts.get("extractor_args", {}):
+                custom_opts.setdefault("extractor_args", {})["youtube"] = {}
             custom_opts["extractor_args"]["youtube"]["po_token"] = [settings.YOUTUBE_PO_TOKEN]
 
         result = await RealMediaExtractor.extract(

@@ -152,11 +152,6 @@ class DownloaderService:
                     "socket_timeout": 30,
                     "retries": 3,
                     "fragment_retries": 3,
-                    "extractor_args": {
-                        "youtube": {
-                            "player_client": ["android", "ios", "mweb", "tv"],
-                        }
-                    },
                 }
 
                 if node_bin:
@@ -176,11 +171,25 @@ class DownloaderService:
                 cookie_file = settings.get_youtube_cookie_file()
                 if cookie_file:
                     ydl_opts["cookiefile"] = cookie_file
+                    ydl_opts["extractor_args"] = {
+                        "youtube": {
+                            "player_client": ["web", "tv", "android", "ios"],
+                        }
+                    }
+                else:
+                    ydl_opts["extractor_args"] = {
+                        "youtube": {
+                            "player_client": ["android", "ios"],
+                            "player_skip": ["webpage", "configs", "initial_data"],
+                        }
+                    }
 
                 if settings.YOUTUBE_PROXY:
                     ydl_opts["proxy"] = settings.YOUTUBE_PROXY
 
                 if settings.YOUTUBE_PO_TOKEN:
+                    if "youtube" not in ydl_opts.get("extractor_args", {}):
+                        ydl_opts.setdefault("extractor_args", {})["youtube"] = {}
                     ydl_opts["extractor_args"]["youtube"]["po_token"] = [settings.YOUTUBE_PO_TOKEN]
 
                 def _sync_worker():

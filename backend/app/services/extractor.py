@@ -90,13 +90,14 @@ class RealMediaExtractor:
             )
         except (DownloadError, ExtractorError) as e:
             err_msg = str(e).lower()
-            logger.info(f"Extractor caught error for {url}: {err_msg}")
+            clean_err = err_msg.replace("’", "'").replace("`", "'")
+            logger.info(f"Extractor caught error for {url}: {clean_err}")
 
-            if "sign in to confirm you're not a bot" in err_msg or "confirm you're not a bot" in err_msg:
+            if "confirm you're not a bot" in clean_err or "not a bot" in clean_err or "bot detection" in clean_err:
                 raise ExtractionFailedException(
-                    message="YouTube bot protection detected. Please configure YouTube cookies or proxy in server settings to bypass."
+                    message="YouTube bot protection detected. Please configure YOUTUBE_COOKIES in Render environment settings to authenticate."
                 )
-            if any(k in err_msg for k in ["private account", "this account is private", "login required", "members-only", "age-restricted"]):
+            if any(k in clean_err for k in ["private account", "this account is private", "login required", "members-only", "age-restricted"]):
                 raise PrivateContentException(
                     message="This content is private, restricted, or requires an account to view."
                 )
