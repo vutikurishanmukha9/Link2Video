@@ -1,5 +1,6 @@
 import asyncio
 import re
+import shutil
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from yt_dlp import YoutubeDL
@@ -17,14 +18,14 @@ from app.schemas.media import MediaItemSchema
 
 def _safe_extract(url: str, custom_opts: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Synchronous worker function to run inside an async thread pool with multi-client rotation."""
-    opts = {
+    opts: Dict[str, Any] = {
         "quiet": True,
         "no_warnings": True,
         "skip_download": True,
         "noplaylist": True,
         "extract_flat": "in_playlist",
         "playlist_items": "1",
-        "socket_timeout": 10,
+        "socket_timeout": 15,
         "ignoreerrors": False,
         "no_color": True,
         "http_headers": {
@@ -38,6 +39,25 @@ def _safe_extract(url: str, custom_opts: Optional[Dict[str, Any]] = None) -> Dic
         },
     }
 
+    # Enable EJS JavaScript challenge solving if Node or Deno is installed
+    if shutil.which("node"):
+        opts["remote_components"] = ["ejs:github"]
+        opts["js_runtimes"] = {"node": {}}
+    elif shutil.which("deno"):
+        opts["remote_components"] = ["ejs:github"]
+        opts["js_runtimes"] = {"deno": {}}
+
+    # Provide ffmpeg if available
+    ffmpeg_bin = shutil.which("ffmpeg")
+    if not ffmpeg_bin:
+        try:
+            import imageio_ffmpeg
+            ffmpeg_bin = imageio_ffmpeg.get_ffmpeg_exe()
+        except Exception:
+            ffmpeg_bin = None
+    if ffmpeg_bin:
+        opts["ffmpeg_location"] = ffmpeg_bin
+
     if custom_opts:
         opts.update(custom_opts)
 
@@ -49,14 +69,19 @@ class RealMediaExtractor:
     """Production media extractor utilizing yt-dlp to extract real video & image streams."""
 
     @staticmethod
-    async def extract(url: str, platform_slug: str, platform_name: str) -> ExtractionResult:
+    async def extract(
+        url: str,
+        platform_slug: str,
+        platform_name: str,
+        custom_opts: Optional[Dict[str, Any]] = None,
+    ) -> ExtractionResult:
         loop = asyncio.get_running_loop()
 
         try:
-            # Run extraction in worker thread with a 20-second timeout
+            # Run extraction in worker thread with a 25-second timeout
             info = await asyncio.wait_for(
-                loop.run_in_executor(None, _safe_extract, url),
-                timeout=20.0,
+                loop.run_in_executor(None, _safe_extract, url, custom_opts),
+                timeout=25.0,
             )
         except asyncio.TimeoutError:
             logger.warning(f"Upstream extraction timed out for {url}")
@@ -67,7 +92,11 @@ class RealMediaExtractor:
             err_msg = str(e).lower()
             logger.info(f"Extractor caught error for {url}: {err_msg}")
 
-            if any(k in err_msg for k in ["private account", "this account is private", "login required", "members-only", "age-restricted", "sign in to confirm"]):
+            if "sign in to confirm you're not a bot" in err_msg or "confirm you're not a bot" in err_msg:
+                raise ExtractionFailedException(
+                    message="YouTube bot protection detected. Please configure YouTube cookies or proxy in server settings to bypass."
+                )
+            if any(k in err_msg for k in ["private account", "this account is private", "login required", "members-only", "age-restricted"]):
                 raise PrivateContentException(
                     message="This content is private, restricted, or requires an account to view."
                 )
@@ -101,7 +130,7 @@ class RealMediaExtractor:
             or f"@{platform_slug}.user"
         )
         caption = info.get("description") or info.get("title") or ""
-        
+
         # Posted timestamp
         posted_at = "Recently"
         if info.get("upload_date"):
@@ -164,12 +193,13 @@ class RealMediaExtractor:
                 if f.get("url") and (f.get("ext") in ["mp4", "webm", "m4v"] or f.get("vcodec") != "none")
             ]
             if video_formats:
-                # Prioritize progressive video formats (contain both video and audio)
                 progressive = [
                     f for f in video_formats
                     if f.get("acodec") not in (None, "none") and f.get("vcodec") not in (None, "none")
                 ]
-                candidates = progressive if progressive else video_formats
+                # For YouTube, DownloaderService merges best video and audio via ffmpeg,
+                # so prioritize highest quality video stream (up to 1080p/720p).
+                candidates = video_formats if platform_slug == "youtube" else (progressive if progressive else video_formats)
                 best_video = max(
                     candidates,
                     key=lambda f: (
@@ -231,6 +261,9 @@ class RealMediaExtractor:
                 file_size = int((est_kbps * 1000 / 8) * float(duration))
 
         ext = entry.get("ext") or (best_video.get("ext") if best_video else "mp4") or "mp4"
+        # Standardize webm to mp4 for universal browser download
+        if ext.lower() == "webm" and media_type == "video":
+            ext = "mp4"
 
         raw_id = entry.get("id") or f"{platform_slug}-{index}"
         clean_id = re.sub(r"[^a-zA-Z0-9_-]", "_", str(raw_id).split("?")[0].replace(".m3u8", "").replace(".mp4", "")).strip("_")[:48]

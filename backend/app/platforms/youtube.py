@@ -1,4 +1,8 @@
+import asyncio
+import shutil
 import urllib.parse
+from typing import Any, Dict
+from app.core.config import settings
 from app.core.exceptions import (
     NoMediaFoundException,
     PrivateContentException,
@@ -32,4 +36,49 @@ class YouTubeAdapter(PlatformAdapter):
                 "This URL points to a YouTube channel or community page, not a downloadable video or Short."
             )
 
-        return await RealMediaExtractor.extract(url, self.slug, self.name)
+        # Build YouTube anti-blocking options
+        custom_opts: Dict[str, Any] = {
+            "extractor_args": {
+                "youtube": {
+                    "player_client": ["android", "ios", "mweb", "tv"],
+                }
+            }
+        }
+
+        # Check for Node.js or Deno JS challenge solver
+        if shutil.which("node"):
+            custom_opts["remote_components"] = ["ejs:github"]
+            custom_opts["js_runtimes"] = {"node": {}}
+        elif shutil.which("deno"):
+            custom_opts["remote_components"] = ["ejs:github"]
+            custom_opts["js_runtimes"] = {"deno": {}}
+
+        # Add cookie file if configured in environment
+        cookie_file = settings.get_youtube_cookie_file()
+        if cookie_file:
+            custom_opts["cookiefile"] = cookie_file
+
+        # Add proxy if configured in environment
+        if settings.YOUTUBE_PROXY:
+            custom_opts["proxy"] = settings.YOUTUBE_PROXY
+
+        # Add PO Token if configured
+        if settings.YOUTUBE_PO_TOKEN:
+            custom_opts["extractor_args"]["youtube"]["po_token"] = [settings.YOUTUBE_PO_TOKEN]
+
+        result = await RealMediaExtractor.extract(
+            url=url,
+            platform_slug=self.slug,
+            platform_name=self.name,
+            custom_opts=custom_opts,
+        )
+
+        # Trigger background prewarm for instantaneous HD download
+        try:
+            from app.services.downloader import downloader_service
+            if result.media and len(result.media) > 0:
+                asyncio.create_task(downloader_service.prewarm_youtube_download(result.media[0].id, url))
+        except Exception:
+            pass
+
+        return result
