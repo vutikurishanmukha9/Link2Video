@@ -313,26 +313,34 @@ class DownloaderService:
             except Exception:
                 pass
 
-            temp_path = await self.ensure_youtube_assembled(media_id, source_url)
-            file_size = os.path.getsize(temp_path)
+            try:
+                temp_path = await self.ensure_youtube_assembled(media_id, source_url)
+                file_size = os.path.getsize(temp_path)
 
-            async def yt_stream_generator() -> AsyncGenerator[bytes, None]:
-                async with await anyio.open_file(temp_path, "rb") as f:
-                    while chunk := await f.read(65536):
-                        yield chunk
+                async def yt_stream_generator() -> AsyncGenerator[bytes, None]:
+                    async with await anyio.open_file(temp_path, "rb") as f:
+                        while chunk := await f.read(65536):
+                            yield chunk
 
-            yt_headers = {
-                "Content-Disposition": f'attachment; filename="{safe_mp4_name}"',
-                "Content-Type": "video/mp4",
-                "Content-Length": str(file_size),
-                "X-Content-Type-Options": "nosniff",
-            }
+                yt_headers = {
+                    "Content-Disposition": f'attachment; filename="{safe_mp4_name}"',
+                    "Content-Type": "video/mp4",
+                    "Content-Length": str(file_size),
+                    "X-Content-Type-Options": "nosniff",
+                }
 
-            return StreamingResponse(
-                yt_stream_generator(),
-                media_type="video/mp4",
-                headers=yt_headers,
-            )
+                return StreamingResponse(
+                    yt_stream_generator(),
+                    media_type="video/mp4",
+                    headers=yt_headers,
+                )
+            except Exception as e:
+                # YouTube assembly failed (likely bot detection on datacenter IP).
+                # Redirect user to the YouTube watch page so their browser can play/download.
+                logger.warning(f"YouTube assembly failed for {media_id}, redirecting to YouTube: {e}")
+                yt_watch_url = source_url if "youtube.com/watch" in source_url or "youtu.be/" in source_url else target.direct_url
+                from fastapi.responses import RedirectResponse
+                return RedirectResponse(url=yt_watch_url, status_code=307)
 
         # 5. Direct progressive streams (MP4/Images from Instagram, Twitter, etc.)
         async def on_redirect_response(response: httpx.Response) -> None:
