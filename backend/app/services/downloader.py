@@ -5,6 +5,7 @@ import re
 import shutil
 import tempfile
 import time
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, AsyncGenerator, Optional
 import httpx
 from fastapi.responses import Response, StreamingResponse
@@ -32,21 +33,50 @@ def _get_ffmpeg_path() -> Optional[str]:
         return None
 
 
-def _cleanup_old_temp_files(max_age_seconds: int = 7200) -> None:
-    """Housekeeping for temporary video cache files older than 2 hours."""
+def _cleanup_old_temp_files(
+    max_age_seconds: int = 7200,
+    max_total_bytes: int = 2 * 1024 * 1024 * 1024,  # 2 GB cap
+) -> None:
+    """Housekeeping: evict temp video files by age (2h) AND by total size (2GB cap)."""
     try:
         temp_dir = tempfile.gettempdir()
         now = time.time()
+        dl_files: list[tuple[str, float, int]] = []  # (path, mtime, size)
+
         for fname in os.listdir(temp_dir):
             if fname.startswith("dl_") and fname.endswith(".mp4"):
                 fpath = os.path.join(temp_dir, fname)
-                if os.path.isfile(fpath) and (now - os.path.getmtime(fpath)) > max_age_seconds:
-                    try:
-                        os.remove(fpath)
-                    except Exception:
-                        pass
+                if os.path.isfile(fpath):
+                    mtime = os.path.getmtime(fpath)
+                    fsize = os.path.getsize(fpath)
+                    # 1. Age-based eviction
+                    if (now - mtime) > max_age_seconds:
+                        try:
+                            os.remove(fpath)
+                        except Exception:
+                            pass
+                    else:
+                        dl_files.append((fpath, mtime, fsize))
+
+        # 2. Size-based eviction: delete oldest files until under cap
+        total_size = sum(f[2] for f in dl_files)
+        if total_size > max_total_bytes:
+            dl_files.sort(key=lambda f: f[1])  # oldest first
+            for fpath, _, fsize in dl_files:
+                if total_size <= max_total_bytes:
+                    break
+                try:
+                    os.remove(fpath)
+                    total_size -= fsize
+                except Exception:
+                    pass
     except Exception:
         pass
+
+
+# Dedicated thread pool for long-running yt-dlp downloads.
+# Keeps them off the default asyncio executor so they can't starve other async work.
+_download_executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="dl-worker")
 
 
 class DownloaderService:
@@ -104,7 +134,7 @@ class DownloaderService:
                     with YoutubeDL(ydl_opts) as ydl:
                         ydl.download([stream_url])
 
-                await loop.run_in_executor(None, _sync_worker)
+                await loop.run_in_executor(_download_executor, _sync_worker)
 
                 if not os.path.exists(temp_path) or os.path.getsize(temp_path) < 1024:
                     raise ExtractionFailedException("Unable to assemble video fragments into a playable MP4 file.")
@@ -196,7 +226,7 @@ class DownloaderService:
                     with YoutubeDL(ydl_opts) as ydl:
                         ydl.download([original_url])
 
-                await loop.run_in_executor(None, _sync_worker)
+                await loop.run_in_executor(_download_executor, _sync_worker)
 
                 if not os.path.exists(temp_path) or os.path.getsize(temp_path) < 1024:
                     raise ExtractionFailedException("Unable to assemble YouTube video into a playable MP4 file.")

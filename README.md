@@ -318,6 +318,29 @@ Link2Video/
 
 ---
 
+## Known Limitations & Scaling Notes
+
+### Rate Limiting (In-Memory Fallback)
+When `REDIS_URL` is **not configured**, rate limiting falls back to an in-memory store. This has two important consequences:
+
+1. **Per-process isolation**: If you run multiple Uvicorn workers or deploy multiple instances, each maintains its own counter. The effective rate limit becomes `configured_limit × instance_count`.
+2. **Reset on restart**: Counters are lost on process restart, so a deploy or crash resets all limits.
+
+**Production recommendation**: Always set `REDIS_URL` to a real Redis instance (Upstash, ElastiCache, etc.). The app now logs a prominent warning at startup if running in production mode without Redis.
+
+### Ephemeral Disk Usage
+Temporary video files (HLS muxing, YouTube assembly) are cached on disk with:
+- **Time-based cleanup**: Files older than 2 hours are swept on each new download.
+- **Size cap**: Total temp directory usage is capped at 2 GB; oldest files are evicted when exceeded.
+- **Per-file limit**: Individual downloads are capped at 500 MB.
+
+On hosts with very small ephemeral storage (< 1 GB), consider reducing `max_filesize` in the downloader configuration.
+
+### Thread Pool for Long-Running Downloads
+Video muxing (HLS/YouTube) runs on a **dedicated 4-thread pool** separate from the asyncio default executor. This prevents large concurrent downloads from starving other async work. For higher concurrency under real load, consider migrating to a proper task queue (Celery/arq/Dramatiq).
+
+---
+
 ## Legal & Compliance Notice
 
 Link 2 Download is designed solely for public content archiving and media retrieval. It does not circumvent digital rights management (DRM), authentication gates, or private account restrictions. Users are responsible for complying with the terms of service of respective source platforms and applicable copyright laws in their jurisdiction.

@@ -88,6 +88,12 @@ class RedisManager:
                 )
 
         logger.info("Using in-memory Redis fallback for caching & rate limiting.")
+        if settings.is_production:
+            logger.warning(
+                "⚠️  PRODUCTION WITHOUT REDIS: In-memory rate limiting is per-process "
+                "and resets on restart. Rate limits are effectively unenforced. "
+                "Set REDIS_URL to a real Redis/Upstash instance for production deployments."
+            )
         self.client = InMemoryRedisClient()
 
     async def disconnect(self) -> None:
