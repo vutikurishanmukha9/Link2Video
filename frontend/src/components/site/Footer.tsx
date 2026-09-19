@@ -1,34 +1,35 @@
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 
 const NAV_LINKS = [
-  { label: "Product", href: "#downloader" },
+  { label: "Downloader", href: "#downloader" },
   { label: "Supported platforms", href: "#platforms" },
   { label: "How it works", href: "#how-it-works" },
+  { label: "FAQ", href: "#faq" },
 ];
 
 export function Footer() {
   return (
-    <footer className="mt-8 border-t border-border bg-surface-sunken/30 py-3.5 sm:mt-10 sm:py-4">
-      <div className="shell flex flex-col items-center justify-between gap-3 text-center md:flex-row md:text-left">
+    <footer className="mt-16 sm:mt-24 border-t-2 border-black bg-background py-8">
+      <div className="shell flex flex-col items-center justify-between gap-5 text-center md:flex-row md:text-left">
         {/* Left: Brand Wordmark */}
         <div className="shrink-0">
           <BrandWordmark size="sm" />
         </div>
 
-        {/* Center: Fair use disclaimer on the same line */}
-        <p className="max-w-[55ch] text-[11.5px] leading-relaxed text-text-muted lg:max-w-none">
+        {/* Center: Fair use disclaimer */}
+        <p className="max-w-[55ch] text-xs font-medium leading-relaxed text-muted-foreground lg:max-w-none">
           Link 2 Download retrieves publicly accessible media only. Respect copyright and the rights
           of original creators.
         </p>
 
-        {/* Right: Clean Nav Links */}
+        {/* Right: Neobrutalist Nav Links */}
         <nav aria-label="Footer navigation" className="shrink-0">
-          <ul className="flex items-center gap-4 sm:gap-5">
+          <ul className="flex items-center gap-4 sm:gap-6">
             {NAV_LINKS.map((link) => (
               <li key={link.label}>
                 <a
                   href={link.href}
-                  className="text-[12px] font-medium text-text-secondary transition-colors duration-150 hover:text-text sm:text-[12.5px]"
+                  className="font-head text-xs uppercase text-foreground transition-colors hover:text-black hover:underline"
                 >
                   {link.label}
                 </a>

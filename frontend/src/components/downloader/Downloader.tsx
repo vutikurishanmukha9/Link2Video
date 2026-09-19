@@ -77,7 +77,7 @@ export function Downloader() {
   }, []);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <UrlCommandBar
         value={url}
         detection={detection}
@@ -90,25 +90,27 @@ export function Downloader() {
         onClear={reset}
       />
 
-      {/* Dynamic Product State Container (Directive Sec 13 & 35) */}
+      {/* Dynamic Product State Container */}
       <div aria-live="polite">
-        {/* State 4: Restrained Loading State (Directive Sec 22) */}
+        {/* Analyzing State */}
         {phase.kind === "analyzing" && (
-          <div className="fade-rise rounded-xl border border-border bg-surface px-5 py-4">
+          <div className="fade-rise rounded-xs border-2 border-black bg-card px-6 py-5 shadow-lg">
             <div className="flex items-center justify-between">
-              <p className="text-[14px] font-medium text-text">Analyzing URL</p>
-              <span className="mono-meta text-text-muted">Resolving origin stream…</span>
+              <p className="font-head text-base font-bold text-foreground">ANALYZING URL…</p>
+              <span className="font-head text-xs bg-primary px-2 py-0.5 border border-black text-black">
+                Resolving origin stream
+              </span>
             </div>
-            <p className="mono-meta mt-1 text-[12px] text-text-muted">
-              Detecting available video streams and image assets
+            <p className="mt-1 text-sm font-medium text-foreground/80">
+              Detecting available video formats, audio channels, and image assets.
             </p>
-            <div className="mt-3 h-[2px] w-full overflow-hidden rounded-full bg-surface-sunken">
-              <div className="indeterminate-bar h-full w-1/3 rounded-full bg-accent" />
+            <div className="mt-4 h-3 w-full overflow-hidden rounded-xs border-2 border-black bg-muted">
+              <div className="indeterminate-bar h-full w-1/3 bg-primary" />
             </div>
           </div>
         )}
 
-        {/* States 8, 9, 10, 11: Error States (Directive Sec 21) */}
+        {/* Error States */}
         {phase.kind === "error" && (
           <StatusNote
             code={phase.code}
@@ -117,7 +119,7 @@ export function Downloader() {
           />
         )}
 
-        {/* States 5, 6, 7: Main Application Result Workspace (Directive Sec 13 & 14) */}
+        {/* Main Application Result Workspace */}
         {phase.kind === "result" && <Workspace result={phase.result} />}
       </div>
     </div>

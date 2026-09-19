@@ -4,57 +4,46 @@ interface Props {
 }
 
 /**
- * Pure code-based brand wordmark: "Link 2 Download"
+ * Neobrutalism Brand Wordmark: "Link 2 Download"
  *
- * Font: Poppins 700
- * "Link" and "Download": deep navy (#101A2E), adapts via CSS variable for dark contexts
- * "2": 3-stop blue gradient (160deg) matching the brand identity
- *
- * Replaces the old PNG-based wordmark -- no more dark mode artifacts.
+ * Font: Archivo Black (var(--font-head))
+ * High contrast with bold "2" inside a signature yellow pill badge
  */
 export function BrandWordmark({ className = "", size = "md" }: Props) {
   const config = {
-    sm: { fontSize: "15px", spacing: "-0.5px", margin: "0 2px" },
-    md: { fontSize: "19px", spacing: "-0.8px", margin: "0 2.5px" },
-    lg: { fontSize: "26px", spacing: "-1.2px", margin: "0 3.5px" },
-    hero: { fontSize: "clamp(28px, 5vw, 44px)", spacing: "-1.5px", margin: "0 5px" },
+    sm: {
+      text: "text-sm",
+      badge: "px-1.5 py-0.5 text-xs border-[1.5px] mx-1 -translate-y-0.5",
+    },
+    md: {
+      text: "text-lg",
+      badge: "px-2 py-0.5 text-xs border-2 mx-1.5 -translate-y-0.5",
+    },
+    lg: {
+      text: "text-2xl",
+      badge: "px-2.5 py-1 text-sm border-2 mx-2 -translate-y-1",
+    },
+    hero: {
+      text: "text-3xl sm:text-5xl md:text-6xl tracking-tight",
+      badge:
+        "px-3 sm:px-4 py-0.5 sm:py-1 text-xl sm:text-3xl border-2 sm:border-[3px] mx-2 sm:mx-3 -translate-y-1 shadow-sm",
+    },
   } as const;
 
   const s = config[size];
 
-  const baseStyle: React.CSSProperties = {
-    fontFamily: "'Poppins', 'Century Gothic', 'Segoe UI', sans-serif",
-    fontWeight: 700,
-    fontSize: s.fontSize,
-    letterSpacing: s.spacing,
-    lineHeight: 1.1,
-    display: "inline-flex",
-    alignItems: "baseline",
-    whiteSpace: "nowrap",
-  };
-
-  const darkStyle: React.CSSProperties = {
-    color: "var(--text, #101A2E)",
-  };
-
-  const twoStyle: React.CSSProperties = {
-    background: "linear-gradient(160deg, #4FA6FF 0%, #2277F5 55%, #0A3FE0 100%)",
-    WebkitBackgroundClip: "text",
-    backgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    color: "transparent",
-    margin: s.margin,
-  };
-
   return (
     <span
-      className={`select-none ${className}`}
-      style={baseStyle}
+      className={`select-none inline-flex items-center font-head tracking-tight text-foreground ${s.text} ${className}`}
       aria-label="Link 2 Download"
     >
-      <span style={darkStyle}>Link</span>
-      <span style={twoStyle}>2</span>
-      <span style={darkStyle}>Download</span>
+      <span>Link</span>
+      <span
+        className={`inline-flex items-center justify-center font-head rounded-xs border-black bg-primary text-black shadow-xs font-black ${s.badge}`}
+      >
+        2
+      </span>
+      <span>Download</span>
     </span>
   );
 }

@@ -18,5 +18,8 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "registries": {}
+  "registries": {
+    "@neobrutalism": "https://neobrutalism.com/r/radix/{name}.json",
+    "@neobrutalism-base": "https://neobrutalism.com/r/base/{name}.json"
+  }
 }

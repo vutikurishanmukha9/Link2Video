@@ -59,7 +59,7 @@ export function MediaFrame({ item, compact = false }: Props) {
   if (compact) {
     return (
       <div
-        className="relative flex h-full w-full items-center justify-center overflow-hidden bg-panel-raised"
+        className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black"
         role="img"
         aria-label={`${item.kind === "video" ? "Video" : "Image"} thumbnail`}
       >
@@ -73,28 +73,33 @@ export function MediaFrame({ item, compact = false }: Props) {
             className="h-full w-full object-cover opacity-90 transition-opacity duration-150 hover:opacity-100"
           />
         ) : (
-          <div className="flex flex-col items-center gap-1.5 text-panel-muted">
+          <div className="flex flex-col items-center gap-1.5 text-white/70">
             {item.kind === "video" ? (
-              <Play size={16} strokeWidth={1.5} aria-hidden="true" />
+              <Play size={16} strokeWidth={2} aria-hidden="true" />
             ) : (
-              <ImageIcon size={16} strokeWidth={1.5} aria-hidden="true" />
+              <ImageIcon size={16} strokeWidth={2} aria-hidden="true" />
             )}
-            <span className="mono-meta text-[11px]">{item.format}</span>
+            <span className="font-head text-[10px] uppercase">{item.format}</span>
           </div>
         )}
 
         {/* Thumbnail micro badges */}
         <div className="absolute top-2 left-2 flex items-center gap-1">
-          <span className="mono-meta rounded-xs bg-panel/80 px-1.5 py-0.5 text-[10px] text-panel-text backdrop-blur-xs">
-            {item.format}
+          <span className="rounded-xs border border-black bg-primary px-1.5 py-0.5 font-head text-[10px] text-black shadow-xs">
+            {item.format.toUpperCase()}
           </span>
         </div>
 
         {item.kind === "video" && (
-          <div className="absolute right-2 bottom-2 flex items-center gap-1 rounded-xs bg-panel/80 px-1.5 py-0.5 backdrop-blur-xs">
-            <Play size={10} strokeWidth={2} className="text-panel-text" aria-hidden="true" />
+          <div className="absolute right-2 bottom-2 flex items-center gap-1 rounded-xs border border-black bg-black px-1.5 py-0.5 text-white shadow-xs">
+            <Play
+              size={10}
+              strokeWidth={2.5}
+              className="text-primary fill-primary"
+              aria-hidden="true"
+            />
             {item.durationSeconds && (
-              <span className="mono-meta text-[10px] text-panel-text">
+              <span className="font-head text-[10px] text-white">
                 {formatDuration(item.durationSeconds)}
               </span>
             )}
@@ -107,7 +112,7 @@ export function MediaFrame({ item, compact = false }: Props) {
   // Full detailed preview mode
   return (
     <div
-      className="group relative flex h-full w-full items-center justify-center overflow-hidden bg-panel-elevated"
+      className="group relative flex h-full w-full items-center justify-center overflow-hidden rounded-xs border-2 border-black bg-black shadow-md"
       style={{ aspectRatio: `${item.width} / ${item.height}`, maxHeight: "560px" }}
     >
       {/* Video element or Image */}
@@ -125,9 +130,9 @@ export function MediaFrame({ item, compact = false }: Props) {
             className="h-full w-full cursor-pointer object-contain"
           />
 
-          {/* Top metadata pills (Apple frosted glass) */}
-          <div className="absolute top-3 right-3 left-3 flex items-center justify-between pointer-events-none">
-            <span className="mono-meta rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-md border border-white/20 shadow-md">
+          {/* Top metadata pills */}
+          <div className="absolute top-3 right-3 left-3 flex items-center justify-between pointer-events-none z-10">
+            <span className="inline-flex items-center gap-1 rounded-xs border-2 border-black bg-primary px-2.5 py-1 font-head text-xs text-black shadow-xs">
               {item.format.toUpperCase()} ·{" "}
               {item.height >= 1080
                 ? "1080p HD"
@@ -136,34 +141,34 @@ export function MediaFrame({ item, compact = false }: Props) {
                   : `${item.height}p`}
             </span>
             {item.durationSeconds && (
-              <span className="mono-meta rounded-full bg-black/60 px-2.5 py-1 text-[11px] text-white backdrop-blur-md border border-white/20 shadow-md">
+              <span className="rounded-xs border-2 border-black bg-card px-2.5 py-1 font-head text-xs text-foreground shadow-xs">
                 {formatDuration(item.durationSeconds)}
               </span>
             )}
           </div>
 
-          {/* Center Play/Pause button overlay (Apple QuickTime style) */}
+          {/* Center Play/Pause button */}
           <button
             type="button"
             onClick={togglePlay}
             aria-label={isPlaying ? "Pause video" : "Play video"}
-            className={`absolute flex h-16 w-16 items-center justify-center rounded-full bg-black/60 text-white border border-white/25 backdrop-blur-md shadow-2xl transition-all duration-200 hover:scale-110 hover:bg-black/80 active:scale-95 ${
+            className={`absolute z-10 flex h-16 w-16 items-center justify-center rounded-xs border-2 border-black bg-primary text-black shadow-md transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-lg active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${
               isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"
             }`}
           >
             {isPlaying ? (
-              <Pause size={24} strokeWidth={2} />
+              <Pause size={26} strokeWidth={2.5} />
             ) : (
-              <Play size={24} strokeWidth={2} className="translate-x-0.5" />
+              <Play size={26} strokeWidth={2.5} className="translate-x-0.5 fill-black" />
             )}
           </button>
 
           {/* Custom bottom playback bar */}
-          <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3.5 pt-6 transition-opacity duration-150 group-hover:opacity-100 opacity-90">
+          <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black via-black/80 to-transparent p-4 pt-8 transition-opacity duration-150 group-hover:opacity-100 opacity-95 z-10">
             {/* Scrubber track */}
             <div
               onClick={handleSeek}
-              className="relative h-1.5 w-full cursor-pointer overflow-hidden rounded-full bg-white/20 transition-all hover:h-2"
+              className="relative h-2 w-full cursor-pointer overflow-hidden rounded-xs border border-black bg-white/20 transition-all hover:h-2.5"
               role="slider"
               aria-label="Video timeline scrubber"
               aria-valuemin={0}
@@ -171,40 +176,40 @@ export function MediaFrame({ item, compact = false }: Props) {
               aria-valuenow={Math.round(progress)}
             >
               <div
-                className="h-full rounded-full bg-[#0071E3] transition-all duration-75"
+                className="h-full bg-primary transition-all duration-75"
                 style={{ width: `${progress}%` }}
               />
             </div>
 
             {/* Bottom mini controls */}
-            <div className="mt-2.5 flex items-center justify-between text-panel-text">
+            <div className="mt-3 flex items-center justify-between text-white">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={togglePlay}
-                  className="rounded-xs p-1 text-panel-muted transition-colors hover:text-panel-text"
+                  className="flex h-7 w-7 items-center justify-center rounded-xs border border-white/40 bg-black/60 text-white transition-colors hover:bg-primary hover:text-black hover:border-black"
                   aria-label={isPlaying ? "Pause" : "Play"}
                 >
                   {isPlaying ? (
-                    <Pause size={14} strokeWidth={1.8} />
+                    <Pause size={14} strokeWidth={2.5} />
                   ) : (
-                    <Play size={14} strokeWidth={1.8} />
+                    <Play size={14} strokeWidth={2.5} className="translate-x-0.5" />
                   )}
                 </button>
                 <button
                   type="button"
                   onClick={toggleMute}
-                  className="rounded-xs p-1 text-panel-muted transition-colors hover:text-panel-text"
+                  className="flex h-7 w-7 items-center justify-center rounded-xs border border-white/40 bg-black/60 text-white transition-colors hover:bg-primary hover:text-black hover:border-black"
                   aria-label={isMuted ? "Unmute" : "Mute"}
                 >
                   {isMuted ? (
-                    <VolumeX size={14} strokeWidth={1.8} />
+                    <VolumeX size={14} strokeWidth={2.5} />
                   ) : (
-                    <Volume2 size={14} strokeWidth={1.8} />
+                    <Volume2 size={14} strokeWidth={2.5} />
                   )}
                 </button>
                 {item.durationSeconds && (
-                  <span className="mono-meta text-[11px] text-panel-muted">
+                  <span className="font-head text-xs text-white/80">
                     {formatDuration(Math.round(videoRef.current?.currentTime || 0))} /{" "}
                     {formatDuration(item.durationSeconds)}
                   </span>
@@ -214,10 +219,10 @@ export function MediaFrame({ item, compact = false }: Props) {
               <button
                 type="button"
                 onClick={handleFullscreen}
-                className="rounded-xs p-1 text-panel-muted transition-colors hover:text-panel-text"
+                className="flex h-7 w-7 items-center justify-center rounded-xs border border-white/40 bg-black/60 text-white transition-colors hover:bg-primary hover:text-black hover:border-black"
                 aria-label="Fullscreen"
               >
-                <Maximize2 size={14} strokeWidth={1.8} />
+                <Maximize2 size={14} strokeWidth={2.5} />
               </button>
             </div>
           </div>
@@ -236,20 +241,20 @@ export function MediaFrame({ item, compact = false }: Props) {
               }`}
             />
           ) : (
-            <div className="flex flex-col items-center gap-2 text-panel-muted">
-              <ImageIcon size={28} strokeWidth={1.5} aria-hidden="true" />
-              <span className="mono-meta">
+            <div className="flex flex-col items-center gap-2 text-white/60">
+              <ImageIcon size={32} strokeWidth={2} aria-hidden="true" />
+              <span className="font-head text-xs">
                 {item.width} × {item.height}
               </span>
             </div>
           )}
 
           {/* Top metadata pill for image */}
-          <div className="absolute top-3 right-3 left-3 flex items-center justify-between pointer-events-none">
-            <span className="mono-meta rounded-xs bg-panel/80 px-2 py-1 text-[11px] font-medium text-panel-text backdrop-blur-xs border border-panel-border/50">
-              {item.format}
+          <div className="absolute top-3 right-3 left-3 flex items-center justify-between pointer-events-none z-10">
+            <span className="rounded-xs border-2 border-black bg-primary px-2.5 py-1 font-head text-xs text-black shadow-xs">
+              {item.format.toUpperCase()}
             </span>
-            <span className="mono-meta rounded-xs bg-panel/80 px-2 py-1 text-[11px] text-panel-text backdrop-blur-xs border border-panel-border/50">
+            <span className="rounded-xs border-2 border-black bg-card px-2.5 py-1 font-head text-xs text-foreground shadow-xs">
               {item.width} × {item.height}
             </span>
           </div>

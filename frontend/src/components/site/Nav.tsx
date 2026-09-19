@@ -52,34 +52,34 @@ export function Nav() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-canvas/90 backdrop-blur-md">
-      <nav className="shell flex h-14 items-center justify-between" aria-label="Primary navigation">
+    <header className="sticky top-0 z-40 border-b-2 border-black bg-background/95 backdrop-blur-md">
+      <nav className="shell flex h-16 items-center justify-between" aria-label="Primary navigation">
         <a
           href="#top"
           onClick={(e) => {
             e.preventDefault();
             triggerHomeReset();
           }}
-          className="flex items-center gap-2.5 rounded-sm transition-opacity hover:opacity-90 cursor-pointer"
+          className="flex items-center gap-2.5 transition-transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
           aria-label="Link 2 Download Home - Reset (Esc)"
           title="Return home and reset (Esc)"
         >
           <img
             src="/favicon.svg"
             alt="Link 2 Download"
-            className="h-7 w-7 rounded-lg object-contain shadow-xs shrink-0 select-none"
+            className="h-8 w-8 rounded-xs border-2 border-black bg-primary object-contain p-0.5 shadow-xs shrink-0 select-none"
           />
           <BrandWordmark size="md" />
         </a>
 
         {/* Center links */}
-        <ul className="hidden items-center gap-1 md:flex">
+        <ul className="hidden items-center gap-1.5 lg:flex">
           {LINKS.map((l) => (
             <li key={l.href}>
               <a
                 href={l.href}
                 onClick={(e) => handleScrollTo(e, l.href)}
-                className="rounded-md px-3 py-1.5 text-[13.5px] text-text-secondary transition-colors duration-150 hover:text-text"
+                className="rounded-xs border-2 border-transparent px-3 py-1 text-sm font-head text-foreground transition-all duration-150 hover:border-black hover:bg-card hover:shadow-xs"
               >
                 {l.label}
               </a>
@@ -88,48 +88,48 @@ export function Nav() {
         </ul>
 
         {/* Right action */}
-        <div className="hidden items-center gap-2.5 md:flex">
+        <div className="hidden items-center gap-2.5 lg:flex">
           <a
             href="#downloader"
             onClick={(e) => handleScrollTo(e, "#downloader")}
-            className="flex h-9 items-center rounded-lg bg-text px-3.5 text-[13px] font-medium text-surface transition-opacity duration-150 hover:opacity-90 active:scale-[0.99]"
+            className="inline-flex h-9 items-center justify-center rounded-xs border-2 border-black bg-primary px-4 text-xs font-head text-black shadow-sm transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-md active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
           >
             Open downloader
           </a>
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile / Tablet menu button */}
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-label={open ? "Close menu" : "Open menu"}
-          className="-mr-2 flex h-11 w-11 items-center justify-center rounded-md text-text-secondary transition-colors duration-150 hover:text-text md:hidden"
+          className="-mr-1 flex h-10 w-10 items-center justify-center rounded-xs border-2 border-black bg-card text-foreground shadow-xs transition-all hover:bg-muted active:shadow-none lg:hidden"
         >
-          {open ? <X size={18} strokeWidth={1.8} /> : <Menu size={18} strokeWidth={1.8} />}
+          {open ? <X size={18} strokeWidth={2.5} /> : <Menu size={18} strokeWidth={2.5} />}
         </button>
       </nav>
 
-      {/* Mobile drawer */}
+      {/* Mobile / Tablet drawer */}
       {open && (
-        <div className="border-t border-border bg-surface md:hidden">
-          <ul className="shell flex flex-col py-3">
+        <div className="border-t-2 border-black bg-background shadow-lg lg:hidden">
+          <ul className="shell flex flex-col py-4 gap-2">
             {LINKS.map((l) => (
               <li key={l.label}>
                 <a
                   href={l.href}
                   onClick={(e) => handleScrollTo(e, l.href)}
-                  className="flex h-11 items-center text-[14px] text-text-secondary transition-colors hover:text-text"
+                  className="flex h-11 items-center px-3 rounded-xs border-2 border-black bg-card font-head text-sm text-foreground shadow-xs hover:bg-muted"
                 >
                   {l.label}
                 </a>
               </li>
             ))}
-            <li className="pt-2 mt-1 border-t border-border">
+            <li className="pt-2">
               <a
                 href="#downloader"
                 onClick={(e) => handleScrollTo(e, "#downloader")}
-                className="flex h-10 w-full items-center justify-center rounded-lg bg-text text-[13px] font-medium text-surface transition-opacity active:scale-[0.99]"
+                className="flex h-11 w-full items-center justify-center rounded-xs border-2 border-black bg-primary font-head text-sm text-black shadow-sm transition-all active:shadow-none"
               >
                 Open downloader
               </a>

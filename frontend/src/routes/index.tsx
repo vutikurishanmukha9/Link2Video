@@ -91,19 +91,20 @@ function Index() {
       <Nav />
 
       <main className="pb-4">
-        {/* Compact Product-First Hero (Directive Sec 10 & 37) */}
-        <section id="downloader" className="shell scroll-mt-16 pt-7 pb-1 sm:pt-9">
+        {/* Compact Product-First Hero */}
+        <section id="downloader" className="shell scroll-mt-16 pt-8 pb-2 sm:pt-12">
           <div className="mx-auto max-w-[840px] text-center flex flex-col items-center">
             <div className="flex items-center justify-center gap-2">
-              <p className="mono-meta tracking-[0.08em] text-text-muted uppercase text-[11px]">
-                Multi-Platform Media Downloader
-              </p>
+              <span className="inline-flex items-center gap-1.5 rounded-xs border-2 border-black bg-primary px-3.5 py-1 font-head text-xs font-bold text-black shadow-xs">
+                ⚡ MULTI-PLATFORM MEDIA DOWNLOADER
+              </span>
             </div>
-            <h1 className="mt-2.5 mb-1 flex items-center justify-center leading-[1.08]">
+            <h1 className="mt-4 mb-2 flex items-center justify-center leading-none">
               <BrandWordmark size="hero" className="mx-auto" />
             </h1>
-            <p className="mt-2.5 text-center text-[15px] leading-relaxed text-text-secondary sm:text-[16px] sm:whitespace-nowrap">
-              One link. Everywhere. Paste a public post URL to retrieve available photos and videos.
+            <p className="mt-3 text-center text-base sm:text-lg font-medium leading-relaxed text-foreground/80 max-w-[620px]">
+              One link. Everywhere. Paste any public post URL to extract HD videos, reels, audio
+              tracks, and photos directly with zero watermarks.
             </p>
           </div>
 

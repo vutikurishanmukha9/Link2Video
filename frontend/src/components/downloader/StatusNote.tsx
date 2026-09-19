@@ -13,19 +13,22 @@ export function StatusNote({ code, hint, onDismiss }: Props) {
   return (
     <div
       role="status"
-      className="fade-rise flex items-start justify-between gap-3 rounded-xl border border-border bg-surface px-5 py-4"
+      className="fade-rise flex items-start justify-between gap-4 rounded-xs border-2 border-black bg-card px-6 py-5 shadow-lg"
     >
       <div className="flex items-start gap-3">
-        <AlertCircle
-          size={16}
-          strokeWidth={1.8}
-          className="mt-0.5 shrink-0 text-warning"
-          aria-hidden="true"
-        />
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xs border-2 border-black bg-destructive text-white shadow-xs">
+          <AlertCircle size={16} strokeWidth={2.5} aria-hidden="true" />
+        </span>
         <div className="min-w-0">
-          <p className="text-[14px] font-medium text-text">{copy.title}</p>
-          <p className="mt-0.5 text-[13px] text-text-secondary">{copy.detail}</p>
-          {hint && <p className="mono-meta mt-1.5 truncate text-text-muted">Host: {hint}</p>}
+          <p className="font-head text-base font-bold text-foreground">{copy.title}</p>
+          <p className="mt-1 text-sm font-medium text-foreground/80 leading-relaxed">
+            {copy.detail}
+          </p>
+          {hint && (
+            <p className="mt-2 inline-block rounded-xs border border-black bg-muted px-2 py-0.5 font-head text-xs text-foreground">
+              Host: {hint}
+            </p>
+          )}
         </div>
       </div>
 
@@ -34,9 +37,9 @@ export function StatusNote({ code, hint, onDismiss }: Props) {
           type="button"
           onClick={onDismiss}
           aria-label="Dismiss message"
-          className="rounded-xs p-1 text-text-muted transition-colors hover:text-text"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xs border-2 border-black bg-muted text-foreground transition-all hover:bg-card hover:-translate-y-0.5 hover:shadow-xs active:translate-y-0 active:shadow-none"
         >
-          <X size={14} strokeWidth={1.8} />
+          <X size={14} strokeWidth={2.5} />
         </button>
       )}
     </div>
