@@ -96,7 +96,7 @@ function Index() {
           <div className="mx-auto max-w-[840px] text-center flex flex-col items-center">
             <div className="flex items-center justify-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-xs border-2 border-black bg-primary px-3.5 py-1 font-head text-xs font-bold text-black shadow-xs">
-                ⚡ MULTI-PLATFORM MEDIA DOWNLOADER
+                MULTI-PLATFORM MEDIA DOWNLOADER
               </span>
             </div>
             <h1 className="mt-4 mb-2 flex items-center justify-center leading-none">
