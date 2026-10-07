@@ -25,12 +25,6 @@ TestSessionLocal = async_sessionmaker(
 )
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
-
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def cleanup_test_db():
