@@ -1,10 +1,5 @@
 const CACHE_NAME = "link2download-v3";
-const STATIC_ASSETS = [
-  "/",
-  "/manifest.json",
-  "/favicon.svg",
-  "/logo.png",
-];
+const STATIC_ASSETS = ["/", "/manifest.json", "/favicon.svg", "/logo.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

@@ -509,11 +509,13 @@ export function Workspace({ result }: { result: PostResult }) {
               )}
             </button>
 
-            {isCurrentDownloading && (active.videoUrl?.includes(".m3u8") || result.platform === "web") && (
-              <p className="animate-pulse text-center text-[11.5px] text-white/60">
-                Packaging video fragments into MP4 container. The download will appear in your browser download shelf shortly.
-              </p>
-            )}
+            {isCurrentDownloading &&
+              (active.videoUrl?.includes(".m3u8") || result.platform === "web") && (
+                <p className="animate-pulse text-center text-[11.5px] text-white/60">
+                  Packaging video fragments into MP4 container. The download will appear in your
+                  browser download shelf shortly.
+                </p>
+              )}
 
             {/* Secondary Action: Frosted Glass Button */}
             <button

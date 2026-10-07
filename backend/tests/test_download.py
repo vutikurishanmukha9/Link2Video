@@ -1,11 +1,12 @@
 from unittest.mock import AsyncMock, patch
 import pytest
+import pytest_asyncio
 from httpx import AsyncClient
 from app.models.media import MediaItemModel
 from tests.conftest import TestSessionLocal
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def sample_media_item():
     """Insert isolated test media item before test."""
     async with TestSessionLocal() as session:

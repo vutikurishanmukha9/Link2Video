@@ -135,7 +135,8 @@ const PLATFORM_DETAILS: Record<
     badgeBorder: "border-emerald-500/25",
     hoverBorder: "hover:border-emerald-500/50 hover:shadow-[0_8px_24px_rgba(16,185,129,0.08)]",
     tags: ["BCCI Cricket", "IPL Highlights", "Google Drive", "Universal Web"],
-    description: "Download match highlights from BCCI, IPL, Google Drive, and 1,750+ video websites.",
+    description:
+      "Download match highlights from BCCI, IPL, Google Drive, and 1,750+ video websites.",
     qualityBadge: "Universal MP4",
   },
 };
@@ -146,7 +147,10 @@ export function Platforms() {
       {/* Header with live operational count */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-border/60 pb-4">
         <div>
-          <h2 id="platforms-heading" className="text-[22px] sm:text-[26px] font-medium tracking-tight text-text">
+          <h2
+            id="platforms-heading"
+            className="text-[22px] sm:text-[26px] font-medium tracking-tight text-text"
+          >
             Supported Platforms
           </h2>
           <p className="mt-1 text-[14px] text-text-secondary">

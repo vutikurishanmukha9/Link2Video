@@ -115,7 +115,7 @@ export function detect(raw: string): Detection {
   const url = parse(raw);
   if (!url || !url.hostname.includes(".")) return { status: "invalid" };
   const host = url.hostname.replace(/^www\./, "");
-  
+
   // 1. Check known social media platforms
   const platform = PLATFORMS.find((p) => p.hosts.some((h) => host === h || host.endsWith(`.${h}`)));
   if (platform) {
@@ -136,7 +136,8 @@ export function detect(raw: string): Detection {
     const parts = host.split(".");
     const brand = parts[parts.length - 2];
     if (brand) {
-      displayName = brand.length <= 4 ? brand.toUpperCase() : brand.charAt(0).toUpperCase() + brand.slice(1);
+      displayName =
+        brand.length <= 4 ? brand.toUpperCase() : brand.charAt(0).toUpperCase() + brand.slice(1);
     }
   }
 

@@ -47,11 +47,7 @@ export function BrandWordmark({ className = "", size = "md" }: Props) {
   };
 
   return (
-    <span
-      className={`select-none ${className}`}
-      style={baseStyle}
-      aria-label="Link 2 Download"
-    >
+    <span className={`select-none ${className}`} style={baseStyle} aria-label="Link 2 Download">
       <span style={darkStyle}>Link</span>
       <span style={twoStyle}>2</span>
       <span style={darkStyle}>Download</span>
