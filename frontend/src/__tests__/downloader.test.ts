@@ -83,11 +83,51 @@ describe("detect()", () => {
     }
   });
 
-  it("detects LinkedIn URLs", () => {
-    const result = detect("https://www.linkedin.com/posts/user-12345");
+  it("detects TikTok URLs", () => {
+    const result = detect("https://www.tiktok.com/@creator/video/12345");
     expect(result.status).toBe("detected");
     if (result.status === "detected") {
-      expect(result.platform.id).toBe("linkedin");
+      expect(result.platform.id).toBe("tiktok");
+    }
+  });
+
+  it("detects Pinterest URLs", () => {
+    const result = detect("https://www.pinterest.com/pin/12345/");
+    expect(result.status).toBe("detected");
+    if (result.status === "detected") {
+      expect(result.platform.id).toBe("pinterest");
+    }
+  });
+
+  it("detects Threads URLs", () => {
+    const result = detect("https://www.threads.net/@user/post/12345");
+    expect(result.status).toBe("detected");
+    if (result.status === "detected") {
+      expect(result.platform.id).toBe("threads");
+    }
+  });
+
+  it("detects SoundCloud URLs", () => {
+    const result = detect("https://soundcloud.com/artist/song-title");
+    expect(result.status).toBe("detected");
+    if (result.status === "detected") {
+      expect(result.platform.id).toBe("soundcloud");
+    }
+  });
+
+  it("detects Bandcamp URLs", () => {
+    const result = detect("https://artist.bandcamp.com/track/cool-song");
+    expect(result.status).toBe("detected");
+    if (result.status === "detected") {
+      expect(result.platform.id).toBe("bandcamp");
+    }
+  });
+
+  it("detects Twitch clips URLs", () => {
+    const result = detect("https://clips.twitch.tv/AmazingClip123");
+    expect(result.status).toBe("detected");
+    if (result.status === "detected") {
+      expect(result.platform.id).toBe("twitch");
     }
   });
 

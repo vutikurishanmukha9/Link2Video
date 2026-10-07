@@ -3,7 +3,20 @@
  * Everything here is API-ready: swap `mockExtract` for a server call later.
  */
 
-export type PlatformId = "instagram" | "x" | "facebook" | "linkedin" | "reddit" | "youtube" | "web";
+export type PlatformId =
+  | "instagram"
+  | "tiktok"
+  | "youtube"
+  | "x"
+  | "facebook"
+  | "pinterest"
+  | "threads"
+  | "soundcloud"
+  | "bandcamp"
+  | "twitch"
+  | "linkedin"
+  | "reddit"
+  | "web";
 
 export type MediaKind = "image" | "video";
 
@@ -53,6 +66,12 @@ export const PLATFORMS: Platform[] = [
     hosts: ["instagram.com", "instagr.am"],
   },
   {
+    id: "tiktok",
+    name: "TikTok",
+    media: "Watermark-Free Video · Audio",
+    hosts: ["tiktok.com", "vm.tiktok.com", "vt.tiktok.com"],
+  },
+  {
     id: "youtube",
     name: "YouTube",
     media: "Shorts · Videos · 1080p · 720p",
@@ -69,6 +88,36 @@ export const PLATFORMS: Platform[] = [
     name: "Facebook",
     media: "Photos · Videos",
     hosts: ["facebook.com", "fb.watch"],
+  },
+  {
+    id: "pinterest",
+    name: "Pinterest",
+    media: "Video Pins · Original Photos",
+    hosts: ["pinterest.com", "pin.it", "pinterest.co.uk", "pinterest.ca"],
+  },
+  {
+    id: "threads",
+    name: "Threads",
+    media: "Photos · Carousels · Videos",
+    hosts: ["threads.net"],
+  },
+  {
+    id: "soundcloud",
+    name: "SoundCloud",
+    media: "HQ Audio · Tracks · Sets",
+    hosts: ["soundcloud.com", "on.soundcloud.com"],
+  },
+  {
+    id: "bandcamp",
+    name: "Bandcamp",
+    media: "Lossless Audio · Albums · Artwork",
+    hosts: ["bandcamp.com"],
+  },
+  {
+    id: "twitch",
+    name: "Twitch Clips",
+    media: "60 FPS Clips · Gaming Streams",
+    hosts: ["twitch.tv", "clips.twitch.tv"],
   },
   {
     id: "linkedin",

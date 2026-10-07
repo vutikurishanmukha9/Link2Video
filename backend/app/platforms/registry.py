@@ -1,9 +1,15 @@
 from typing import List, Optional
+from app.platforms.bandcamp import BandcampAdapter
 from app.platforms.base import PlatformAdapter
 from app.platforms.facebook import FacebookAdapter
 from app.platforms.instagram import InstagramAdapter
 from app.platforms.linkedin import LinkedInAdapter
+from app.platforms.pinterest import PinterestAdapter
 from app.platforms.reddit import RedditAdapter
+from app.platforms.soundcloud import SoundCloudAdapter
+from app.platforms.threads import ThreadsAdapter
+from app.platforms.tiktok import TikTokAdapter
+from app.platforms.twitch import TwitchAdapter
 from app.platforms.twitter import TwitterAdapter
 from app.platforms.universal import UniversalWebAdapter
 from app.platforms.youtube import YouTubeAdapter
@@ -13,11 +19,17 @@ class PlatformRegistry:
     def __init__(self) -> None:
         self._specific_adapters: List[PlatformAdapter] = [
             InstagramAdapter(),
+            TikTokAdapter(),
+            YouTubeAdapter(),
             TwitterAdapter(),
             FacebookAdapter(),
+            PinterestAdapter(),
+            ThreadsAdapter(),
+            SoundCloudAdapter(),
+            BandcampAdapter(),
+            TwitchAdapter(),
             LinkedInAdapter(),
             RedditAdapter(),
-            YouTubeAdapter(),
         ]
         self._universal_adapter = UniversalWebAdapter()
 

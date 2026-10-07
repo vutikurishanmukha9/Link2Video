@@ -62,6 +62,55 @@ def test_detect_universal_web_google_drive():
     assert info.name == "Google Drive"
 
 
+def test_detect_tiktok():
+    result = platform_detector.detect("https://www.tiktok.com/@creator/video/71234567890")
+    assert result is not None
+    assert result[0].slug == "tiktok"
+    assert result[1].name == "TikTok"
+
+    result_short = platform_detector.detect("https://vm.tiktok.com/ZMxxxxxx/")
+    assert result_short is not None
+    assert result_short[0].slug == "tiktok"
+
+
+def test_detect_pinterest():
+    result = platform_detector.detect("https://www.pinterest.com/pin/123456789/")
+    assert result is not None
+    assert result[0].slug == "pinterest"
+
+    result_short = platform_detector.detect("https://pin.it/7abcxyz")
+    assert result_short is not None
+    assert result_short[0].slug == "pinterest"
+
+
+def test_detect_threads():
+    result = platform_detector.detect("https://www.threads.net/@zuck/post/C_abc123")
+    assert result is not None
+    assert result[0].slug == "threads"
+    assert result[1].name == "Threads"
+
+
+def test_detect_soundcloud():
+    result = platform_detector.detect("https://soundcloud.com/artist/track-title")
+    assert result is not None
+    assert result[0].slug == "soundcloud"
+    assert result[1].name == "SoundCloud"
+
+
+def test_detect_bandcamp():
+    result = platform_detector.detect("https://artist.bandcamp.com/track/song-name")
+    assert result is not None
+    assert result[0].slug == "bandcamp"
+    assert result[1].name == "Bandcamp"
+
+
+def test_detect_twitch():
+    result = platform_detector.detect("https://clips.twitch.tv/GloriousClip123")
+    assert result is not None
+    assert result[0].slug == "twitch"
+    assert result[1].name == "Twitch"
+
+
 def test_invalid_scheme_returns_none():
     assert platform_detector.detect("") is None
     assert platform_detector.detect("ftp://example.com/video.mp4") is None
