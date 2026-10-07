@@ -1,4 +1,4 @@
-const CACHE_NAME = "link2download-v3";
+const CACHE_NAME = "link2download-v4";
 const STATIC_ASSETS = ["/", "/manifest.json", "/favicon.svg", "/logo.png"];
 
 self.addEventListener("install", (event) => {
