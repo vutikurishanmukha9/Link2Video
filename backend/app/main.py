@@ -82,7 +82,7 @@ async def request_context_middleware(request: Request, call_next):
         try:
             if int(content_length) > 65536:
                 return JSONResponse(
-                    status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+                    status_code=413,
                     content={
                         "success": False,
                         "request_id": request_id,
