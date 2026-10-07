@@ -76,6 +76,23 @@ export function Downloader() {
     })();
   }, []);
 
+  // Handle incoming shared URLs from mobile Web Share Target
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const shared = params.get("url") || params.get("text") || params.get("link");
+    if (shared) {
+      const match = shared.match(/https?:\/\/[^\s]+/);
+      const target = match ? match[0] : shared.trim();
+      if (target) {
+        setUrl(target);
+        runAnalyze(target);
+        const cleanUrl = window.location.pathname + window.location.hash;
+        window.history.replaceState({}, "", cleanUrl || "/");
+      }
+    }
+  }, [runAnalyze]);
+
   return (
     <div className="space-y-4">
       <UrlCommandBar

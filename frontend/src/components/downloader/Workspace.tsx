@@ -12,6 +12,7 @@ import {
   Sparkles,
   Layers,
   Volume2,
+  Share2,
 } from "lucide-react";
 import { PlatformMark } from "@/components/platform/PlatformMark";
 import { MediaFrame } from "./MediaFrame";
@@ -521,7 +522,7 @@ export function Workspace({ result }: { result: PostResult }) {
             <button
               type="button"
               onClick={() => handleCopyLink()}
-              className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/[0.10] bg-white/[0.06] px-4 text-[12.5px] font-medium text-white/80 transition-all hover:bg-white/[0.10] active:scale-[0.98]"
+              className="native-tap flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/[0.10] bg-white/[0.06] px-4 text-[12.5px] font-medium text-white/80 transition-all hover:bg-white/[0.10] active:scale-[0.98]"
             >
               {copiedLink ? (
                 <>
@@ -535,6 +536,34 @@ export function Workspace({ result }: { result: PostResult }) {
                 </>
               )}
             </button>
+
+            {typeof navigator !== "undefined" && typeof navigator.share === "function" && (
+              <button
+                type="button"
+                onClick={async () => {
+                  if (navigator.vibrate) {
+                    try {
+                      navigator.vibrate(12);
+                    } catch {
+                      /* ignore */
+                    }
+                  }
+                  try {
+                    await navigator.share({
+                      title: active.title || result.caption || "Link 2 Download",
+                      text: "Media downloaded with Link 2 Download",
+                      url: active.videoUrl || active.previewUrl || window.location.href,
+                    });
+                  } catch {
+                    /* ignore */
+                  }
+                }}
+                className="native-tap flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/[0.10] bg-white/[0.06] px-4 text-[12.5px] font-medium text-white/80 transition-all hover:bg-white/[0.10] active:scale-[0.98]"
+              >
+                <Share2 size={14} />
+                Share media link
+              </button>
+            )}
           </div>
         </aside>
       </div>

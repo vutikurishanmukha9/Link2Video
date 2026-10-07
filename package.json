@@ -12,6 +12,11 @@
     "build": "npm run build --workspace=frontend",
     "preview": "npm run preview --workspace=frontend",
     "lint": "npm run lint --workspace=frontend",
-    "format": "npm run format --workspace=frontend"
+    "format": "npm run format --workspace=frontend",
+    "cap:sync": "npm run build && npx cap sync",
+    "cap:android": "npm run build && npx cap sync && npx cap open android",
+    "cap:ios": "npm run build && npx cap sync && npx cap open ios",
+    "cap:add:android": "npx cap add android",
+    "cap:add:ios": "npx cap add ios"
   }
 }

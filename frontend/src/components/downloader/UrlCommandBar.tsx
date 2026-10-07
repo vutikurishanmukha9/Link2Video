@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
-import { Link2, X, Check, CornerDownLeft } from "lucide-react";
+import { useCallback, useEffect, useRef } from "react";
+import { Link2, X, Check, CornerDownLeft, Clipboard } from "lucide-react";
 import { PlatformMark } from "@/components/platform/PlatformMark";
-import { PLATFORMS, type Detection } from "@/lib/downloader";
+import { PLATFORMS, detect, type Detection } from "@/lib/downloader";
 
 interface Props {
   value: string;
@@ -14,6 +14,33 @@ interface Props {
 
 export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onClear }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const handlePaste = useCallback(async () => {
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      try {
+        navigator.vibrate(15);
+      } catch {
+        /* ignore */
+      }
+    }
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.readText) {
+        const text = await navigator.clipboard.readText();
+        if (text && text.trim()) {
+          const trimmed = text.trim();
+          onChange(trimmed);
+          const det = detect(trimmed);
+          if (det.status === "detected") {
+            setTimeout(() => onSubmit(), 50);
+          }
+          return;
+        }
+      }
+      inputRef.current?.focus();
+    } catch {
+      inputRef.current?.focus();
+    }
+  }, [onChange, onSubmit]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -64,12 +91,32 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
             className="h-11 w-full min-w-0 bg-transparent text-[16px] text-text outline-none placeholder:text-text-muted sm:h-full sm:text-[15px]"
           />
 
-          {value && (
+          {!value ? (
             <button
               type="button"
-              onClick={onClear}
+              onClick={handlePaste}
+              aria-label="Paste from clipboard"
+              className="native-tap flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-border bg-surface-sunken px-2.5 text-[12px] font-medium text-text-secondary transition-colors hover:bg-border/60 hover:text-text"
+              title="Paste from clipboard"
+            >
+              <Clipboard size={13} strokeWidth={2} />
+              <span>Paste</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof navigator !== "undefined" && navigator.vibrate) {
+                  try {
+                    navigator.vibrate(10);
+                  } catch {
+                    /* ignore */
+                  }
+                }
+                onClear();
+              }}
               aria-label="Clear URL"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm text-text-muted transition-colors duration-150 hover:text-text"
+              className="native-tap flex h-8 w-8 shrink-0 items-center justify-center rounded-sm text-text-muted transition-colors duration-150 hover:text-text"
             >
               <X size={15} strokeWidth={1.8} />
             </button>
@@ -84,7 +131,16 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
           <button
             type="submit"
             disabled={busy || !value.trim()}
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-accent px-5 text-[14px] font-medium text-accent-foreground transition-all duration-150 hover:bg-accent-hover active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+            onClick={() => {
+              if (typeof navigator !== "undefined" && navigator.vibrate) {
+                try {
+                  navigator.vibrate(15);
+                } catch {
+                  /* ignore */
+                }
+              }
+            }}
+            className="native-tap flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-accent px-5 text-[14px] font-medium text-accent-foreground transition-all duration-150 hover:bg-accent-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
           >
             {busy ? (
               <>

@@ -1,0 +1,17 @@
+{
+  "appId": "com.link2download.app",
+  "appName": "Link 2 Download",
+  "webDir": "frontend/.output/public",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#101A2E",
+      "showSpinner": false
+    }
+  }
+}

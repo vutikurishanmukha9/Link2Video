@@ -4,6 +4,7 @@ import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { Features, Platforms, HowItWorks } from "@/components/site/Sections";
 import { FaqSection } from "@/components/site/FaqSection";
+import { MobileTabBar } from "@/components/site/MobileTabBar";
 import { Downloader } from "@/components/downloader/Downloader";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import {
@@ -90,7 +91,7 @@ function Index() {
     <div id="top" className="min-h-screen">
       <Nav />
 
-      <main className="pb-4">
+      <main className="pb-24 md:pb-6">
         {/* Compact Product-First Hero (Directive Sec 10 & 37) */}
         <section id="downloader" className="shell scroll-mt-16 pt-7 pb-1 sm:pt-9">
           <div className="mx-auto max-w-[840px] text-center flex flex-col items-center">
@@ -120,6 +121,7 @@ function Index() {
       </main>
 
       <Footer />
+      <MobileTabBar />
     </div>
   );
 }
