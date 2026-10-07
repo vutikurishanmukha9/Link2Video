@@ -40,12 +40,25 @@ export function MediaFrame({ item, compact = false }: Props) {
     }
   };
 
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+  const seekToClientX = (clientX: number, target: HTMLElement) => {
     if (!videoRef.current) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const pos = (e.clientX - rect.left) / rect.width;
+    const rect = target.getBoundingClientRect();
+    if (rect.width <= 0) return;
+    const pos = (clientX - rect.left) / rect.width;
     const clamped = Math.max(0, Math.min(1, pos));
     videoRef.current.currentTime = clamped * (videoRef.current.duration || 0);
+    setProgress(clamped * 100);
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    seekToClientX(e.clientX, e.currentTarget);
+  };
+
+  const handleTouchSeek = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.touches[0];
+    if (touch) {
+      seekToClientX(touch.clientX, e.currentTarget);
+    }
   };
 
   const handleFullscreen = () => {
@@ -160,51 +173,59 @@ export function MediaFrame({ item, compact = false }: Props) {
 
           {/* Custom bottom playback bar */}
           <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3.5 pt-6 transition-opacity duration-150 group-hover:opacity-100 opacity-90">
-            {/* Scrubber track */}
+            {/* Scrubber track with enlarged touch target */}
             <div
               onClick={handleSeek}
-              className="relative h-1.5 w-full cursor-pointer overflow-hidden rounded-full bg-white/20 transition-all hover:h-2"
+              onTouchStart={handleTouchSeek}
+              onTouchMove={handleTouchSeek}
+              className="group/track relative flex h-6 w-full cursor-pointer items-center touch-none py-2 -my-2"
               role="slider"
               aria-label="Video timeline scrubber"
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={Math.round(progress)}
             >
+              <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-white/25 transition-all group-hover/track:h-2">
+                <div
+                  className="h-full rounded-full bg-[#0071E3] transition-all duration-75"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
               <div
-                className="h-full rounded-full bg-[#0071E3] transition-all duration-75"
-                style={{ width: `${progress}%` }}
+                className="pointer-events-none absolute h-3.5 w-3.5 -translate-x-1/2 rounded-full border-2 border-white bg-[#0071E3] shadow-md transition-all group-hover/track:scale-110"
+                style={{ left: `${progress}%` }}
               />
             </div>
 
             {/* Bottom mini controls */}
-            <div className="mt-2.5 flex items-center justify-between text-panel-text">
-              <div className="flex items-center gap-2">
+            <div className="mt-2 flex items-center justify-between text-panel-text">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <button
                   type="button"
                   onClick={togglePlay}
-                  className="rounded-xs p-1 text-panel-muted transition-colors hover:text-panel-text"
+                  className="native-tap rounded-md p-2 sm:p-1 text-panel-muted transition-colors hover:text-panel-text active:scale-95"
                   aria-label={isPlaying ? "Pause" : "Play"}
                 >
                   {isPlaying ? (
-                    <Pause size={14} strokeWidth={1.8} />
+                    <Pause size={15} strokeWidth={1.8} />
                   ) : (
-                    <Play size={14} strokeWidth={1.8} />
+                    <Play size={15} strokeWidth={1.8} />
                   )}
                 </button>
                 <button
                   type="button"
                   onClick={toggleMute}
-                  className="rounded-xs p-1 text-panel-muted transition-colors hover:text-panel-text"
+                  className="native-tap rounded-md p-2 sm:p-1 text-panel-muted transition-colors hover:text-panel-text active:scale-95"
                   aria-label={isMuted ? "Unmute" : "Mute"}
                 >
                   {isMuted ? (
-                    <VolumeX size={14} strokeWidth={1.8} />
+                    <VolumeX size={15} strokeWidth={1.8} />
                   ) : (
-                    <Volume2 size={14} strokeWidth={1.8} />
+                    <Volume2 size={15} strokeWidth={1.8} />
                   )}
                 </button>
                 {item.durationSeconds && (
-                  <span className="mono-meta text-[11px] text-panel-muted">
+                  <span className="mono-meta text-[11px] text-panel-muted ml-1">
                     {formatDuration(Math.round(videoRef.current?.currentTime || 0))} /{" "}
                     {formatDuration(item.durationSeconds)}
                   </span>
@@ -214,10 +235,10 @@ export function MediaFrame({ item, compact = false }: Props) {
               <button
                 type="button"
                 onClick={handleFullscreen}
-                className="rounded-xs p-1 text-panel-muted transition-colors hover:text-panel-text"
+                className="native-tap rounded-md p-2 sm:p-1 text-panel-muted transition-colors hover:text-panel-text active:scale-95"
                 aria-label="Fullscreen"
               >
-                <Maximize2 size={14} strokeWidth={1.8} />
+                <Maximize2 size={15} strokeWidth={1.8} />
               </button>
             </div>
           </div>

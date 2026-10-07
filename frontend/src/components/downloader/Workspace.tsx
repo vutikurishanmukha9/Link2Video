@@ -660,22 +660,31 @@ export function Workspace({ result }: { result: PostResult }) {
             <span className="text-[11px] font-semibold uppercase tracking-wider text-white/40">
               Photos & Clips Filmstrip ({result.media.length})
             </span>
-            <span className="text-[11px] text-white/40">Select item to inspect</span>
+            <span className="text-[11px] text-white/40">
+              <span className="sm:hidden">Swipe to browse · </span>Tap to inspect
+            </span>
           </div>
 
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <ul className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2 no-scrollbar -mx-1 px-1 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 lg:grid-cols-4">
             {result.media.map((m, idx) => {
               const selected = m.id === active.id;
               const isDownloaded = downloadedIds.includes(m.id);
 
               return (
-                <li key={m.id}>
+                <li key={m.id} className="w-[160px] shrink-0 snap-start sm:w-auto">
                   <div
                     onClick={() => {
+                      if (typeof navigator !== "undefined" && navigator.vibrate) {
+                        try {
+                          navigator.vibrate(8);
+                        } catch {
+                          /* ignore */
+                        }
+                      }
                       setActiveId(m.id);
                       setActiveTab("preview");
                     }}
-                    className={`group cursor-pointer overflow-hidden rounded-xl border transition-all duration-150 ${
+                    className={`native-tap group cursor-pointer overflow-hidden rounded-xl border transition-all duration-150 ${
                       selected
                         ? "border-[#0071E3] bg-white/[0.10] ring-2 ring-[#0071E3]/50 shadow-md"
                         : "border-white/[0.08] bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06]"
@@ -687,7 +696,7 @@ export function Workspace({ result }: { result: PostResult }) {
 
                     <div className="flex items-center justify-between p-2.5">
                       <div className="min-w-0">
-                        <p className="font-mono text-[11px] font-medium text-white">
+                        <p className="font-mono text-[11px] font-medium text-white truncate">
                           #{idx + 1} · {m.format.toUpperCase()}
                         </p>
                         <p className="font-mono text-[10px] text-white/50">
@@ -699,10 +708,17 @@ export function Workspace({ result }: { result: PostResult }) {
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
+                          if (typeof navigator !== "undefined" && navigator.vibrate) {
+                            try {
+                              navigator.vibrate(12);
+                            } catch {
+                              /* ignore */
+                            }
+                          }
                           handleDownloadSingle(m);
                         }}
                         aria-label={`Download item ${idx + 1}`}
-                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-white transition-all hover:bg-white hover:text-black"
+                        className="native-tap flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-white transition-all hover:bg-white hover:text-black active:scale-95"
                       >
                         {isDownloaded ? (
                           <Check size={12} strokeWidth={2.2} className="text-[#27C93F]" />

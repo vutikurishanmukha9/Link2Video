@@ -162,7 +162,7 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
           e.preventDefault();
           onSubmit();
         }}
-        className="group relative flex flex-col gap-2 rounded-2xl border border-border/90 bg-surface/95 shadow-[0_8px_30px_rgba(0,0,0,0.06)] backdrop-blur-md p-2 transition-all duration-200 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 focus-within:shadow-[0_12px_36px_rgba(59,130,246,0.12)] sm:h-16 sm:flex-row sm:items-center sm:gap-0 sm:p-0 sm:pl-4 sm:pr-2"
+        className="group relative flex flex-col gap-2 rounded-2xl border border-black ring-1 ring-black/15 bg-surface/98 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md p-2 transition-all duration-200 focus-within:border-black focus-within:ring-4 focus-within:ring-black/10 sm:h-16 sm:flex-row sm:items-center sm:gap-0 sm:p-0 sm:pl-4 sm:pr-2"
       >
         <label htmlFor="post-url" className="sr-only">
           Public post URL
@@ -172,7 +172,7 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
           <Link2
             size={18}
             strokeWidth={1.8}
-            className="shrink-0 text-text-muted transition-colors group-focus-within:text-blue-600"
+            className="shrink-0 text-text-muted transition-colors group-focus-within:text-black"
             aria-hidden="true"
           />
 
@@ -197,7 +197,7 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
               type="button"
               onClick={handlePaste}
               aria-label="Paste from clipboard"
-              className="native-tap flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-blue-500/25 bg-blue-500/10 px-3 text-[12.5px] font-semibold text-blue-600 transition-all duration-150 hover:bg-blue-500/15 hover:border-blue-500/40 active:scale-95 shadow-xs"
+              className="native-tap flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-black/15 bg-zinc-800/5 px-3 text-[12.5px] font-semibold text-text transition-all duration-150 hover:bg-zinc-800/10 hover:border-black/30 active:scale-95 shadow-xs"
               title="Paste from clipboard"
             >
               <Clipboard size={13.5} strokeWidth={2.2} />
@@ -225,7 +225,7 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
         </div>
 
         <div className="flex items-center gap-2 sm:ml-3">
-          <kbd className="mono-meta hidden shrink-0 items-center gap-1 rounded-sm border border-border/80 bg-surface-sunken/60 px-1.5 py-0.5 text-[11px] text-text-muted lg:flex">
+          <kbd className="mono-meta hidden shrink-0 items-center gap-1 rounded-sm border border-black/15 bg-surface-sunken/60 px-1.5 py-0.5 text-[11px] text-text-muted lg:flex">
             <span>⌘K</span>
           </kbd>
 
@@ -265,7 +265,7 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
       {/* Status / Detection Row */}
       <div className="mt-3.5 flex items-center justify-center text-center">
         {detection.status === "detected" ? (
-          <span className="fade-rise inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 shadow-xs text-[13px] font-medium text-text">
+          <span className="fade-rise inline-flex items-center gap-2 rounded-full border border-black/15 bg-surface px-3 py-1 shadow-xs text-[13px] font-medium text-text">
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600">
               <Check size={12} strokeWidth={2.8} aria-hidden="true" />
             </span>
@@ -277,15 +277,40 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
           <div className="flex flex-wrap items-center justify-center gap-1.5 text-[12.5px] text-text-muted">
             <span className="font-medium text-text-secondary mr-1">Supported:</span>
             {PLATFORMS.slice(0, 8).map((p) => (
-              <span
+              <button
                 key={p.id}
-                className="inline-flex items-center gap-1 rounded-md border border-border/70 bg-surface/80 px-2 py-0.5 text-[11px] font-medium text-text-secondary"
+                type="button"
+                onClick={() => {
+                  if (typeof navigator !== "undefined" && navigator.vibrate) {
+                    try {
+                      navigator.vibrate(8);
+                    } catch {
+                      /* ignore */
+                    }
+                  }
+                  const target = document.getElementById("platforms");
+                  if (target) {
+                    target.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className="native-tap inline-flex items-center gap-1 rounded-md border border-black/15 bg-surface px-2 py-0.5 text-[11px] font-medium text-text-secondary transition-all hover:border-black hover:text-text active:scale-95"
+                title={`View ${p.name} support`}
               >
                 <PlatformMark platform={p.id} size={11} />
                 <span>{p.name}</span>
-              </span>
+              </button>
             ))}
-            <span className="text-[11px] font-mono text-text-muted">+5 more</span>
+            <a
+              href="#platforms"
+              onClick={(e) => {
+                e.preventDefault();
+                const target = document.getElementById("platforms");
+                if (target) target.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="native-tap rounded-md px-1.5 py-0.5 text-[11px] font-mono text-text-muted transition-colors hover:text-text"
+            >
+              +5 more
+            </a>
           </div>
         )}
       </div>

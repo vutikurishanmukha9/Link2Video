@@ -40,16 +40,16 @@ export function InstallAppSheet({ open, onClose }: Props) {
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs transition-opacity duration-200">
       <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
 
-      <div className="relative z-10 w-full max-w-lg rounded-t-2xl border-t border-border bg-surface p-5 pb-safe shadow-2xl transition-transform duration-200">
+      <div className="relative z-10 w-full max-w-lg rounded-t-3xl border-t-2 border-black ring-1 ring-black/15 bg-surface p-5 pb-safe shadow-[0_-12px_40px_rgba(0,0,0,0.18)] transition-transform duration-200">
         {/* Handle pill for native drawer feel */}
-        <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-border-strong" />
+        <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-zinc-300" />
 
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <img
               src="/favicon.svg"
               alt="Link 2 Download"
-              className="h-12 w-12 rounded-xl object-contain shadow-xs select-none"
+              className="h-12 w-12 rounded-xl border border-black/15 object-contain shadow-xs select-none"
             />
             <div>
               <h3 className="text-[17px] font-semibold text-text">Link 2 Download App</h3>
@@ -61,7 +61,7 @@ export function InstallAppSheet({ open, onClose }: Props) {
           <button
             onClick={onClose}
             aria-label="Close"
-            className="native-tap rounded-full p-1.5 text-text-muted hover:bg-surface-sunken hover:text-text"
+            className="native-tap rounded-full p-1.5 text-text-muted hover:bg-surface-sunken hover:text-text active:scale-90"
           >
             <X size={18} />
           </button>
@@ -69,7 +69,7 @@ export function InstallAppSheet({ open, onClose }: Props) {
 
         <div className="mt-4 space-y-3">
           {isInstalled ? (
-            <div className="flex items-center gap-2.5 rounded-xl border border-positive/20 bg-positive/10 p-3 text-[13px] text-positive">
+            <div className="flex items-center gap-2.5 rounded-xl border border-black ring-1 ring-black/10 bg-positive/10 p-3 text-[13px] text-positive font-medium">
               <CheckCircle2 size={18} className="shrink-0" />
               <span>You're already running the standalone mobile app experience!</span>
             </div>
@@ -81,7 +81,7 @@ export function InstallAppSheet({ open, onClose }: Props) {
               </p>
               <button
                 onClick={handleInstallClick}
-                className="native-tap flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-[15px] font-medium text-accent-foreground shadow-sm hover:bg-accent-hover"
+                className="native-tap flex w-full items-center justify-center gap-2 rounded-xl border border-black bg-zinc-900 py-3 text-[15px] font-semibold text-white shadow-md hover:bg-black active:scale-[0.98]"
               >
                 <Download size={18} />
                 Install App Now
@@ -92,24 +92,24 @@ export function InstallAppSheet({ open, onClose }: Props) {
               <p className="text-[13.5px] leading-relaxed text-text-secondary">
                 Install Link 2 Download on your iPhone or iPad for the full native app experience:
               </p>
-              <div className="space-y-2 rounded-xl border border-border bg-surface-sunken p-3.5 text-[13px] text-text">
+              <div className="space-y-2.5 rounded-xl border border-black ring-1 ring-black/10 bg-surface-sunken/70 p-3.5 text-[13px] text-text">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent text-[11px] font-bold text-accent-foreground">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-[11px] font-bold text-white">
                     1
                   </span>
                   <span>
                     Tap the <strong>Share</strong> button{" "}
-                    <Share2 size={14} className="inline mx-1 text-accent" /> in Safari's bottom
+                    <Share2 size={14} className="inline mx-1 text-zinc-900" /> in Safari's bottom
                     toolbar.
                   </span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent text-[11px] font-bold text-accent-foreground">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-[11px] font-bold text-white">
                     2
                   </span>
                   <span>
                     Scroll down and tap <strong>Add to Home Screen</strong>{" "}
-                    <PlusSquare size={14} className="inline mx-1 text-accent" />.
+                    <PlusSquare size={14} className="inline mx-1 text-zinc-900" />.
                   </span>
                 </div>
               </div>
@@ -117,7 +117,7 @@ export function InstallAppSheet({ open, onClose }: Props) {
           ) : (
             <div className="space-y-3">
               <p className="text-[13.5px] leading-relaxed text-text-secondary">
-                To install, open your browser menu (<span className="font-mono">⋮</span>) and select{" "}
+                To install, open your browser menu (<span className="font-mono font-bold">⋮</span>) and select{" "}
                 <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong>.
               </p>
             </div>
@@ -126,7 +126,7 @@ export function InstallAppSheet({ open, onClose }: Props) {
           {canShare && (
             <button
               onClick={handleShareClick}
-              className="native-tap flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface py-2.5 text-[14px] font-medium text-text hover:bg-surface-sunken"
+              className="native-tap flex w-full items-center justify-center gap-2 rounded-xl border border-black ring-1 ring-black/10 bg-white py-2.5 text-[14px] font-semibold text-text hover:bg-zinc-100 active:scale-[0.98]"
             >
               <Share2 size={16} />
               Share Link 2 Download

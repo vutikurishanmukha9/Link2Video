@@ -11,6 +11,30 @@ const LINKS = [
 
 export function Nav() {
   const [open, setOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("downloader");
+
+  // Track active section for desktop navigation highlight
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const platformsEl = document.getElementById("platforms");
+      const howEl = document.getElementById("how-it-works");
+      const faqEl = document.getElementById("faq");
+
+      if (faqEl && scrollY >= faqEl.offsetTop - 200) {
+        setActiveSection("faq");
+      } else if (howEl && scrollY >= howEl.offsetTop - 200) {
+        setActiveSection("how-it-works");
+      } else if (platformsEl && scrollY >= platformsEl.offsetTop - 200) {
+        setActiveSection("platforms");
+      } else {
+        setActiveSection("downloader");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const triggerHomeReset = useCallback(() => {
     setOpen(false);
@@ -40,7 +64,7 @@ export function Nav() {
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     setOpen(false);
-    if (href === "#top") {
+    if (href === "#top" || href === "#downloader") {
       triggerHomeReset();
       return;
     }
@@ -52,7 +76,7 @@ export function Nav() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-canvas/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-black/15 bg-canvas/90 backdrop-blur-md">
       <nav className="shell flex h-14 items-center justify-between" aria-label="Primary navigation">
         <a
           href="#top"
@@ -72,19 +96,31 @@ export function Nav() {
           <BrandWordmark size="md" />
         </a>
 
-        {/* Center links */}
-        <ul className="hidden items-center gap-1 md:flex">
-          {LINKS.map((l) => (
-            <li key={l.href}>
-              <a
-                href={l.href}
-                onClick={(e) => handleScrollTo(e, l.href)}
-                className="rounded-md px-3 py-1.5 text-[13.5px] text-text-secondary transition-colors duration-150 hover:text-text"
-              >
-                {l.label}
-              </a>
-            </li>
-          ))}
+        {/* Center links with active pill */}
+        <ul className="hidden items-center gap-1.5 md:flex">
+          {LINKS.map((l) => {
+            const sectionId = l.href.replace("#", "");
+            const isActive =
+              (sectionId === "downloader" && activeSection === "downloader") ||
+              (sectionId === "top" && activeSection === "downloader") ||
+              sectionId === activeSection;
+
+            return (
+              <li key={l.href}>
+                <a
+                  href={l.href}
+                  onClick={(e) => handleScrollTo(e, l.href)}
+                  className={`rounded-full px-3.5 py-1 text-[13px] font-medium transition-all duration-150 ${
+                    isActive
+                      ? "bg-zinc-900 text-white shadow-xs dark:bg-white dark:text-zinc-900"
+                      : "text-text-secondary hover:text-text hover:bg-black/5"
+                  }`}
+                >
+                  {l.label}
+                </a>
+              </li>
+            );
+          })}
         </ul>
 
         {/* Right action */}
@@ -92,7 +128,7 @@ export function Nav() {
           <a
             href="#downloader"
             onClick={(e) => handleScrollTo(e, "#downloader")}
-            className="flex h-9 items-center rounded-lg bg-text px-3.5 text-[13px] font-medium text-surface transition-opacity duration-150 hover:opacity-90 active:scale-[0.99]"
+            className="flex h-9 items-center rounded-xl border border-black bg-zinc-900 px-4 text-[13px] font-semibold text-white shadow-xs transition-all duration-150 hover:bg-black active:scale-[0.98]"
           >
             Open downloader
           </a>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link2, Layers, DownloadCloud, ArrowUpRight } from "lucide-react";
 import { PlatformMark } from "@/components/platform/PlatformMark";
 import { PLATFORMS } from "@/lib/downloader";
@@ -71,7 +72,7 @@ export function Features() {
           return (
             <li
               key={f.n}
-              className={`flex min-h-[170px] flex-col justify-between rounded-2xl border ${f.accentBorder} ${f.accentGradient} p-5.5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg sm:min-h-[185px]`}
+              className={`flex min-h-[170px] flex-col justify-between rounded-2xl border border-black ring-1 ring-black/15 bg-surface p-5.5 sm:p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:ring-black/30 sm:min-h-[185px]`}
             >
               <div>
                 <div className="flex items-center justify-between">
@@ -96,6 +97,7 @@ export function Features() {
 }
 
 interface PlatformDetail {
+  cardBorder: string;
   badgeBg: string;
   badgeText: string;
   badgeBorder: string;
@@ -113,201 +115,227 @@ interface PlatformDetail {
 
 const PLATFORM_DETAILS: Record<string, PlatformDetail> = {
   instagram: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["Reels", "Carousels", "Posts", "Stories"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description: "Extract public Reels, carousel photos, and video posts at native 1080p fidelity.",
     qualityBadge: "1080p HD",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try Instagram Reel",
     sampleUrl: "https://www.instagram.com/reel/C8v9z8_L_2m/",
   },
   tiktok: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["No Watermark", "HD 1080p", "Soundtrack", "Original MP4"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description:
       "Clean HD downloads with bouncing watermark removal and isolated soundtrack capture.",
     qualityBadge: "No Watermark",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try TikTok Clip",
     sampleUrl: "https://www.tiktok.com/@creator/video/71234567890",
   },
   youtube: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["Shorts", "1080p HD", "720p", "Audio Track"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description:
       "High-speed video stream resolution for Shorts & full videos with audio track extraction.",
     qualityBadge: "Up to 1080p",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try YouTube Shorts",
     sampleUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
   },
   x: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["High-FPS Video", "Photos", "Looped GIFs"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description: "Instant grab of native video bitrates, multi-image posts, and animated GIFs.",
     qualityBadge: "Original Bitrate",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try X Post Video",
     sampleUrl: "https://x.com/user/status/12345",
   },
   facebook: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["Watch Videos", "Reels", "Public Posts"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description: "Retrieve public video streams, reel clips, and multi-photo media sets.",
     qualityBadge: "HD Streams",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try Facebook Reel",
     sampleUrl: "https://www.facebook.com/watch/?v=12345",
   },
   pinterest: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["Video Pins", "HD Photos", "Story Pins", "Idea Pins"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description:
       "Extract high-resolution craft, recipe, and design video pins at full master quality.",
     qualityBadge: "Full Res",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try Video Pin",
     sampleUrl: "https://www.pinterest.com/pin/12345/",
   },
   threads: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["Carousels", "Clips", "Full Bitrate", "Photos"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description: "Seamlessly extract video clips, carousel images, and updates from threads.net.",
     qualityBadge: "Lossless",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try Threads Post",
     sampleUrl: "https://www.threads.net/@user/post/12345",
   },
   soundcloud: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["HQ Audio", "Tracks", "DJ Sets", "Artwork"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description:
       "Direct audio stream extraction with high fidelity, album artwork, and track tags.",
     qualityBadge: "HQ Audio",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try SoundCloud Track",
     sampleUrl: "https://soundcloud.com/artist/song-title",
   },
   bandcamp: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["Studio Audio", "Full Albums", "Original Artwork"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description: "Download independent artist tracks, whole album sets, and hi-res cover art.",
     qualityBadge: "Studio Audio",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try Bandcamp Release",
     sampleUrl: "https://artist.bandcamp.com/track/cool-song",
   },
   twitch: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["60 FPS", "Gaming Clips", "Highlights", "1080p60"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description: "Ultra smooth 60 frames-per-second gaming highlights and live clip captures.",
     qualityBadge: "1080p 60FPS",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try Twitch Clip",
     sampleUrl: "https://clips.twitch.tv/AmazingClip123",
   },
   linkedin: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["Presentations", "Clips", "Post Media"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description: "Download professional presentations, clips, and video attachments.",
     qualityBadge: "Direct CDN",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try LinkedIn Video",
     sampleUrl: "https://www.linkedin.com/posts/user-12345",
   },
   reddit: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["DASH Audio Mux", "Galleries", "MP4"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description: "Automatic audio-video muxing for native Reddit video and gallery albums.",
     qualityBadge: "Muxed 1080p",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try Reddit Video",
     sampleUrl: "https://www.reddit.com/r/funny/comments/abc123/",
   },
   web: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-700/20",
-    hoverBorder: "hover:border-zinc-500/40",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
     cardBg: "bg-surface",
     tags: ["BCCI Cricket", "IPL Highlights", "Google Drive", "Universal Web"],
-    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     description:
       "Download match highlights from BCCI, IPL, Google Drive, and 1,750+ video websites.",
     qualityBadge: "Universal MP4",
-    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
     btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
     btnLabel: "Try Web Video",
     sampleUrl: "https://www.bcci.tv/videos/556677/match-highlights",
@@ -315,6 +343,8 @@ const PLATFORM_DETAILS: Record<string, PlatformDetail> = {
 };
 
 export function Platforms() {
+  const [filter, setFilter] = useState<"all" | "video" | "social" | "audio">("all");
+
   const handleTry = (sampleUrl: string) => {
     const input = document.getElementById("post-url") as HTMLInputElement | null;
     if (input) {
@@ -331,6 +361,38 @@ export function Platforms() {
       }
     }
   };
+
+  const filteredPlatforms = PLATFORMS.filter((p) => {
+    if (filter === "all") return true;
+    if (filter === "audio") return p.id === "soundcloud" || p.id === "bandcamp";
+    if (filter === "social") {
+      return [
+        "instagram",
+        "tiktok",
+        "x",
+        "facebook",
+        "pinterest",
+        "threads",
+        "linkedin",
+        "reddit",
+      ].includes(p.id);
+    }
+    if (filter === "video") {
+      return [
+        "youtube",
+        "tiktok",
+        "instagram",
+        "x",
+        "facebook",
+        "pinterest",
+        "threads",
+        "twitch",
+        "reddit",
+        "web",
+      ].includes(p.id);
+    }
+    return true;
+  });
 
   return (
     <section
@@ -372,20 +434,67 @@ export function Platforms() {
         </div>
       </div>
 
+      {/* Category Filter Pills (Horizontal chip scroll on mobile, wrap on desktop) */}
+      <div className="mt-5 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar -mx-1 px-1 sm:mx-0 sm:px-0 sm:flex-wrap">
+        {[
+          { id: "all", label: "All Platforms", count: 13 },
+          { id: "video", label: "Video Streams", count: 10 },
+          { id: "social", label: "Social Media", count: 8 },
+          { id: "audio", label: "Hi-Res Audio", count: 2 },
+        ].map((cat) => {
+          const isSelected = filter === cat.id;
+          return (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => {
+                if (typeof navigator !== "undefined" && navigator.vibrate) {
+                  try {
+                    navigator.vibrate(8);
+                  } catch {
+                    /* ignore */
+                  }
+                }
+                setFilter(cat.id as any);
+              }}
+              className={`native-tap flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1 text-[12px] font-semibold transition-all duration-150 active:scale-95 ${
+                isSelected
+                  ? "bg-zinc-900 text-white shadow-xs dark:bg-white dark:text-zinc-900"
+                  : "border border-black/15 bg-surface text-text-secondary hover:border-black hover:text-text"
+              }`}
+            >
+              <span>{cat.label}</span>
+              <span
+                className={`mono-meta rounded-full px-1.5 py-0.2 text-[10px] ${
+                  isSelected
+                    ? "bg-white/20 text-white dark:bg-black/20 dark:text-zinc-900"
+                    : "bg-black/5 text-text-muted"
+                }`}
+              >
+                {cat.count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Modern Card Grid */}
       <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
-        {PLATFORMS.map((p) => {
+        {filteredPlatforms.map((p) => {
           const meta = PLATFORM_DETAILS[p.id] ?? {
+            cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
             badgeBg: "bg-zinc-800/10",
             badgeText: "text-zinc-900 dark:text-zinc-100",
-            badgeBorder: "border-zinc-700/20",
-            hoverBorder: "hover:border-zinc-500/40",
+            badgeBorder: "border-zinc-300 dark:border-zinc-700",
+            hoverBorder: "hover:border-zinc-500",
             cardBg: "bg-surface",
             tags: ["Photos", "Videos"],
-            tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+            tagStyle:
+              "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
             description: "Direct media extraction from origin post URLs.",
             qualityBadge: "Standard",
-            qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+            qualityBadgeStyle:
+              "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
             btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
             btnLabel: "Try Media",
             sampleUrl: "",
@@ -394,7 +503,7 @@ export function Platforms() {
           return (
             <li
               key={p.id}
-              className={`group relative flex flex-col justify-between rounded-2xl border border-border/80 ${meta.cardBg} p-5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl ${meta.hoverBorder}`}
+              className={`group relative flex flex-col justify-between rounded-2xl border ${meta.cardBorder} bg-surface p-5 sm:p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-xl`}
             >
               <div>
                 {/* Top Row: Brand squircle badge + Quality Pill */}
@@ -428,7 +537,7 @@ export function Platforms() {
               </div>
 
               {/* Bottom: Media capability tags + Action Button */}
-              <div className="mt-5 space-y-3.5 border-t border-border/60 pt-4">
+              <div className="mt-5 space-y-3.5 border-t border-zinc-200 dark:border-zinc-800 pt-4">
                 <div className="flex flex-wrap items-center gap-1.5">
                   {meta.tags.map((tag) => (
                     <span
@@ -482,7 +591,7 @@ export function HowItWorks() {
         {STEPS.map((s) => (
           <li
             key={s.n}
-            className={`flex flex-col justify-between rounded-2xl border ${s.badgeBorder} ${s.cardBg} p-5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-md`}
+            className={`flex flex-col justify-between rounded-2xl border border-black ring-1 ring-black/15 bg-surface p-5 sm:p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:ring-black/30`}
           >
             <div>
               <div className="flex items-center justify-between">

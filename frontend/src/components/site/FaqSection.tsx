@@ -26,31 +26,36 @@ export function FaqSection() {
           </p>
         </div>
 
-        {/* Center-Contained Accordion */}
-        <div className="divide-y divide-border border-b border-border">
+        {/* Accordion Cards */}
+        <div className="mt-6 space-y-3">
           {FAQS.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
-              <div key={faq.q} className="py-4 sm:py-4.5">
+              <div
+                key={faq.q}
+                className="overflow-hidden rounded-2xl border border-black ring-1 ring-black/15 bg-surface p-4.5 sm:p-5 shadow-xs transition-all duration-200 hover:shadow-md"
+              >
                 <button
                   type="button"
                   onClick={() => toggle(idx)}
                   aria-expanded={isOpen}
                   className="flex w-full items-center justify-between gap-4 text-left group"
                 >
-                  <span className="text-[15px] sm:text-[16px] font-medium text-text transition-colors group-hover:text-accent">
+                  <span className="text-[15px] sm:text-[16.5px] font-semibold text-text transition-colors group-hover:text-black">
                     {faq.q}
                   </span>
                   <span
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border bg-surface-sunken text-text-muted transition-all duration-200 group-hover:border-border-strong group-hover:text-text ${
-                      isOpen ? "rotate-180 text-text bg-surface" : ""
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-black/10 bg-zinc-800/5 text-text transition-all duration-200 group-hover:bg-zinc-800/10 ${
+                      isOpen ? "rotate-180 bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : ""
                     }`}
                   >
-                    <ChevronDown size={14} strokeWidth={2} />
+                    <ChevronDown size={14} strokeWidth={2.2} />
                   </span>
                 </button>
                 {isOpen && (
-                  <p className="mt-2.5 text-[14px] leading-relaxed text-text-secondary">{faq.a}</p>
+                  <p className="mt-3 text-[13.5px] sm:text-[14px] leading-relaxed text-text-secondary border-t border-zinc-200 dark:border-zinc-800 pt-3">
+                    {faq.a}
+                  </p>
                 )}
               </div>
             );
