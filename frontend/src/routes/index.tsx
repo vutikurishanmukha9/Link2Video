@@ -88,7 +88,7 @@ function Index() {
   }, []);
 
   return (
-    <div id="top" className="min-h-screen">
+    <div id="top" className="min-h-screen overflow-x-clip">
       <Nav />
 
       <main className="pb-6">
