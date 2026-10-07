@@ -91,7 +91,7 @@ function Index() {
     <div id="top" className="min-h-screen">
       <Nav />
 
-      <main className="pb-24 md:pb-6">
+      <main className="pb-6">
         {/* Compact Product-First Hero (Directive Sec 10 & 37) */}
         <section id="downloader" className="shell scroll-mt-16 pt-7 pb-1 sm:pt-9">
           <div className="mx-auto max-w-[840px] text-center flex flex-col items-center">

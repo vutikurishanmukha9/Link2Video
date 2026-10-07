@@ -8,7 +8,7 @@ const NAV_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="mt-8 border-t border-border bg-surface-sunken/30 py-3.5 sm:mt-10 sm:py-4">
+    <footer className="mt-8 border-t border-border bg-surface-sunken/30 pt-3.5 pb-20 sm:mt-10 sm:py-4 md:pb-4">
       <div className="shell flex flex-col items-center justify-between gap-3 text-center md:flex-row md:text-left">
         {/* Left: Brand Wordmark */}
         <div className="shrink-0">
