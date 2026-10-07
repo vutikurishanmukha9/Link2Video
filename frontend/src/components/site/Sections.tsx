@@ -1,56 +1,88 @@
-import { Link2, Layers, DownloadCloud } from "lucide-react";
+import { Link2, Layers, DownloadCloud, ArrowUpRight } from "lucide-react";
 import { PlatformMark } from "@/components/platform/PlatformMark";
 import { PLATFORMS } from "@/lib/downloader";
 
 const FEATURES = [
   {
     n: "01",
-    title: "One link",
+    title: "One Link Everywhere",
     body: "Paste a supported public post URL. Link2Download resolves the platform as you type — no account, no extension, no queue.",
     icon: Link2,
+    accentBorder: "border-blue-500/20",
+    accentGradient: "bg-surface",
+    iconBg: "bg-blue-600 text-white shadow-xs",
+    numColor: "text-blue-600",
   },
   {
     n: "02",
-    title: "Clean extraction",
-    body: "Every asset in the post is listed with its real format, resolution and file size, so you know exactly what you are taking.",
+    title: "Clean Master Extraction",
+    body: "Every asset in the post is listed with its real format, resolution, and exact file size, so you know exactly what you are saving.",
     icon: Layers,
+    accentBorder: "border-purple-500/20",
+    accentGradient: "bg-surface",
+    iconBg: "bg-purple-600 text-white shadow-xs",
+    numColor: "text-purple-600",
   },
   {
     n: "03",
-    title: "Ready to download",
-    body: "Pick one item or take the whole set. Files stream straight from the source; nothing is stored on our side.",
+    title: "Direct CDN Streaming",
+    body: "Pick one media item or take the whole carousel set. Files stream straight from the source CDN; nothing is stored on our servers.",
     icon: DownloadCloud,
+    accentBorder: "border-emerald-500/20",
+    accentGradient: "bg-surface",
+    iconBg: "bg-emerald-600 text-white shadow-xs",
+    numColor: "text-emerald-600",
   },
 ];
 
 const STEPS = [
-  { n: "01", title: "Paste", body: "Paste the public post URL into the command bar." },
-  { n: "02", title: "Analyze", body: "The platform and every available media item are detected." },
-  { n: "03", title: "Download", body: "Choose the media you need and download it directly." },
+  {
+    n: "01",
+    title: "Paste URL",
+    body: "Paste any public post URL from supported platforms into the top command bar or tap 1-tap Paste.",
+    stepColor: "bg-blue-600 text-white shadow-xs",
+    badgeBorder: "border-blue-500/20",
+    cardBg: "bg-surface",
+  },
+  {
+    n: "02",
+    title: "Instant Analysis",
+    body: "Our engine detects the origin network, strips watermarks, parses bitrates, and presents clean streams.",
+    stepColor: "bg-purple-600 text-white shadow-xs",
+    badgeBorder: "border-purple-500/20",
+    cardBg: "bg-surface",
+  },
+  {
+    n: "03",
+    title: "Download HD Media",
+    body: "Save 1080p videos, photo carousels, or extracted MP3 audio tracks directly to your camera roll or PC.",
+    stepColor: "bg-emerald-600 text-white shadow-xs",
+    badgeBorder: "border-emerald-500/20",
+    cardBg: "bg-surface",
+  },
 ];
 
 export function Features() {
   return (
     <section aria-label="Product features" className="shell mt-10 sm:mt-12">
-      <ul className="grid gap-3.5 md:grid-cols-3">
+      <ul className="grid gap-4 md:grid-cols-3">
         {FEATURES.map((f) => {
           const Icon = f.icon;
           return (
             <li
               key={f.n}
-              className="flex min-h-[160px] flex-col justify-between rounded-xl border border-border bg-surface p-5 transition-all duration-150 hover:border-border-strong sm:min-h-[175px]"
+              className={`flex min-h-[170px] flex-col justify-between rounded-2xl border ${f.accentBorder} ${f.accentGradient} p-5.5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg sm:min-h-[185px]`}
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="mono-meta text-[11px] text-text-muted">{f.n}</span>
-                  <Icon
-                    size={15}
-                    strokeWidth={1.6}
-                    className="text-text-muted"
-                    aria-hidden="true"
-                  />
+                  <span className={`mono-meta text-[12px] font-bold ${f.numColor}`}>{f.n}</span>
+                  <div
+                    className={`flex h-8 w-8 items-center justify-center rounded-xl ${f.iconBg}`}
+                  >
+                    <Icon size={16} strokeWidth={2.2} aria-hidden="true" />
+                  </div>
                 </div>
-                <h3 className="mt-3 text-[17px] font-medium tracking-[-0.015em] text-text">
+                <h3 className="mt-3.5 text-[18px] font-semibold tracking-[-0.015em] text-text">
                   {f.title}
                 </h3>
               </div>
@@ -63,141 +95,243 @@ export function Features() {
   );
 }
 
-const PLATFORM_DETAILS: Record<
-  string,
-  {
-    badgeBg: string;
-    badgeText: string;
-    badgeBorder: string;
-    hoverBorder: string;
-    tags: string[];
-    description: string;
-    qualityBadge: string;
-  }
-> = {
+interface PlatformDetail {
+  badgeBg: string;
+  badgeText: string;
+  badgeBorder: string;
+  hoverBorder: string;
+  cardBg: string;
+  tags: string[];
+  tagStyle: string;
+  description: string;
+  qualityBadge: string;
+  qualityBadgeStyle: string;
+  btnStyle: string;
+  btnLabel: string;
+  sampleUrl: string;
+}
+
+const PLATFORM_DETAILS: Record<string, PlatformDetail> = {
   instagram: {
-    badgeBg: "bg-gradient-to-tr from-amber-500/10 via-rose-500/15 to-purple-600/15",
-    badgeText: "text-[#dd2a7b]",
-    badgeBorder: "border-[#dd2a7b]/25",
-    hoverBorder: "hover:border-[#dd2a7b]/50 hover:shadow-[0_8px_24px_rgba(221,42,123,0.08)]",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["Reels", "Carousels", "Posts", "Stories"],
-    description: "Extract public Reels, carousel photos, and video posts at native fidelity.",
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    description: "Extract public Reels, carousel photos, and video posts at native 1080p fidelity.",
     qualityBadge: "1080p HD",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try Instagram Reel",
+    sampleUrl: "https://www.instagram.com/reel/C8v9z8_L_2m/",
   },
   tiktok: {
-    badgeBg: "bg-teal-500/10 dark:bg-teal-400/10",
-    badgeText: "text-teal-600 dark:text-teal-400",
-    badgeBorder: "border-teal-500/25",
-    hoverBorder: "hover:border-teal-500/50 hover:shadow-[0_8px_24px_rgba(20,184,166,0.08)]",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["No Watermark", "HD 1080p", "Soundtrack", "Original MP4"],
-    description: "Clean HD downloads with watermark removal and isolated background audio tracks.",
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    description:
+      "Clean HD downloads with bouncing watermark removal and isolated soundtrack capture.",
     qualityBadge: "No Watermark",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try TikTok Clip",
+    sampleUrl: "https://www.tiktok.com/@creator/video/71234567890",
   },
   youtube: {
-    badgeBg: "bg-red-500/10",
-    badgeText: "text-red-600",
-    badgeBorder: "border-red-500/25",
-    hoverBorder: "hover:border-red-500/50 hover:shadow-[0_8px_24px_rgba(239,68,68,0.08)]",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["Shorts", "1080p HD", "720p", "Audio Track"],
-    description: "High-speed video stream resolution with isolated audio track capture.",
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    description:
+      "High-speed video stream resolution for Shorts & full videos with audio track extraction.",
     qualityBadge: "Up to 1080p",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try YouTube Shorts",
+    sampleUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
   },
   x: {
-    badgeBg: "bg-zinc-900/10 dark:bg-zinc-100/10",
+    badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-900/20 dark:border-zinc-100/20",
-    hoverBorder: "hover:border-zinc-500/50 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["High-FPS Video", "Photos", "Looped GIFs"],
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
     description: "Instant grab of native video bitrates, multi-image posts, and animated GIFs.",
     qualityBadge: "Original Bitrate",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try X Post Video",
+    sampleUrl: "https://x.com/user/status/12345",
   },
   facebook: {
-    badgeBg: "bg-blue-600/10",
-    badgeText: "text-blue-600",
-    badgeBorder: "border-blue-600/25",
-    hoverBorder: "hover:border-blue-600/50 hover:shadow-[0_8px_24px_rgba(37,99,235,0.08)]",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["Watch Videos", "Reels", "Public Posts"],
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
     description: "Retrieve public video streams, reel clips, and multi-photo media sets.",
     qualityBadge: "HD Streams",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try Facebook Reel",
+    sampleUrl: "https://www.facebook.com/watch/?v=12345",
   },
   pinterest: {
-    badgeBg: "bg-red-600/10",
-    badgeText: "text-[#e60023]",
-    badgeBorder: "border-[#e60023]/25",
-    hoverBorder: "hover:border-[#e60023]/50 hover:shadow-[0_8px_24px_rgba(230,0,35,0.08)]",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["Video Pins", "HD Photos", "Story Pins", "Idea Pins"],
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
     description:
       "Extract high-resolution craft, recipe, and design video pins at full master quality.",
     qualityBadge: "Full Res",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try Video Pin",
+    sampleUrl: "https://www.pinterest.com/pin/12345/",
   },
   threads: {
-    badgeBg: "bg-zinc-900/10 dark:bg-zinc-100/10",
+    badgeBg: "bg-zinc-800/10",
     badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-900/20 dark:border-zinc-100/20",
-    hoverBorder: "hover:border-zinc-500/50 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["Carousels", "Clips", "Full Bitrate", "Photos"],
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
     description: "Seamlessly extract video clips, carousel images, and updates from threads.net.",
     qualityBadge: "Lossless",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try Threads Post",
+    sampleUrl: "https://www.threads.net/@user/post/12345",
   },
   soundcloud: {
-    badgeBg: "bg-orange-500/10",
-    badgeText: "text-[#ff5500]",
-    badgeBorder: "border-[#ff5500]/25",
-    hoverBorder: "hover:border-[#ff5500]/50 hover:shadow-[0_8px_24px_rgba(255,85,0,0.08)]",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["HQ Audio", "Tracks", "DJ Sets", "Artwork"],
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
     description:
       "Direct audio stream extraction with high fidelity, album artwork, and track tags.",
     qualityBadge: "HQ Audio",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try SoundCloud Track",
+    sampleUrl: "https://soundcloud.com/artist/song-title",
   },
   bandcamp: {
-    badgeBg: "bg-cyan-600/10",
-    badgeText: "text-[#1da0c3]",
-    badgeBorder: "border-[#1da0c3]/25",
-    hoverBorder: "hover:border-[#1da0c3]/50 hover:shadow-[0_8px_24px_rgba(29,160,195,0.08)]",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["Studio Audio", "Full Albums", "Original Artwork"],
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
     description: "Download independent artist tracks, whole album sets, and hi-res cover art.",
     qualityBadge: "Studio Audio",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try Bandcamp Release",
+    sampleUrl: "https://artist.bandcamp.com/track/cool-song",
   },
   twitch: {
-    badgeBg: "bg-purple-600/10",
-    badgeText: "text-[#9146ff]",
-    badgeBorder: "border-[#9146ff]/25",
-    hoverBorder: "hover:border-[#9146ff]/50 hover:shadow-[0_8px_24px_rgba(145,70,255,0.08)]",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["60 FPS", "Gaming Clips", "Highlights", "1080p60"],
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
     description: "Ultra smooth 60 frames-per-second gaming highlights and live clip captures.",
     qualityBadge: "1080p 60FPS",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try Twitch Clip",
+    sampleUrl: "https://clips.twitch.tv/AmazingClip123",
   },
   linkedin: {
-    badgeBg: "bg-[#0a66c2]/10",
-    badgeText: "text-[#0a66c2]",
-    badgeBorder: "border-[#0a66c2]/25",
-    hoverBorder: "hover:border-[#0a66c2]/50 hover:shadow-[0_8px_24px_rgba(10,102,194,0.08)]",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["Presentations", "Clips", "Post Media"],
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
     description: "Download professional presentations, clips, and video attachments.",
     qualityBadge: "Direct CDN",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try LinkedIn Video",
+    sampleUrl: "https://www.linkedin.com/posts/user-12345",
   },
   reddit: {
-    badgeBg: "bg-[#ff4500]/10",
-    badgeText: "text-[#ff4500]",
-    badgeBorder: "border-[#ff4500]/25",
-    hoverBorder: "hover:border-[#ff4500]/50 hover:shadow-[0_8px_24px_rgba(255,69,0,0.08)]",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["DASH Audio Mux", "Galleries", "MP4"],
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
     description: "Automatic audio-video muxing for native Reddit video and gallery albums.",
     qualityBadge: "Muxed 1080p",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try Reddit Video",
+    sampleUrl: "https://www.reddit.com/r/funny/comments/abc123/",
   },
   web: {
-    badgeBg: "bg-emerald-500/10",
-    badgeText: "text-emerald-500",
-    badgeBorder: "border-emerald-500/25",
-    hoverBorder: "hover:border-emerald-500/50 hover:shadow-[0_8px_24px_rgba(16,185,129,0.08)]",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-700/20",
+    hoverBorder: "hover:border-zinc-500/40",
+    cardBg: "bg-surface",
     tags: ["BCCI Cricket", "IPL Highlights", "Google Drive", "Universal Web"],
+    tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
     description:
       "Download match highlights from BCCI, IPL, Google Drive, and 1,750+ video websites.",
     qualityBadge: "Universal MP4",
+    qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try Web Video",
+    sampleUrl: "https://www.bcci.tv/videos/556677/match-highlights",
   },
 };
 
 export function Platforms() {
+  const handleTry = (sampleUrl: string) => {
+    const input = document.getElementById("post-url") as HTMLInputElement | null;
+    if (input) {
+      input.value = sampleUrl;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.focus();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (typeof navigator !== "undefined" && navigator.vibrate) {
+        try {
+          navigator.vibrate(15);
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+  };
+
   return (
     <section
       id="platforms"
@@ -205,7 +339,7 @@ export function Platforms() {
       className="shell mt-12 scroll-mt-16 sm:mt-16"
     >
       {/* Header with live operational count */}
-      <div className="flex flex-col gap-2.5 border-b border-border/60 pb-4 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+      <div className="flex flex-col gap-2.5 border-b border-border/80 pb-4 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-3 sm:justify-start">
             <h2
@@ -214,7 +348,7 @@ export function Platforms() {
             >
               Supported Platforms
             </h2>
-            <span className="mono-meta inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-600 sm:hidden">
+            <span className="mono-meta inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-600 sm:hidden">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -223,11 +357,12 @@ export function Platforms() {
             </span>
           </div>
           <p className="text-[13px] leading-relaxed text-text-secondary sm:text-[14px]">
-            Engineered extraction adapters tuned for every major platform and web video stream.
+            Engineered extraction adapters tuned for every major platform with tailored color
+            profiles and direct CDN bitrates.
           </p>
         </div>
         <div className="hidden sm:flex sm:items-center sm:gap-2">
-          <span className="mono-meta inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-[12px] font-medium text-emerald-600">
+          <span className="mono-meta inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-[12px] font-semibold text-emerald-600 shadow-xs">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
@@ -237,33 +372,41 @@ export function Platforms() {
         </div>
       </div>
 
-      {/* Modern 3x2 Card Grid */}
+      {/* Modern Card Grid */}
       <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
         {PLATFORMS.map((p) => {
           const meta = PLATFORM_DETAILS[p.id] ?? {
-            badgeBg: "bg-surface-sunken",
-            badgeText: "text-text",
-            badgeBorder: "border-border",
-            hoverBorder: "hover:border-border-strong",
+            badgeBg: "bg-zinc-800/10",
+            badgeText: "text-zinc-900 dark:text-zinc-100",
+            badgeBorder: "border-zinc-700/20",
+            hoverBorder: "hover:border-zinc-500/40",
+            cardBg: "bg-surface",
             tags: ["Photos", "Videos"],
+            tagStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
             description: "Direct media extraction from origin post URLs.",
             qualityBadge: "Standard",
+            qualityBadgeStyle: "border-zinc-700/20 bg-zinc-800/5 text-zinc-800 dark:text-zinc-200",
+            btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+            btnLabel: "Try Media",
+            sampleUrl: "",
           };
 
           return (
             <li
               key={p.id}
-              className={`group relative flex flex-col justify-between rounded-2xl border border-border bg-surface p-5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${meta.hoverBorder}`}
+              className={`group relative flex flex-col justify-between rounded-2xl border border-border/80 ${meta.cardBg} p-5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl ${meta.hoverBorder}`}
             >
               <div>
                 {/* Top Row: Brand squircle badge + Quality Pill */}
                 <div className="flex items-center justify-between">
                   <span
-                    className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-transform duration-200 group-hover:scale-105 ${meta.badgeBorder} ${meta.badgeBg} ${meta.badgeText}`}
+                    className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-transform duration-200 group-hover:scale-105 shadow-xs ${meta.badgeBorder} ${meta.badgeBg} ${meta.badgeText}`}
                   >
                     <PlatformMark platform={p.id} size={20} />
                   </span>
-                  <span className="mono-meta rounded-full border border-border/80 bg-surface-sunken/80 px-2.5 py-0.5 text-[11px] font-medium text-text-muted">
+                  <span
+                    className={`mono-meta rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${meta.qualityBadgeStyle}`}
+                  >
                     {meta.qualityBadge}
                   </span>
                 </div>
@@ -274,7 +417,9 @@ export function Platforms() {
                     <h3 className="text-[17px] font-semibold tracking-[-0.015em] text-text">
                       {p.name}
                     </h3>
-                    <span className="mono-meta text-[11px] text-text-muted">{p.hosts[0]}</span>
+                    <span className="mono-meta text-[11px] text-text-muted font-medium">
+                      {p.hosts[0]}
+                    </span>
                   </div>
                   <p className="mt-2 text-[13px] leading-relaxed text-text-secondary">
                     {meta.description}
@@ -282,18 +427,29 @@ export function Platforms() {
                 </div>
               </div>
 
-              {/* Bottom: Media capability tags */}
-              <div className="mt-5 pt-4 border-t border-border/60">
+              {/* Bottom: Media capability tags + Action Button */}
+              <div className="mt-5 space-y-3.5 border-t border-border/60 pt-4">
                 <div className="flex flex-wrap items-center gap-1.5">
                   {meta.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-md border border-border/70 bg-surface-sunken/60 px-2 py-0.5 text-[11px] font-medium text-text-secondary transition-colors group-hover:border-border group-hover:text-text"
+                      className={`rounded-md border px-2 py-0.5 text-[11px] font-semibold transition-all ${meta.tagStyle}`}
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
+
+                {meta.sampleUrl && (
+                  <button
+                    type="button"
+                    onClick={() => handleTry(meta.sampleUrl)}
+                    className={`native-tap flex h-9 w-full items-center justify-center gap-1.5 rounded-xl px-3 text-[12.5px] font-semibold transition-all duration-150 active:scale-[0.98] ${meta.btnStyle}`}
+                  >
+                    <span>{meta.btnLabel}</span>
+                    <ArrowUpRight size={13} strokeWidth={2.2} className="opacity-70" />
+                  </button>
+                )}
               </div>
             </li>
           );
@@ -308,27 +464,42 @@ export function HowItWorks() {
     <section
       id="how-it-works"
       aria-labelledby="how-title"
-      className="shell mt-10 scroll-mt-16 sm:mt-12"
+      className="shell mt-12 scroll-mt-16 sm:mt-16"
     >
-      <div className="border-b border-border pb-3">
-        <h2 id="how-title" className="display-tight text-[24px] sm:text-[28px]">
-          How it works
+      <div className="border-b border-border/80 pb-3">
+        <h2
+          id="how-title"
+          className="display-tight text-[24px] sm:text-[28px] font-semibold text-text"
+        >
+          How It Works
         </h2>
+        <p className="mt-1 text-[13.5px] text-text-secondary">
+          Three simple steps to extract and download high-definition media without third-party apps.
+        </p>
       </div>
 
-      <ol className="grid md:grid-cols-3">
+      <ol className="mt-6 grid gap-4 md:grid-cols-3">
         {STEPS.map((s) => (
           <li
             key={s.n}
-            className="border-b border-border py-4.5 md:border-b-0 md:border-r md:px-5 md:py-5 md:last:border-r-0 md:first:pl-0"
+            className={`flex flex-col justify-between rounded-2xl border ${s.badgeBorder} ${s.cardBg} p-5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-md`}
           >
-            <span className="mono-meta text-[11px] text-text-muted">{s.n}</span>
-            <h3 className="mt-2 text-[17px] font-medium tracking-[-0.015em] text-text">
-              {s.title}
-            </h3>
-            <p className="mt-1.5 max-w-[40ch] text-[13.5px] leading-relaxed text-text-secondary">
-              {s.body}
-            </p>
+            <div>
+              <div className="flex items-center justify-between">
+                <span
+                  className={`flex h-8 w-8 items-center justify-center rounded-xl text-[13px] font-bold ${s.stepColor}`}
+                >
+                  {s.n}
+                </span>
+                <span className="mono-meta text-[11px] font-medium text-text-muted">
+                  Step {s.n}
+                </span>
+              </div>
+              <h3 className="mt-4 text-[18px] font-semibold tracking-[-0.015em] text-text">
+                {s.title}
+              </h3>
+              <p className="mt-2 text-[13.5px] leading-relaxed text-text-secondary">{s.body}</p>
+            </div>
           </li>
         ))}
       </ol>

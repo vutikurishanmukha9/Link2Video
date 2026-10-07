@@ -97,18 +97,20 @@ export function MobileTabBar() {
               >
                 <div
                   className={`flex h-7 w-12 items-center justify-center rounded-full transition-all duration-200 ${
-                    isActive ? "bg-accent/15 text-accent" : "text-text-muted hover:text-text"
+                    isActive
+                      ? "bg-blue-600 text-white shadow-xs"
+                      : "text-text-muted hover:text-text"
                   }`}
                 >
                   <Icon
-                    size={19}
+                    size={18}
                     strokeWidth={isActive ? 2.4 : 1.8}
                     className="transition-transform duration-150"
                   />
                 </div>
                 <span
                   className={`text-[10.5px] font-medium leading-none tracking-tight transition-colors ${
-                    isActive ? "text-accent font-semibold" : "text-text-muted"
+                    isActive ? "text-blue-600 font-semibold" : "text-text-muted"
                   }`}
                 >
                   {tab.label}

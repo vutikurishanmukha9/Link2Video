@@ -1,5 +1,4 @@
-@import "tailwindcss" source(none);
-@source "../src";
+@import "tailwindcss";
 
 /*
  * Design system — "Conduit" multi-platform media downloader.
@@ -50,38 +49,38 @@
 }
 
 :root {
-  /* Soft warm-neutral canvas (Directive Sec 4) */
-  --canvas: #f7f7f5;
+  /* Rich slate-neutral canvas — eliminating pale sterile wash with crisp modern contrast */
+  --canvas: #f8fafc;
   --surface: #ffffff;
-  --surface-sunken: #efefea;
+  --surface-sunken: #f1f5f9;
 
-  /* Dark product panel hierarchy (Directive Sec 4 & 14) */
-  --surface-dark: #111214;
-  --surface-dark-elevated: #181a1d;
-  --surface-dark-raised: #202226;
-  --border-dark: #2a2d32;
+  /* Dark product panel hierarchy */
+  --surface-dark: #0f172a;
+  --surface-dark-elevated: #1e293b;
+  --surface-dark-raised: #334155;
+  --border-dark: #334155;
 
-  /* Neutral typography (Directive Sec 4 & 6) */
-  --text: #17181a;
-  --text-secondary: #666b73;
-  --text-muted: #8b9098;
-  --text-on-dark: #f7f7f5;
-  --text-on-dark-muted: #8b9098;
+  /* High-contrast crisp typography */
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-on-dark: #f8fafc;
+  --text-on-dark-muted: #94a3b8;
 
-  /* Subtle hairlines (Directive Sec 4 & 28) */
-  --border: #e5e7ea;
-  --border-strong: #d5d8dc;
+  /* Modern crisp hairlines */
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
 
-  /* ONE restrained functional blue (Directive Sec 4) */
-  --accent: #0066cc;
-  --accent-hover: #0052a3;
+  /* Vibrant functional electric blue */
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
   --accent-foreground: #ffffff;
-  --accent-soft: #ebf3fc;
+  --accent-soft: #eff6ff;
 
   /* Functional status colors */
-  --positive: #16a34a;
-  --warning: #d97706;
-  --danger: #dc2626;
+  --positive: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
 }
 
 @layer base {

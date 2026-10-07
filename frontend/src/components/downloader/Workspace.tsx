@@ -9,7 +9,6 @@ import {
   Image as ImageIcon,
   Info,
   ExternalLink,
-  Sparkles,
   Layers,
   Volume2,
   Share2,
@@ -27,6 +26,87 @@ import {
 
 type AppleTab = "preview" | "audio" | "cover" | "inspector";
 
+const WORKSPACE_PLATFORM_THEMES: Record<
+  string,
+  {
+    btn: string;
+    accentText: string;
+    pillBg: string;
+  }
+> = {
+  instagram: {
+    btn: "bg-[#e1306c] hover:bg-[#c8245b] text-white shadow-xs",
+    accentText: "text-[#e1306c]",
+    pillBg: "bg-[#e1306c]/10 text-[#e1306c]",
+  },
+  tiktok: {
+    btn: "bg-[#fe2c55] hover:bg-[#e0264b] text-white shadow-xs",
+    accentText: "text-[#fe2c55]",
+    pillBg: "bg-[#fe2c55]/10 text-[#fe2c55]",
+  },
+  youtube: {
+    btn: "bg-red-600 hover:bg-red-700 text-white shadow-xs",
+    accentText: "text-red-600",
+    pillBg: "bg-red-500/10 text-red-600",
+  },
+  x: {
+    btn: "bg-zinc-900 hover:bg-black text-white shadow-xs",
+    accentText: "text-zinc-800 dark:text-zinc-200",
+    pillBg: "bg-zinc-500/10 text-zinc-700 dark:text-zinc-300",
+  },
+  facebook: {
+    btn: "bg-[#1877f2] hover:bg-[#166fe5] text-white shadow-xs",
+    accentText: "text-[#1877f2]",
+    pillBg: "bg-[#1877f2]/10 text-[#1877f2]",
+  },
+  pinterest: {
+    btn: "bg-[#e60023] hover:bg-[#cc001f] text-white shadow-xs",
+    accentText: "text-[#e60023]",
+    pillBg: "bg-[#e60023]/10 text-[#e60023]",
+  },
+  threads: {
+    btn: "bg-purple-600 hover:bg-purple-700 text-white shadow-xs",
+    accentText: "text-purple-600",
+    pillBg: "bg-purple-500/10 text-purple-600",
+  },
+  soundcloud: {
+    btn: "bg-[#ff5500] hover:bg-[#e04b00] text-white shadow-xs",
+    accentText: "text-[#ff5500]",
+    pillBg: "bg-[#ff5500]/10 text-[#ff5500]",
+  },
+  bandcamp: {
+    btn: "bg-[#1da0c3] hover:bg-[#188ba9] text-white shadow-xs",
+    accentText: "text-[#1da0c3]",
+    pillBg: "bg-[#1da0c3]/10 text-[#1da0c3]",
+  },
+  twitch: {
+    btn: "bg-[#9146ff] hover:bg-[#772ce8] text-white shadow-xs",
+    accentText: "text-[#9146ff]",
+    pillBg: "bg-[#9146ff]/10 text-[#9146ff]",
+  },
+  linkedin: {
+    btn: "bg-[#0a66c2] hover:bg-[#084e96] text-white shadow-xs",
+    accentText: "text-[#0a66c2]",
+    pillBg: "bg-[#0a66c2]/10 text-[#0a66c2]",
+  },
+  reddit: {
+    btn: "bg-[#ff4500] hover:bg-[#e03d00] text-white shadow-xs",
+    accentText: "text-[#ff4500]",
+    pillBg: "bg-[#ff4500]/10 text-[#ff4500]",
+  },
+  web: {
+    btn: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs",
+    accentText: "text-emerald-600",
+    pillBg: "bg-emerald-500/10 text-emerald-600",
+  },
+};
+
+const DEFAULT_WORKSPACE_THEME = {
+  btn: "bg-blue-600 hover:bg-blue-700 text-white shadow-xs",
+  accentText: "text-blue-600",
+  pillBg: "bg-blue-500/10 text-blue-600",
+};
+
 export function Workspace({ result }: { result: PostResult }) {
   const [activeId, setActiveId] = useState(result.media[0]?.id ?? "");
   const [activeTab, setActiveTab] = useState<AppleTab>("preview");
@@ -40,6 +120,7 @@ export function Workspace({ result }: { result: PostResult }) {
   const active = result.media.find((m) => m.id === activeId) ?? result.media[0];
   if (!active) return null;
   const platform = PLATFORM_BY_ID[result.platform];
+  const theme = WORKSPACE_PLATFORM_THEMES[result.platform] ?? DEFAULT_WORKSPACE_THEME;
 
   const handleDownloadSingle = (item = active, customFilename?: string) => {
     const isHls = item.videoUrl?.includes(".m3u8") || result.platform === "web";
@@ -443,10 +524,12 @@ export function Workspace({ result }: { result: PostResult }) {
             {/* Header: Tab title */}
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
               <div className="flex items-center gap-2">
-                <Download size={16} className="text-[#0071E3]" />
+                <Download size={16} className={theme.accentText} />
                 <h4 className="text-[14px] font-medium text-white">Download & Specifications</h4>
               </div>
-              <span className="inline-flex items-center gap-1 rounded-full bg-[#0071E3]/20 px-2 py-0.5 text-[10.5px] font-medium text-[#0071E3]">
+              <span
+                className={`inline-flex items-center gap-1 rounded-full ${theme.pillBg} px-2.5 py-0.5 text-[10.5px] font-semibold ${theme.accentText}`}
+              >
                 Active Stream
               </span>
             </div>
@@ -482,12 +565,12 @@ export function Workspace({ result }: { result: PostResult }) {
 
           {/* Action Center */}
           <div className="mt-6 space-y-2.5 border-t border-white/[0.08] pt-4">
-            {/* Primary Action Button: Apple System Blue */}
+            {/* Primary Action Button: Platform Adaptive */}
             <button
               type="button"
               onClick={() => handleDownloadSingle(active)}
               disabled={isCurrentDownloading}
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#0071E3] px-4 text-[13.5px] font-medium text-white shadow-[0_4px_16px_rgba(0,113,227,0.35)] transition-all duration-150 hover:bg-[#0077ED] active:scale-[0.98] disabled:opacity-50"
+              className={`flex h-11 w-full items-center justify-center gap-2 rounded-xl ${theme.btn} px-4 text-[13.5px] font-semibold text-white transition-all duration-150 active:scale-[0.98] disabled:opacity-50`}
             >
               {isCurrentDownloading ? (
                 <>
