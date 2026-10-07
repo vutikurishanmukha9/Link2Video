@@ -143,22 +143,35 @@ const PLATFORM_DETAILS: Record<
 
 export function Platforms() {
   return (
-    <section id="platforms" aria-labelledby="platforms-heading" className="mt-16 sm:mt-24">
+    <section
+      id="platforms"
+      aria-labelledby="platforms-heading"
+      className="shell mt-12 scroll-mt-16 sm:mt-16"
+    >
       {/* Header with live operational count */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-border/60 pb-4">
-        <div>
-          <h2
-            id="platforms-heading"
-            className="text-[22px] sm:text-[26px] font-medium tracking-tight text-text"
-          >
-            Supported Platforms
-          </h2>
-          <p className="mt-1 text-[14px] text-text-secondary">
+      <div className="flex flex-col gap-2.5 border-b border-border/60 pb-4 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center justify-between gap-3 sm:justify-start">
+            <h2
+              id="platforms-heading"
+              className="text-[20px] font-semibold tracking-tight text-text sm:text-[26px]"
+            >
+              Supported Platforms
+            </h2>
+            <span className="mono-meta inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-600 sm:hidden">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              </span>
+              1,750+ Sites
+            </span>
+          </div>
+          <p className="text-[13px] leading-relaxed text-text-secondary sm:text-[14px]">
             Engineered extraction adapters tuned for every major platform and web video stream.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="mono-meta inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-[12px] font-medium text-emerald-600 dark:text-emerald-400">
+        <div className="hidden sm:flex sm:items-center sm:gap-2">
+          <span className="mono-meta inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-[12px] font-medium text-emerald-600">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
