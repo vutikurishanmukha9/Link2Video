@@ -292,13 +292,62 @@ class DownloaderService:
 
         target = await self.get_download_target(media_id, db)
 
-        # 1. SSRF defense: Validate initial destination URL against internal/metadata IPs
-        validate_safe_outbound_url(target.direct_url)
-
-        # 2. Header injection defense: Sanitize filename against CRLF and quotes
+        # 1. Header injection defense: Sanitize filename against CRLF and quotes
         safe_filename = re.sub(r"[^a-zA-Z0-9._-]", "_", target.filename).strip(".")
         if not safe_filename:
             safe_filename = f"media_{media_id}.mp4"
+
+        # 2. Mega Decrypted Progressive Streaming
+        if target.direct_url.startswith("mega_stream://"):
+            import urllib.parse
+            from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+            from app.platforms.mega import _derive_mega_key_and_iv
+
+            parsed_mega = urllib.parse.urlsplit(target.direct_url)
+            mega_params = urllib.parse.parse_qs(parsed_mega.query)
+            file_key = mega_params.get("key", [""])[0]
+            g_url = urllib.parse.unquote(mega_params.get("g", [""])[0])
+            fn = urllib.parse.unquote(mega_params.get("fn", [""])[0]) or safe_filename
+            clean_mega_fn = re.sub(r"[^a-zA-Z0-9._-]", "_", fn).strip(".") or "mega_file.mp4"
+
+            if not g_url or not file_key:
+                raise ExtractionFailedException("Incomplete Mega stream configuration.")
+
+            validate_safe_outbound_url(g_url)
+            derived_key, iv = _derive_mega_key_and_iv(file_key)
+            cipher = Cipher(algorithms.AES(derived_key), modes.CTR(iv))
+            decryptor = cipher.decryptor()
+
+            async def mega_stream_generator() -> AsyncGenerator[bytes, None]:
+                client = httpx.AsyncClient(timeout=60.0, follow_redirects=True)
+                try:
+                    async with client.stream("GET", g_url) as resp:
+                        if resp.status_code >= 400:
+                            raise ExtractionFailedException(
+                                f"Failed to fetch Mega encrypted stream: HTTP {resp.status_code}"
+                            )
+                        async for chunk in resp.aiter_bytes(chunk_size=65536):
+                            yield decryptor.update(chunk)
+                finally:
+                    await client.aclose()
+
+            mega_content_type = "video/mp4" if clean_mega_fn.endswith(".mp4") else "application/octet-stream"
+            mega_headers = {
+                "Content-Disposition": f'attachment; filename="{clean_mega_fn}"',
+                "Content-Type": mega_content_type,
+                "X-Content-Type-Options": "nosniff",
+            }
+            if target.size and target.size > 0:
+                mega_headers["Content-Length"] = str(target.size)
+
+            return StreamingResponse(
+                mega_stream_generator(),
+                media_type=mega_content_type,
+                headers=mega_headers,
+            )
+
+        # 3. SSRF defense: Validate initial destination URL against internal/metadata IPs
+        validate_safe_outbound_url(target.direct_url)
 
         # 3. Special handling for HLS playlists (.m3u8 streams on BCCI, IPL, MUX, etc.)
         # Download and mux fragments into a real, 100% playable standard MP4 file with faststart moov
@@ -387,6 +436,8 @@ class DownloaderService:
                 "Accept": "*/*",
                 "Accept-Encoding": "identity",
             }
+            if any(k in target.direct_url for k in ["terabox", "1024tera", "baidupcs"]):
+                headers["Referer"] = "https://www.terabox.com/"
             client = httpx.AsyncClient(
                 timeout=60.0,
                 follow_redirects=True,

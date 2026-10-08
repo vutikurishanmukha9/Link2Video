@@ -69,6 +69,40 @@ const PATHS: Record<PlatformId, React.ReactNode> = {
       <polygon points="10 9 15 12 10 15 10 9" fill="currentColor" stroke="none" />
     </>
   ),
+  terabox: (
+    <>
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+      <line x1="12" y1="22.08" x2="12" y2="12" />
+    </>
+  ),
+  mega: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M8 15V9l4 4 4-4v6" strokeWidth={1.8} />
+    </>
+  ),
+  gdrive: (
+    <>
+      <path d="M8.3 4h7.4l4.8 8.5-3.7 6.5H9.4L4.5 12.5z" />
+      <line x1="8.3" y1="4" x2="16.8" y2="19" />
+      <line x1="20.5" y1="12.5" x2="4.5" y2="12.5" />
+    </>
+  ),
+  mediafire: (
+    <>
+      <path d="M12 2.5c.5 3 3.5 5.5 3.5 8.5a4 4 0 0 1-7.2 2.2C8 10.5 10.5 7.5 11 4.5c0 0-4 3.5-4 7.5a5 5 0 0 0 10 0c0-4-3.5-6.5-5-9.5z" />
+    </>
+  ),
+  dropbox: (
+    <>
+      <polygon points="7 3.5 12 7 7 10.5 2 7" />
+      <polygon points="17 3.5 22 7 17 10.5 12 7" />
+      <polygon points="7 10.5 12 14 7 17.5 2 14" />
+      <polygon points="17 10.5 22 14 17 17.5 12 14" />
+      <polyline points="7 18 12 21.5 17 18" />
+    </>
+  ),
   web: (
     <>
       <circle cx="12" cy="12" r="9" />

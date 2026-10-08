@@ -131,6 +131,63 @@ describe("detect()", () => {
     }
   });
 
+  it("detects TeraBox URLs (terabox.com and 1024tera.com)", () => {
+    const resTera = detect("https://terabox.com/s/1d0aBCd_E123");
+    expect(resTera.status).toBe("detected");
+    if (resTera.status === "detected") {
+      expect(resTera.platform.id).toBe("terabox");
+      expect(resTera.platform.name).toBe("TeraBox");
+    }
+
+    const res1024 = detect("https://1024tera.com/s/1abcxyz");
+    expect(res1024.status).toBe("detected");
+    if (res1024.status === "detected") {
+      expect(res1024.platform.id).toBe("terabox");
+    }
+  });
+
+  it("detects Mega URLs (mega.nz and mega.io)", () => {
+    const resMega = detect("https://mega.nz/file/abc12345#secret_key");
+    expect(resMega.status).toBe("detected");
+    if (resMega.status === "detected") {
+      expect(resMega.platform.id).toBe("mega");
+      expect(resMega.platform.name).toBe("Mega");
+    }
+
+    const resMegaIo = detect("https://mega.io/file/abc12345#secret_key");
+    expect(resMegaIo.status).toBe("detected");
+    if (resMegaIo.status === "detected") {
+      expect(resMegaIo.platform.id).toBe("mega");
+    }
+  });
+
+  it("detects Google Drive URLs (drive.google.com)", () => {
+    const resDrive = detect("https://drive.google.com/file/d/1B2C3D4E5F6G7H8I9J0K1L2M/view");
+    expect(resDrive.status).toBe("detected");
+    if (resDrive.status === "detected") {
+      expect(resDrive.platform.id).toBe("gdrive");
+      expect(resDrive.platform.name).toBe("Google Drive");
+    }
+  });
+
+  it("detects MediaFire URLs (mediafire.com)", () => {
+    const resMf = detect("https://www.mediafire.com/file/abc123xyz/sample.mp4/file");
+    expect(resMf.status).toBe("detected");
+    if (resMf.status === "detected") {
+      expect(resMf.platform.id).toBe("mediafire");
+      expect(resMf.platform.name).toBe("MediaFire");
+    }
+  });
+
+  it("detects Dropbox URLs (dropbox.com)", () => {
+    const resDrop = detect("https://www.dropbox.com/s/abc123xyz/sample.mp4?dl=0");
+    expect(resDrop.status).toBe("detected");
+    if (resDrop.status === "detected") {
+      expect(resDrop.platform.id).toBe("dropbox");
+      expect(resDrop.platform.name).toBe("Dropbox");
+    }
+  });
+
   it("falls back to 'web' for unknown domains", () => {
     const result = detect("https://www.example.com/video/123");
     expect(result.status).toBe("detected");

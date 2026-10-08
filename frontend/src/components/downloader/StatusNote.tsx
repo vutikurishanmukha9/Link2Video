@@ -13,7 +13,7 @@ export function StatusNote({ code, hint, onDismiss }: Props) {
   return (
     <div
       role="status"
-      className="fade-rise flex items-start justify-between gap-3 rounded-xl border border-border bg-surface px-5 py-4"
+      className="fade-rise flex items-start justify-between gap-3 rounded-xl border border-black dark:border-white/15 ring-1 ring-black/15 dark:ring-white/10 bg-surface px-5 py-4 shadow-xs"
     >
       <div className="flex items-start gap-3">
         <AlertCircle

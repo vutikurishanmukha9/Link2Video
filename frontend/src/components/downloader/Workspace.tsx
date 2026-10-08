@@ -12,9 +12,13 @@ import {
   Layers,
   Volume2,
   Share2,
+  SlidersHorizontal,
+  ArrowDownCircle,
 } from "lucide-react";
 import { PlatformMark } from "@/components/platform/PlatformMark";
 import { MediaFrame } from "./MediaFrame";
+import { FloatingDownloadFab } from "./FloatingDownloadFab";
+import { useDownloadHistory } from "@/hooks/useDownloadHistory";
 import {
   PLATFORM_BY_ID,
   formatBytes,
@@ -107,6 +111,17 @@ const DEFAULT_WORKSPACE_THEME = {
   pillBg: "bg-blue-500/10 text-blue-600",
 };
 
+export type ResolutionOptionId = "1080p" | "720p" | "audio" | "cover";
+
+export interface LiveTransfer {
+  itemId: string;
+  progress: number;
+  speed: string;
+  transferredBytes: number;
+  totalBytes: number;
+  stage: string;
+}
+
 export function Workspace({ result }: { result: PostResult }) {
   const [activeId, setActiveId] = useState(result.media[0]?.id ?? "");
   const [activeTab, setActiveTab] = useState<AppleTab>("preview");
@@ -116,22 +131,85 @@ export function Workspace({ result }: { result: PostResult }) {
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const [downloadedAll, setDownloadedAll] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [selectedResolution, setSelectedResolution] = useState<ResolutionOptionId>("1080p");
+  const [liveTransfer, setLiveTransfer] = useState<LiveTransfer | null>(null);
+  const { addHistoryItem } = useDownloadHistory();
 
   const active = result.media.find((m) => m.id === activeId) ?? result.media[0];
   if (!active) return null;
   const platform = PLATFORM_BY_ID[result.platform];
   const theme = WORKSPACE_PLATFORM_THEMES[result.platform] ?? DEFAULT_WORKSPACE_THEME;
 
-  const handleDownloadSingle = (item = active, customFilename?: string) => {
+  const handleDownloadSingle = (
+    item = active,
+    formatChoice: ResolutionOptionId = selectedResolution,
+  ) => {
+    if (formatChoice === "cover") {
+      handleDownloadCover();
+      return;
+    }
+
+    if (formatChoice === "audio" && activeTab !== "audio") {
+      setActiveTab("audio");
+    }
+
     const isHls = item.videoUrl?.includes(".m3u8") || result.platform === "web";
+    const totalBytes =
+      formatChoice === "720p"
+        ? Math.round((item.bytes || 28000000) * 0.62)
+        : formatChoice === "audio"
+          ? Math.round((item.bytes || 28000000) * 0.15)
+          : (item.bytes || 28000000);
+
     setDownloadingIds((prev) => [...prev, item.id]);
     triggerDownload(item);
+    addHistoryItem(item, result.platform, result.caption);
 
-    const waitTime = isHls ? 6000 : 800;
-    setTimeout(() => {
-      setDownloadingIds((prev) => prev.filter((id) => id !== item.id));
-      setDownloadedIds((prev) => (prev.includes(item.id) ? prev : [...prev, item.id]));
-    }, waitTime);
+    // Dynamic transfer simulation with tabular numbers and progress feedback
+    const duration = isHls ? 4500 : 2000;
+    const intervalTime = 100;
+    const steps = duration / intervalTime;
+    let step = 0;
+
+    const interval = setInterval(() => {
+      step++;
+      const pct = Math.min(100, Math.round((step / steps) * 100));
+      const speedVal = (4.5 + Math.sin(step) * 1.6).toFixed(1);
+      const transferred = Math.round((pct / 100) * totalBytes);
+
+      let stage = "Intercepting CDN fragments…";
+      if (pct > 25 && pct <= 80) stage = "Transferring media packets…";
+      else if (pct > 80 && pct < 100)
+        stage = isHls ? "Packaging MP4 container…" : "Finalizing stream file…";
+      else if (pct === 100) stage = "Transfer complete · Saved to Downloads";
+
+      setLiveTransfer({
+        itemId: item.id,
+        progress: pct,
+        speed: `${speedVal} MB/s`,
+        transferredBytes: transferred,
+        totalBytes,
+        stage,
+      });
+
+      if (step >= steps) {
+        clearInterval(interval);
+        setDownloadingIds((prev) => prev.filter((id) => id !== item.id));
+        setDownloadedIds((prev) => (prev.includes(item.id) ? prev : [...prev, item.id]));
+
+        if (typeof navigator !== "undefined" && navigator.vibrate) {
+          try {
+            navigator.vibrate([16, 40, 16]);
+          } catch {
+            /* ignore */
+          }
+        }
+
+        setTimeout(() => {
+          setLiveTransfer(null);
+        }, 3200);
+      }
+    }, intervalTime);
   };
 
   const handleDownloadAll = () => {
@@ -139,6 +217,7 @@ export function Workspace({ result }: { result: PostResult }) {
     result.media.forEach((m, idx) => {
       setTimeout(() => {
         triggerDownload(m);
+        addHistoryItem(m, result.platform, result.caption);
         setDownloadedIds((prev) => (prev.includes(m.id) ? prev : [...prev, m.id]));
       }, idx * 300);
     });
@@ -172,7 +251,7 @@ export function Workspace({ result }: { result: PostResult }) {
       videoUrl: undefined,
       previewUrl: active.previewUrl,
     };
-    handleDownloadSingle(virtualItem);
+    handleDownloadSingle(virtualItem, "cover");
   };
 
   const isCurrentDownloaded = downloadedIds.includes(active.id);
@@ -215,17 +294,18 @@ export function Workspace({ result }: { result: PostResult }) {
   ];
 
   return (
-    <section
-      aria-label="Media workspace"
-      className="fade-rise relative overflow-hidden rounded-[22px] border border-white/[0.12] bg-[#121316]/95 text-white shadow-[0_32px_100px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)_inset] backdrop-blur-2xl"
-    >
+    <>
+      <section
+        aria-label="Media workspace"
+        className="fade-rise relative overflow-hidden rounded-[22px] border border-white/[0.12] bg-[#121316]/95 text-white shadow-[0_32px_100px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)_inset] backdrop-blur-2xl"
+      >
       {/* ------------------------------------------------------------- */}
       {/* 1. macOS Window Header Chrome (QuickTime / Finder Window)     */}
       {/* ------------------------------------------------------------- */}
       <div className="relative flex h-12 select-none items-center justify-between border-b border-white/[0.08] bg-white/[0.03] px-3 sm:px-4">
-        {/* Left: macOS Window Traffic Light Buttons */}
+        {/* Left: macOS Window Traffic Light Buttons (hidden on mobile for maximum title room) */}
         <div
-          className="flex items-center gap-1.5 sm:gap-2 shrink-0"
+          className="hidden sm:flex items-center gap-1.5 sm:gap-2 shrink-0"
           onMouseEnter={() => setTrafficHover(true)}
           onMouseLeave={() => setTrafficHover(false)}
         >
@@ -246,10 +326,10 @@ export function Workspace({ result }: { result: PostResult }) {
           </div>
         </div>
 
-        {/* Center: macOS Window Document Title */}
-        <div className="flex items-center gap-1.5 sm:gap-2 max-w-[65%] sm:max-w-[50%] md:max-w-[60%] truncate pointer-events-none mx-auto sm:absolute sm:left-1/2 sm:-translate-x-1/2">
-          <PlatformMark platform={platform.id} size={13} className="shrink-0 text-white/70" />
-          <span className="text-[12px] sm:text-[13px] font-medium tracking-tight text-white/90 truncate">
+        {/* Document Title (Left-aligned on mobile, centered on desktop) */}
+        <div className="flex items-center gap-1.5 sm:gap-2 max-w-[85%] sm:max-w-[50%] md:max-w-[60%] truncate pointer-events-none sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+          <PlatformMark platform={platform.id} size={14} className="shrink-0 text-white/70" />
+          <span className="text-[12.5px] sm:text-[13px] font-semibold sm:font-medium tracking-tight text-white/90 truncate">
             {active.title || result.caption || `${platform.name} Media`}
           </span>
           <span className="hidden md:inline text-[12px] text-white/40 font-normal truncate">
@@ -260,7 +340,7 @@ export function Workspace({ result }: { result: PostResult }) {
         {/* Right: Status Pill Badge (hidden on smallest screens to protect title space) */}
         <div className="hidden sm:flex items-center gap-2 shrink-0">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.05] px-2.5 py-1 text-[11px] font-medium text-white/70">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#27C93F] animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[#27C93F]" />
             Direct CDN Stream
           </span>
         </div>
@@ -309,7 +389,7 @@ export function Workspace({ result }: { result: PostResult }) {
                 </>
               ) : isDownloadingAll ? (
                 <>
-                  <span className="h-2 w-2 animate-ping rounded-full bg-[#0071E3]" />
+                  <span className="h-3 w-3 animate-spin rounded-full border border-white border-t-transparent" />
                   Saving ({result.media.length})...
                 </>
               ) : (
@@ -561,43 +641,208 @@ export function Workspace({ result }: { result: PostResult }) {
                 </div>
               ))}
             </dl>
+
+            {/* Multi-Resolution & Stream Format Selector Shelf (Parrot Downloader style) */}
+            <div className="mt-5 border-t border-white/[0.08] pt-3.5">
+              <div className="mb-2.5 flex items-center justify-between">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-white/60 flex items-center gap-1.5">
+                  <SlidersHorizontal size={11} className="text-[#00c853]" />
+                  Resolution & Stream Format
+                </span>
+                <span className="font-mono text-[10.5px] font-medium text-[#00c853]">1-Tap Select</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                {(active.kind === "video"
+                  ? [
+                      {
+                        id: "1080p" as ResolutionOptionId,
+                        label: "1080p Full HD",
+                        badge: "MAX",
+                        container: "MP4",
+                        badgeColor: "bg-[#00c853]/20 text-[#00c853]",
+                        bytes: active.bytes || 28000000,
+                        icon: Film,
+                      },
+                      {
+                        id: "720p" as ResolutionOptionId,
+                        label: "720p Fast HD",
+                        badge: "FAST",
+                        container: "MP4",
+                        badgeColor: "bg-[#00b0ff]/20 text-[#00b0ff]",
+                        bytes: Math.round((active.bytes || 28000000) * 0.62),
+                        icon: Film,
+                      },
+                      {
+                        id: "audio" as ResolutionOptionId,
+                        label: "Audio Track",
+                        badge: "MP3",
+                        container: "AAC",
+                        badgeColor: "bg-purple-500/20 text-purple-400",
+                        bytes: Math.round((active.bytes || 28000000) * 0.15),
+                        icon: Music,
+                      },
+                      ...(active.previewUrl
+                        ? [
+                            {
+                              id: "cover" as ResolutionOptionId,
+                              label: "Cover Artwork",
+                              badge: "POSTER",
+                              container: "JPG",
+                              badgeColor: "bg-amber-500/20 text-amber-400",
+                              bytes: 420000,
+                              icon: ImageIcon,
+                            },
+                          ]
+                        : []),
+                    ]
+                  : [
+                      {
+                        id: "1080p" as ResolutionOptionId,
+                        label: "Original Resolution",
+                        badge: "LOSSLESS",
+                        container: active.format.toUpperCase(),
+                        badgeColor: "bg-[#00c853]/20 text-[#00c853]",
+                        bytes: active.bytes || 2500000,
+                        icon: ImageIcon,
+                      },
+                      {
+                        id: "720p" as ResolutionOptionId,
+                        label: "Web Optimized",
+                        badge: "WEBP",
+                        container: "WEBP",
+                        badgeColor: "bg-[#00b0ff]/20 text-[#00b0ff]",
+                        bytes: Math.round((active.bytes || 2500000) * 0.55),
+                        icon: ImageIcon,
+                      },
+                    ]
+                ).map((opt) => {
+                  const isSelected = selectedResolution === opt.id;
+                  const Icon = opt.icon;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        if (typeof navigator !== "undefined" && navigator.vibrate) {
+                          try {
+                            navigator.vibrate(8);
+                          } catch {
+                            /* ignore */
+                          }
+                        }
+                        setSelectedResolution(opt.id);
+                        if (opt.id === "audio") setActiveTab("audio");
+                        else if (opt.id === "cover") setActiveTab("cover");
+                        else setActiveTab("preview");
+                      }}
+                      className={`native-tap flex flex-col justify-between rounded-xl border p-2.5 text-left transition-all duration-150 ${
+                        isSelected
+                          ? "border-[#00c853] bg-[#00c853]/15 ring-1 ring-[#00c853] shadow-xs"
+                          : "border-white/[0.08] bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06]"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <Icon
+                            size={12}
+                            className={`shrink-0 ${isSelected ? "text-[#00c853]" : "text-white/60"}`}
+                          />
+                          <span className="text-[11.5px] font-medium text-white truncate">
+                            {opt.label}
+                          </span>
+                        </div>
+                        <span
+                          className={`rounded-xs px-1 py-0.2 font-mono text-[9px] font-bold ${opt.badgeColor}`}
+                        >
+                          {opt.badge}
+                        </span>
+                      </div>
+                      <div className="mt-1.5 flex items-baseline justify-between font-mono text-[10.5px] text-white/50">
+                        <span>{opt.container}</span>
+                        <span className="text-white/80">{formatBytes(opt.bytes)}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Action Center */}
           <div className="mt-6 space-y-2.5 border-t border-white/[0.08] pt-4">
+            {/* Active Concurrent Transfer Queue Progress (Parrot Downloader style) */}
+            {liveTransfer && (
+              <div className="fade-rise rounded-xl border border-[#00c853]/50 bg-black/60 p-3.5 backdrop-blur-md shadow-lg">
+                <div className="flex items-center justify-between text-[12px]">
+                  <div className="flex items-center gap-1.5 font-medium text-[#00c853]">
+                    <span className="h-2 w-2 rounded-full bg-[#00c853]" />
+                    <span>{liveTransfer.stage}</span>
+                  </div>
+                  <span className="font-mono text-[11px] font-bold text-white tabular-nums">
+                    {liveTransfer.speed}
+                  </span>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className="h-full rounded-full bg-[#00c853] transition-all duration-100 ease-out"
+                    style={{ width: `${liveTransfer.progress}%` }}
+                  />
+                </div>
+
+                <div className="mt-2 flex items-center justify-between font-mono text-[11px] text-white/60 tabular-nums">
+                  <span>
+                    {formatBytes(liveTransfer.transferredBytes)} /{" "}
+                    {formatBytes(liveTransfer.totalBytes)}
+                  </span>
+                  <span className="font-semibold text-white">{liveTransfer.progress}%</span>
+                </div>
+              </div>
+            )}
+
             {/* Primary Action Button: Platform Adaptive */}
             <button
               type="button"
-              onClick={() => handleDownloadSingle(active)}
+              onClick={() => handleDownloadSingle(active, selectedResolution)}
               disabled={isCurrentDownloading}
               className={`flex h-11 w-full items-center justify-center gap-2 rounded-xl ${theme.btn} px-4 text-[13.5px] font-semibold text-white transition-all duration-150 active:scale-[0.98] disabled:opacity-50`}
             >
               {isCurrentDownloading ? (
                 <>
-                  <span className="h-2 w-2 animate-ping rounded-full bg-white" />
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   {active.videoUrl?.includes(".m3u8") || result.platform === "web"
                     ? "Packaging HD Video..."
-                    : "Preparing file..."}
+                    : "Transferring stream..."}
                 </>
               ) : isCurrentDownloaded ? (
                 <>
                   <Check size={16} strokeWidth={2.2} className="text-white" />
-                  Download started
+                  Download completed
                 </>
               ) : (
                 <>
                   <Download size={16} strokeWidth={1.8} />
-                  Download {active.kind === "video" ? "Video" : "Image"}
-                  {active.bytes > 0 ? ` (${formatBytes(active.bytes)})` : ""}
+                  Download{" "}
+                  {selectedResolution === "audio"
+                    ? "Audio Stream (MP3)"
+                    : selectedResolution === "cover"
+                      ? "Cover Artwork"
+                      : selectedResolution === "720p"
+                        ? "720p Video (MP4)"
+                        : active.kind === "video"
+                          ? "1080p Video (MP4)"
+                          : "Image"}
                 </>
               )}
             </button>
 
             {isCurrentDownloading &&
               (active.videoUrl?.includes(".m3u8") || result.platform === "web") && (
-                <p className="animate-pulse text-center text-[11.5px] text-white/60">
-                  Packaging video fragments into MP4 container. The download will appear in your
-                  browser download shelf shortly.
+                <p className="text-center text-[11.5px] text-white/60">
+                  Packaging video fragments into MP4 container. The file will appear in your browser
+                  download shelf.
                 </p>
               )}
 
@@ -735,5 +980,14 @@ export function Workspace({ result }: { result: PostResult }) {
         </div>
       )}
     </section>
+
+    {/* Floating Sniffer Action Button (Parrot Downloader style) */}
+    <FloatingDownloadFab
+      item={active}
+      isDownloading={isCurrentDownloading}
+      isDownloaded={isCurrentDownloaded}
+      onDownload={() => handleDownloadSingle(active, selectedResolution)}
+    />
+  </>
   );
 }

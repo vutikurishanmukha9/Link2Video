@@ -16,6 +16,11 @@ export type PlatformId =
   | "twitch"
   | "linkedin"
   | "reddit"
+  | "terabox"
+  | "mega"
+  | "gdrive"
+  | "mediafire"
+  | "dropbox"
   | "web";
 
 export type MediaKind = "image" | "video";
@@ -132,9 +137,48 @@ export const PLATFORMS: Platform[] = [
     hosts: ["reddit.com", "redd.it"],
   },
   {
+    id: "terabox",
+    name: "TeraBox",
+    media: "Direct 1080p Stream · No App Required",
+    hosts: [
+      "terabox.com",
+      "1024tera.com",
+      "teraboxapp.com",
+      "mirrobox.com",
+      "nephobox.com",
+      "4funbox.com",
+      "freeterabox.com",
+      "terabox.app",
+    ],
+  },
+  {
+    id: "mega",
+    name: "Mega",
+    media: "Direct Decrypted Stream · No App",
+    hosts: ["mega.nz", "mega.io", "mega.co.nz"],
+  },
+  {
+    id: "gdrive",
+    name: "Google Drive",
+    media: "1-Tap Direct Download · Scan Warning Bypass",
+    hosts: ["drive.google.com"],
+  },
+  {
+    id: "mediafire",
+    name: "MediaFire",
+    media: "Instant Raw File Stream · Ad-Free CDN",
+    hosts: ["mediafire.com"],
+  },
+  {
+    id: "dropbox",
+    name: "Dropbox",
+    media: "Direct Raw Progressive Stream (dl=1)",
+    hosts: ["dropbox.com"],
+  },
+  {
     id: "web",
     name: "Web Video",
-    media: "BCCI · IPL · Google Drive · HD Streams",
+    media: "BCCI · IPL · Universal HD Streams",
     hosts: [],
   },
 ];

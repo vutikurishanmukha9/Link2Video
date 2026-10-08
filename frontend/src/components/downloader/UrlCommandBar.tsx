@@ -162,7 +162,7 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
           e.preventDefault();
           onSubmit();
         }}
-        className="group relative flex flex-col gap-2 rounded-2xl border border-black ring-1 ring-black/15 bg-surface/98 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md p-2 transition-all duration-200 focus-within:border-black focus-within:ring-4 focus-within:ring-black/10 sm:h-16 sm:flex-row sm:items-center sm:gap-0 sm:p-0 sm:pl-4 sm:pr-2"
+        className="group relative flex flex-col gap-2 rounded-2xl border border-black dark:border-white/15 ring-1 ring-black/15 dark:ring-white/10 bg-surface shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md p-2 transition-all duration-200 focus-within:border-black dark:focus-within:border-white/40 focus-within:ring-4 focus-within:ring-black/10 dark:focus-within:ring-white/10 sm:h-16 sm:flex-row sm:items-center sm:gap-0 sm:p-0 sm:pl-4 sm:pr-2"
       >
         <label htmlFor="post-url" className="sr-only">
           Public post URL
@@ -172,7 +172,7 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
           <Link2
             size={18}
             strokeWidth={1.8}
-            className="shrink-0 text-text-muted transition-colors group-focus-within:text-black"
+            className="shrink-0 text-text-muted transition-colors group-focus-within:text-black dark:group-focus-within:text-white"
             aria-hidden="true"
           />
 
@@ -197,7 +197,7 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
               type="button"
               onClick={handlePaste}
               aria-label="Paste from clipboard"
-              className="native-tap flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-black/15 bg-zinc-800/5 px-3 text-[12.5px] font-semibold text-text transition-all duration-150 hover:bg-zinc-800/10 hover:border-black/30 active:scale-95 shadow-xs"
+              className="native-tap flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-black/15 dark:border-white/15 bg-zinc-800/5 dark:bg-white/10 px-3 text-[12.5px] font-semibold text-text transition-all duration-150 hover:bg-zinc-800/10 dark:hover:bg-white/15 hover:border-black/30 dark:hover:border-white/30 active:scale-95 shadow-xs"
               title="Paste from clipboard"
             >
               <Clipboard size={13.5} strokeWidth={2.2} />
@@ -225,7 +225,7 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
         </div>
 
         <div className="flex items-center gap-2 sm:ml-3">
-          <kbd className="mono-meta hidden shrink-0 items-center gap-1 rounded-sm border border-black/15 bg-surface-sunken/60 px-1.5 py-0.5 text-[11px] text-text-muted lg:flex">
+          <kbd className="mono-meta hidden shrink-0 items-center gap-1 rounded-sm border border-black/15 dark:border-white/15 bg-surface-sunken/60 px-1.5 py-0.5 text-[11px] text-text-muted lg:flex">
             <span>⌘K</span>
           </kbd>
 
@@ -245,7 +245,7 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
           >
             {busy ? (
               <>
-                <span className="h-2 w-2 animate-ping rounded-full bg-white" />
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 Analyzing…
               </>
             ) : (
@@ -261,6 +261,20 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
           </button>
         </div>
       </form>
+
+      {/* Mobile Quick Paste Helper */}
+      {!value && !busy && (
+        <div className="flex sm:hidden items-center justify-center mt-2">
+          <button
+            type="button"
+            onClick={handlePaste}
+            className="native-tap flex items-center gap-1.5 rounded-full border border-black/15 dark:border-white/20 bg-surface px-3.5 py-1 text-[11.5px] font-semibold text-text shadow-xs active:scale-95"
+          >
+            <Clipboard size={12} className="text-accent" />
+            <span>Tap to paste copied link</span>
+          </button>
+        </div>
+      )}
 
       {/* Status / Detection Row */}
       <div className="mt-3.5 flex items-center justify-center text-center">

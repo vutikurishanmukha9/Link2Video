@@ -34,7 +34,11 @@ class Settings(BaseSettings):
 
     # The universal extractor is intentionally opt-in to a curated set of public
     # video hosts. Add comma-separated roots when supporting another host.
-    UNIVERSAL_ALLOWED_DOMAINS: str = "bcci.tv,iplt20.com,drive.google.com,vimeo.com,dailymotion.com"
+    UNIVERSAL_ALLOWED_DOMAINS: str = (
+        "bcci.tv,iplt20.com,drive.google.com,vimeo.com,dailymotion.com,"
+        "terabox.com,1024tera.com,teraboxapp.com,mirrobox.com,nephobox.com,4funbox.com,freeterabox.com,terabox.app,"
+        "mega.nz,mega.io,mega.co.nz,mediafire.com,dropbox.com"
+    )
     TRUST_PROXY_HEADERS: bool = False
 
     # Rate Limiting & Caching Defaults

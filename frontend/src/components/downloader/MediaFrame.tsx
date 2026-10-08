@@ -1,5 +1,14 @@
 import { useState, useRef } from "react";
-import { Play, Pause, Volume2, VolumeX, Image as ImageIcon, Maximize2 } from "lucide-react";
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Image as ImageIcon,
+  Maximize2,
+  PictureInPicture2,
+  Repeat,
+} from "lucide-react";
 import { type MediaItem, formatDuration } from "@/lib/downloader";
 
 interface Props {
@@ -10,10 +19,55 @@ interface Props {
 export function MediaFrame({ item, compact = false }: Props) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [isLooping, setIsLooping] = useState(true);
+  const [isPip, setIsPip] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
   const [progress, setProgress] = useState(0);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  const toggleLoop = () => {
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      try {
+        navigator.vibrate(8);
+      } catch {
+        /* ignore */
+      }
+    }
+    setIsLooping((prev) => !prev);
+  };
+
+  const togglePip = async () => {
+    if (!videoRef.current) return;
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      try {
+        navigator.vibrate(8);
+      } catch {
+        /* ignore */
+      }
+    }
+    try {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture();
+        setIsPip(false);
+      } else if (document.pictureInPictureEnabled) {
+        await videoRef.current.requestPictureInPicture();
+        setIsPip(true);
+      }
+    } catch {
+      /* ignore browser restrictions */
+    }
+  };
+
+  const cyclePlaybackRate = () => {
+    if (!videoRef.current) return;
+    const rates = [1, 1.25, 1.5, 2];
+    const nextIdx = (rates.indexOf(playbackRate) + 1) % rates.length;
+    const nextRate = rates[nextIdx] ?? 1;
+    videoRef.current.playbackRate = nextRate;
+    setPlaybackRate(nextRate);
+  };
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -131,9 +185,12 @@ export function MediaFrame({ item, compact = false }: Props) {
             src={item.videoUrl}
             poster={item.previewUrl}
             playsInline
+            loop={isLooping}
             muted={isMuted}
             onTimeUpdate={handleTimeUpdate}
-            onEnded={() => setIsPlaying(false)}
+            onEnded={() => {
+              if (!isLooping) setIsPlaying(false);
+            }}
             onClick={togglePlay}
             className="h-full w-full cursor-pointer object-contain"
           />
@@ -232,14 +289,47 @@ export function MediaFrame({ item, compact = false }: Props) {
                 )}
               </div>
 
-              <button
-                type="button"
-                onClick={handleFullscreen}
-                className="native-tap rounded-md p-2 sm:p-1 text-panel-muted transition-colors hover:text-panel-text active:scale-95"
-                aria-label="Fullscreen"
-              >
-                <Maximize2 size={15} strokeWidth={1.8} />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={toggleLoop}
+                  className={`native-tap rounded-md p-2 sm:p-1 transition-colors active:scale-95 ${
+                    isLooping ? "text-[#00c853] bg-white/10" : "text-panel-muted hover:text-panel-text"
+                  }`}
+                  title={isLooping ? "Loop enabled" : "Loop disabled"}
+                  aria-label={isLooping ? "Disable video loop" : "Enable video loop"}
+                >
+                  <Repeat size={14} strokeWidth={isLooping ? 2.2 : 1.8} />
+                </button>
+                <button
+                  type="button"
+                  onClick={togglePip}
+                  className={`native-tap rounded-md p-2 sm:p-1 transition-colors active:scale-95 ${
+                    isPip ? "text-[#00c853] bg-white/10" : "text-panel-muted hover:text-panel-text"
+                  }`}
+                  title="Picture-in-Picture"
+                  aria-label="Picture-in-Picture"
+                >
+                  <PictureInPicture2 size={14} strokeWidth={1.8} />
+                </button>
+                <button
+                  type="button"
+                  onClick={cyclePlaybackRate}
+                  className="native-tap rounded-md px-1.5 py-0.5 font-mono text-[11px] font-bold text-panel-muted transition-colors hover:text-panel-text active:scale-95"
+                  title="Playback speed"
+                  aria-label={`Playback speed: ${playbackRate}x`}
+                >
+                  {playbackRate}x
+                </button>
+                <button
+                  type="button"
+                  onClick={handleFullscreen}
+                  className="native-tap rounded-md p-2 sm:p-1 text-panel-muted transition-colors hover:text-panel-text active:scale-95"
+                  aria-label="Fullscreen"
+                >
+                  <Maximize2 size={15} strokeWidth={1.8} />
+                </button>
+              </div>
             </div>
           </div>
         </>

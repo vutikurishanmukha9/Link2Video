@@ -162,6 +162,15 @@ function RootShell({ children }: { children: ReactNode }) {
               try {
                 var l = document.querySelector("link[rel*='icon']");
                 if (l) { l.href = '/favicon.svg?v=' + Date.now(); }
+                var theme = localStorage.getItem('link2download-theme');
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (theme === 'dark' || (!theme && prefersDark)) {
+                  document.documentElement.classList.add('dark');
+                  var meta = document.querySelector('meta[name="theme-color"]');
+                  if (meta) meta.setAttribute('content', '#000000');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
               } catch(e) {}
             `,
           }}

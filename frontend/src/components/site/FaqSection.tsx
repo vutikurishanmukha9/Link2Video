@@ -33,7 +33,7 @@ export function FaqSection() {
             return (
               <div
                 key={faq.q}
-                className="overflow-hidden rounded-2xl border border-black ring-1 ring-black/15 bg-surface p-4.5 sm:p-5 shadow-xs transition-all duration-200 hover:shadow-md"
+                className="overflow-hidden rounded-2xl border border-black dark:border-white/15 ring-1 ring-black/15 dark:ring-white/10 bg-surface p-4.5 sm:p-5 shadow-xs transition-all duration-200 hover:shadow-md"
               >
                 <button
                   type="button"
@@ -41,11 +41,11 @@ export function FaqSection() {
                   aria-expanded={isOpen}
                   className="flex w-full items-center justify-between gap-4 text-left group"
                 >
-                  <span className="text-[15px] sm:text-[16.5px] font-semibold text-text transition-colors group-hover:text-black">
+                  <span className="text-[15px] sm:text-[16.5px] font-semibold text-text transition-colors group-hover:text-black dark:group-hover:text-white">
                     {faq.q}
                   </span>
                   <span
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-black/10 bg-zinc-800/5 text-text transition-all duration-200 group-hover:bg-zinc-800/10 ${
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-black/10 dark:border-white/15 bg-zinc-800/5 dark:bg-white/5 text-text transition-all duration-200 group-hover:bg-zinc-800/10 dark:group-hover:bg-white/10 ${
                       isOpen ? "rotate-180 bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : ""
                     }`}
                   >

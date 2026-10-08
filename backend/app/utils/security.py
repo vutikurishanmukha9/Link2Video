@@ -19,6 +19,20 @@ ALLOWED_PLATFORM_DOMAINS = [
     "redd.it",
     "youtube.com",
     "youtu.be",
+    "terabox.com",
+    "1024tera.com",
+    "teraboxapp.com",
+    "mirrobox.com",
+    "nephobox.com",
+    "4funbox.com",
+    "freeterabox.com",
+    "terabox.app",
+    "mega.nz",
+    "mega.io",
+    "mega.co.nz",
+    "drive.google.com",
+    "mediafire.com",
+    "dropbox.com",
 ]
 
 # Disallowed schemes

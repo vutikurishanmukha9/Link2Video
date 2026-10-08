@@ -54,11 +54,11 @@ def test_detect_universal_web_ipl():
     assert info.name == "IPL"
 
 
-def test_detect_universal_web_google_drive():
-    result = platform_detector.detect("https://drive.google.com/file/d/1A2B3C4D/view")
+def test_detect_google_drive():
+    result = platform_detector.detect("https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I0J1K2L/view")
     assert result is not None
     adapter, info = result
-    assert adapter.slug == "web"
+    assert adapter.slug == "gdrive"
     assert info.name == "Google Drive"
 
 
@@ -109,6 +109,42 @@ def test_detect_twitch():
     assert result is not None
     assert result[0].slug == "twitch"
     assert result[1].name == "Twitch"
+
+
+def test_detect_terabox():
+    result = platform_detector.detect("https://terabox.com/s/1d0aBCd_E123")
+    assert result is not None
+    assert result[0].slug == "terabox"
+    assert result[1].name == "TeraBox"
+
+    result_1024 = platform_detector.detect("https://1024tera.com/s/1abc123")
+    assert result_1024 is not None
+    assert result_1024[0].slug == "terabox"
+
+
+def test_detect_mega():
+    result = platform_detector.detect("https://mega.nz/file/abc12345#key_secret_1234567890123456789012")
+    assert result is not None
+    assert result[0].slug == "mega"
+    assert result[1].name == "Mega"
+
+    result_io = platform_detector.detect("https://mega.io/file/abc12345#key_secret_1234567890123456789012")
+    assert result_io is not None
+    assert result_io[0].slug == "mega"
+
+
+def test_detect_mediafire():
+    result = platform_detector.detect("https://www.mediafire.com/file/abc123xyz/sample_video.mp4/file")
+    assert result is not None
+    assert result[0].slug == "mediafire"
+    assert result[1].name == "MediaFire"
+
+
+def test_detect_dropbox():
+    result = platform_detector.detect("https://www.dropbox.com/s/abc123xyz/sample_video.mp4?dl=0")
+    assert result is not None
+    assert result[0].slug == "dropbox"
+    assert result[1].name == "Dropbox"
 
 
 def test_invalid_scheme_returns_none():

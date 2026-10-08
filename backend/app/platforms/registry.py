@@ -1,12 +1,17 @@
 from typing import List, Optional
 from app.platforms.bandcamp import BandcampAdapter
 from app.platforms.base import PlatformAdapter
+from app.platforms.dropbox import DropboxAdapter
 from app.platforms.facebook import FacebookAdapter
+from app.platforms.gdrive import GoogleDriveAdapter
 from app.platforms.instagram import InstagramAdapter
 from app.platforms.linkedin import LinkedInAdapter
+from app.platforms.mediafire import MediaFireAdapter
+from app.platforms.mega import MegaAdapter
 from app.platforms.pinterest import PinterestAdapter
 from app.platforms.reddit import RedditAdapter
 from app.platforms.soundcloud import SoundCloudAdapter
+from app.platforms.terabox import TeraBoxAdapter
 from app.platforms.threads import ThreadsAdapter
 from app.platforms.tiktok import TikTokAdapter
 from app.platforms.twitch import TwitchAdapter
@@ -30,6 +35,11 @@ class PlatformRegistry:
             TwitchAdapter(),
             LinkedInAdapter(),
             RedditAdapter(),
+            TeraBoxAdapter(),
+            MegaAdapter(),
+            GoogleDriveAdapter(),
+            MediaFireAdapter(),
+            DropboxAdapter(),
         ]
         self._universal_adapter = UniversalWebAdapter()
 

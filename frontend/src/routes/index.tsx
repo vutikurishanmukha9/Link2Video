@@ -6,6 +6,7 @@ import { Features, Platforms, HowItWorks } from "@/components/site/Sections";
 import { FaqSection } from "@/components/site/FaqSection";
 import { MobileTabBar } from "@/components/site/MobileTabBar";
 import { Downloader } from "@/components/downloader/Downloader";
+import { DownloadsLibrarySection } from "@/components/downloader/DownloadsLibrarySection";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import {
   JSON_LD_WEBAPP,
@@ -91,7 +92,7 @@ function Index() {
     <div id="top" className="min-h-screen overflow-x-clip bg-canvas">
       <Nav />
 
-      <main className="pb-16 sm:pb-8">
+      <main className="pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:pb-12">
         {/* Compact Product-First Hero (Directive Sec 10 & 37) */}
         <section id="downloader" className="shell scroll-mt-16 pt-7 pb-1 sm:pt-9">
           <div className="mx-auto max-w-[840px] text-center flex flex-col items-center">
@@ -114,8 +115,9 @@ function Index() {
         </section>
 
         {/* Compact Product Sections with Controlled Rhythm */}
-        <Features />
         <Platforms />
+        <Features />
+        <DownloadsLibrarySection />
         <HowItWorks />
         <FaqSection />
       </main>

@@ -111,7 +111,7 @@ export function Downloader() {
       <div aria-live="polite">
         {/* State 4: Restrained Loading State (Directive Sec 22) */}
         {phase.kind === "analyzing" && (
-          <div className="fade-rise rounded-xl border border-border bg-surface px-5 py-4">
+          <div className="fade-rise rounded-xl border border-black dark:border-white/15 ring-1 ring-black/15 dark:ring-white/10 bg-surface px-5 py-4 shadow-xs">
             <div className="flex items-center justify-between">
               <p className="text-[14px] font-medium text-text">Analyzing URL</p>
               <span className="mono-meta text-text-muted">Resolving origin stream…</span>

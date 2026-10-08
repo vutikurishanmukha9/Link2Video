@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
  * Design system — "Conduit" multi-platform media downloader.
- * Engineered Light/Dark hybrid system:
- * Soft warm-neutral canvas + dark technical product surfaces + one functional blue.
- * 70-75% neutral canvas, 15-20% dark product surface, 5-10% functional accent.
+ * Dual-theme architecture:
+ * 1. Cool Slate Crisp Light (#d8e2ec canvas, crisp white cards, solid borders)
+ * 2. AMOLED True-Black (#000000 pitch black OLED canvas, #121214 surfaces, #00c853 emerald accent)
  */
 
 @theme inline {
@@ -81,6 +83,40 @@
   --positive: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
+}
+
+.dark {
+  /* Battery-saving OLED AMOLED Pitch Black Canvas (#000000) */
+  --canvas: #000000;
+  --surface: #121214;
+  --surface-sunken: #09090b;
+
+  /* Dark product panels */
+  --surface-dark: #000000;
+  --surface-dark-elevated: #18181b;
+  --surface-dark-raised: #27272a;
+  --border-dark: #27272a;
+
+  /* High-contrast OLED typography */
+  --text: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-on-dark: #ffffff;
+  --text-on-dark-muted: #a1a1aa;
+
+  /* Crisp borders */
+  --border: #27272a;
+  --border-strong: #3f3f46;
+
+  /* High-visibility Vibrant Emerald & Electric Cyan */
+  --accent: #00c853;
+  --accent-hover: #00b0ff;
+  --accent-foreground: #000000;
+  --accent-soft: rgba(0, 200, 83, 0.15);
+
+  --positive: #00c853;
+  --warning: #ffab00;
+  --danger: #ff5252;
 }
 
 @layer base {
@@ -223,4 +259,11 @@
     transform: scale(0.96);
     opacity: 0.88;
   }
+}
+
+/* Mobile native performance resets */
+html,
+body {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-x: none;
 }

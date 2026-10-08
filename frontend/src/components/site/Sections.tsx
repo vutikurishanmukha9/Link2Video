@@ -1,7 +1,28 @@
 import { useState } from "react";
-import { Link2, Layers, DownloadCloud, ArrowUpRight } from "lucide-react";
+import { Link2, Layers, DownloadCloud } from "lucide-react";
 import { PlatformMark } from "@/components/platform/PlatformMark";
 import { PLATFORMS } from "@/lib/downloader";
+
+const PLATFORM_BRAND_COLORS: Record<string, string> = {
+  instagram: "text-[#e1306c]",
+  tiktok: "text-[#fe2c55] dark:text-[#ff3b68]",
+  youtube: "text-red-600 dark:text-red-500",
+  x: "text-zinc-900 dark:text-zinc-100",
+  facebook: "text-[#1877f2]",
+  pinterest: "text-[#e60023]",
+  threads: "text-purple-600 dark:text-purple-400",
+  soundcloud: "text-[#ff5500]",
+  bandcamp: "text-[#1da0c3]",
+  twitch: "text-[#9146ff]",
+  linkedin: "text-[#0a66c2]",
+  reddit: "text-[#ff4500]",
+  terabox: "text-[#0086ff]",
+  mega: "text-[#d9272e]",
+  gdrive: "text-[#34a853]",
+  mediafire: "text-[#1299f3]",
+  dropbox: "text-[#0061fe]",
+  web: "text-emerald-600 dark:text-emerald-400",
+};
 
 const FEATURES = [
   {
@@ -72,7 +93,7 @@ export function Features() {
           return (
             <li
               key={f.n}
-              className={`flex min-h-[170px] flex-col justify-between rounded-2xl border border-black ring-1 ring-black/15 bg-surface p-5.5 sm:p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:ring-black/30 sm:min-h-[185px]`}
+              className={`flex min-h-[170px] flex-col justify-between rounded-2xl border border-black dark:border-white/15 ring-1 ring-black/15 dark:ring-white/10 bg-surface p-5.5 sm:p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:ring-black/30 dark:hover:ring-white/30 sm:min-h-[185px]`}
             >
               <div>
                 <div className="flex items-center justify-between">
@@ -322,6 +343,96 @@ const PLATFORM_DETAILS: Record<string, PlatformDetail> = {
     btnLabel: "Try Reddit Video",
     sampleUrl: "https://www.reddit.com/r/funny/comments/abc123/",
   },
+  terabox: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
+    cardBg: "bg-surface",
+    tags: ["1080p CDN", "App Lock Bypass", "Direct MP4", "High Speed"],
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
+    description:
+      "Bypasses mobile app lock. Extracts direct 1080p CDN video streams for browser playback and fast downloading.",
+    qualityBadge: "1080p CDN",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try TeraBox Link",
+    sampleUrl: "https://terabox.com/s/1d0aBCd_E123",
+  },
+  mega: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
+    cardBg: "bg-surface",
+    tags: ["Zero Apps", "Decrypted Stream", "Progressive", "Browser Save"],
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
+    description:
+      "Resolves shared file metadata and streams raw decrypted bytes directly to browser storage without Mega desktop/mobile app.",
+    qualityBadge: "Decrypted",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try Mega Link",
+    sampleUrl: "https://mega.nz/file/abc12345#key_secret_1234567890123456789012",
+  },
+  gdrive: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
+    cardBg: "bg-surface",
+    tags: ["1-Tap Direct", "Virus Warning Bypass", "No Interstitial", "Full Speed"],
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
+    description:
+      "Bypasses 'file exceeds maximum scan size' virus check interstitial with 1-tap direct download stream.",
+    qualityBadge: "Scan Bypass",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try Google Drive Link",
+    sampleUrl: "https://drive.google.com/file/d/1B2C3D4E5F6G7H8I9J0K1L2M/view",
+  },
+  mediafire: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
+    cardBg: "bg-surface",
+    tags: ["Ad-Free", "Direct CDN", "Instant Stream", "Raw Bytes"],
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
+    description:
+      "Bypasses ad-heavy download landing pages for instant raw CDN byte streams.",
+    qualityBadge: "Ad-Free CDN",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try MediaFire Link",
+    sampleUrl: "https://www.mediafire.com/file/abc123xyz/sample_video.mp4/file",
+  },
+  dropbox: {
+    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
+    badgeBg: "bg-zinc-800/10",
+    badgeText: "text-zinc-900 dark:text-zinc-100",
+    badgeBorder: "border-zinc-300 dark:border-zinc-700",
+    hoverBorder: "hover:border-zinc-500",
+    cardBg: "bg-surface",
+    tags: ["Direct dl=1", "Progressive Stream", "Ad-Free", "Raw Binary"],
+    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
+    description:
+      "Instant direct resolution to progressive binary streams (dl=1) without ads or friction.",
+    qualityBadge: "Direct dl=1",
+    qualityBadgeStyle:
+      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
+    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
+    btnLabel: "Try Dropbox Link",
+    sampleUrl: "https://www.dropbox.com/s/abc123xyz/sample_video.mp4?dl=0",
+  },
   web: {
     cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
@@ -343,7 +454,7 @@ const PLATFORM_DETAILS: Record<string, PlatformDetail> = {
 };
 
 export function Platforms() {
-  const [filter, setFilter] = useState<"all" | "video" | "social" | "audio">("all");
+  const [filter, setFilter] = useState<"all" | "cloud" | "video" | "social" | "audio">("all");
 
   const handleTry = (sampleUrl: string) => {
     const input = document.getElementById("post-url") as HTMLInputElement | null;
@@ -364,6 +475,9 @@ export function Platforms() {
 
   const filteredPlatforms = PLATFORMS.filter((p) => {
     if (filter === "all") return true;
+    if (filter === "cloud") {
+      return ["terabox", "mega", "gdrive", "mediafire", "dropbox"].includes(p.id);
+    }
     if (filter === "audio") return p.id === "soundcloud" || p.id === "bandcamp";
     if (filter === "social") {
       return [
@@ -388,6 +502,10 @@ export function Platforms() {
         "threads",
         "twitch",
         "reddit",
+        "terabox",
+        "mega",
+        "gdrive",
+        "dropbox",
         "web",
       ].includes(p.id);
     }
@@ -411,10 +529,7 @@ export function Platforms() {
               Supported Platforms
             </h2>
             <span className="mono-meta inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-600 sm:hidden">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              </span>
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               1,750+ Sites
             </span>
           </div>
@@ -425,10 +540,7 @@ export function Platforms() {
         </div>
         <div className="hidden sm:flex sm:items-center sm:gap-2">
           <span className="mono-meta inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-[12px] font-semibold text-emerald-600 shadow-xs">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-            </span>
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
             Universal + 1,750+ Sites
           </span>
         </div>
@@ -437,8 +549,9 @@ export function Platforms() {
       {/* Category Filter Pills (Horizontal chip scroll on mobile, wrap on desktop) */}
       <div className="mt-5 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar -mx-1 px-1 sm:mx-0 sm:px-0 sm:flex-wrap">
         {[
-          { id: "all", label: "All Platforms", count: 13 },
-          { id: "video", label: "Video Streams", count: 10 },
+          { id: "all", label: "All Platforms", count: 18 },
+          { id: "cloud", label: "Cloud Storage", count: 5 },
+          { id: "video", label: "Video Streams", count: 14 },
           { id: "social", label: "Social Media", count: 8 },
           { id: "audio", label: "Hi-Res Audio", count: 2 },
         ].map((cat) => {
@@ -478,88 +591,58 @@ export function Platforms() {
         })}
       </div>
 
-      {/* Modern Card Grid */}
-      <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
+      {/* Sleek Ultra-Compact Micro Logo Cards */}
+      <ul className="mt-4 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
         {filteredPlatforms.map((p) => {
-          const meta = PLATFORM_DETAILS[p.id] ?? {
-            cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
-            badgeBg: "bg-zinc-800/10",
-            badgeText: "text-zinc-900 dark:text-zinc-100",
-            badgeBorder: "border-zinc-300 dark:border-zinc-700",
-            hoverBorder: "hover:border-zinc-500",
-            cardBg: "bg-surface",
-            tags: ["Photos", "Videos"],
-            tagStyle:
-              "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
-            description: "Direct media extraction from origin post URLs.",
-            qualityBadge: "Standard",
-            qualityBadgeStyle:
-              "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
-            btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
-            btnLabel: "Try Media",
-            sampleUrl: "",
-          };
+          const meta = PLATFORM_DETAILS[p.id];
+          const displayName =
+            p.id === "twitch"
+              ? "Twitch"
+              : p.id === "web"
+              ? "Web"
+              : p.id === "gdrive"
+              ? "Drive"
+              : p.name;
 
           return (
-            <li
-              key={p.id}
-              className={`group relative flex flex-col justify-between rounded-2xl border ${meta.cardBorder} bg-surface p-5 sm:p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-xl`}
-            >
-              <div>
-                {/* Top Row: Brand squircle badge + Quality Pill */}
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-transform duration-200 group-hover:scale-105 shadow-xs ${meta.badgeBorder} ${meta.badgeBg} ${meta.badgeText}`}
-                  >
-                    <PlatformMark platform={p.id} size={20} />
-                  </span>
-                  <span
-                    className={`mono-meta rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${meta.qualityBadgeStyle}`}
-                  >
-                    {meta.qualityBadge}
-                  </span>
+            <li key={p.id}>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof navigator !== "undefined" && navigator.vibrate) {
+                    try {
+                      navigator.vibrate(10);
+                    } catch {
+                      /* ignore */
+                    }
+                  }
+                  if (meta?.sampleUrl) {
+                    handleTry(meta.sampleUrl);
+                  } else {
+                    const input = document.getElementById("post-url");
+                    if (input) {
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                      setTimeout(() => input.focus(), 300);
+                    }
+                  }
+                }}
+                className="native-tap group flex h-[54px] w-[62px] sm:h-[58px] sm:w-[68px] flex-col items-center justify-center rounded-xl border border-black/15 dark:border-white/15 bg-surface p-1 shadow-2xs transition-all duration-150 hover:-translate-y-0.5 hover:shadow-xs hover:border-black dark:hover:border-white/30 active:scale-95 text-center text-text"
+                title={`Extract media from ${p.name} (${p.hosts[0]})`}
+              >
+                {/* Centered Brand Logo Mark */}
+                <div className="flex h-6.5 w-6.5 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-black/[0.04] dark:bg-white/[0.08] border border-black/10 dark:border-white/15 transition-transform duration-150 group-hover:scale-110 shadow-2xs">
+                  <PlatformMark
+                    platform={p.id}
+                    size={15}
+                    className={PLATFORM_BRAND_COLORS[p.id] ?? "text-text"}
+                  />
                 </div>
 
-                {/* Title & Domain info */}
-                <div className="mt-4">
-                  <div className="flex items-baseline justify-between">
-                    <h3 className="text-[17px] font-semibold tracking-[-0.015em] text-text">
-                      {p.name}
-                    </h3>
-                    <span className="mono-meta text-[11px] text-text-muted font-medium">
-                      {p.hosts[0]}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-[13px] leading-relaxed text-text-secondary">
-                    {meta.description}
-                  </p>
-                </div>
-              </div>
-
-              {/* Bottom: Media capability tags + Action Button */}
-              <div className="mt-5 space-y-3.5 border-t border-zinc-200 dark:border-zinc-800 pt-4">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {meta.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className={`rounded-md border px-2 py-0.5 text-[11px] font-semibold transition-all ${meta.tagStyle}`}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                {meta.sampleUrl && (
-                  <button
-                    type="button"
-                    onClick={() => handleTry(meta.sampleUrl)}
-                    className={`native-tap flex h-9 w-full items-center justify-center gap-1.5 rounded-xl px-3 text-[12.5px] font-semibold transition-all duration-150 active:scale-[0.98] ${meta.btnStyle}`}
-                  >
-                    <span>{meta.btnLabel}</span>
-                    <ArrowUpRight size={13} strokeWidth={2.2} className="opacity-70" />
-                  </button>
-                )}
-              </div>
+                {/* Platform Name */}
+                <span className="mt-0.5 text-[9.5px] sm:text-[10px] font-semibold text-text tracking-tight truncate max-w-[95%]">
+                  {displayName}
+                </span>
+              </button>
             </li>
           );
         })}
@@ -591,7 +674,7 @@ export function HowItWorks() {
         {STEPS.map((s) => (
           <li
             key={s.n}
-            className={`flex flex-col justify-between rounded-2xl border border-black ring-1 ring-black/15 bg-surface p-5 sm:p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:ring-black/30`}
+            className={`flex flex-col justify-between rounded-2xl border border-black dark:border-white/15 ring-1 ring-black/15 dark:ring-white/10 bg-surface p-5 sm:p-6 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:ring-black/30 dark:hover:ring-white/30`}
           >
             <div>
               <div className="flex items-center justify-between">

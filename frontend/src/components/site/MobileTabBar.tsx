@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { Download, Grid, Compass, HelpCircle, Smartphone } from "lucide-react";
+import { Download, Grid, Compass, FolderOpen, Smartphone } from "lucide-react";
 import { InstallAppSheet } from "./InstallAppSheet";
+import { useDownloadHistory } from "@/hooks/useDownloadHistory";
 
 interface Tab {
   id: string;
@@ -11,15 +12,16 @@ interface Tab {
 
 const TABS: Tab[] = [
   { id: "downloader", label: "Downloader", icon: Download, href: "#top" },
+  { id: "library", label: "Library", icon: FolderOpen, href: "#library" },
   { id: "platforms", label: "Platforms", icon: Grid, href: "#platforms" },
-  { id: "how-it-works", label: "How It Works", icon: Compass, href: "#how-it-works" },
-  { id: "faq", label: "FAQ", icon: HelpCircle, href: "#faq" },
+  { id: "how-it-works", label: "Guide", icon: Compass, href: "#how-it-works" },
   { id: "app", label: "Get App", icon: Smartphone },
 ];
 
 export function MobileTabBar() {
   const [activeTab, setActiveTab] = useState("downloader");
   const [showInstallSheet, setShowInstallSheet] = useState(false);
+  const { count } = useDownloadHistory();
   const isClickScrollingRef = useRef(false);
 
   // Sync active tab with scroll position
@@ -28,14 +30,14 @@ export function MobileTabBar() {
       if (isClickScrollingRef.current) return;
 
       const scrollY = window.scrollY;
-      const platformsEl = document.getElementById("platforms");
+      const libraryEl = document.getElementById("library");
       const howEl = document.getElementById("how-it-works");
-      const faqEl = document.getElementById("faq");
+      const platformsEl = document.getElementById("platforms");
 
-      if (faqEl && scrollY >= faqEl.offsetTop - 200) {
-        setActiveTab("faq");
-      } else if (howEl && scrollY >= howEl.offsetTop - 200) {
+      if (howEl && scrollY >= howEl.offsetTop - 200) {
         setActiveTab("how-it-works");
+      } else if (libraryEl && scrollY >= libraryEl.offsetTop - 200) {
+        setActiveTab("library");
       } else if (platformsEl && scrollY >= platformsEl.offsetTop - 200) {
         setActiveTab("platforms");
       } else {
@@ -94,14 +96,14 @@ export function MobileTabBar() {
     <>
       <nav
         aria-label="Mobile Navigation Bar"
-        className="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t-2 border-black bg-surface/98 backdrop-blur-xl shadow-[0_-6px_24px_rgba(0,0,0,0.08)] transition-all duration-300 pb-[max(env(safe-area-inset-bottom,0px),8px)]"
+        className="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-black/10 dark:border-white/15 bg-surface/92 dark:bg-[#0c0c0e]/95 backdrop-blur-2xl shadow-[0_-8px_32px_rgba(0,0,0,0.12)] transition-all duration-300 pb-[max(env(safe-area-inset-bottom,0px),8px)]"
       >
-        <div className="relative flex h-14 items-center justify-around px-2">
-          {/* Animated Sliding Pill Track Indicator */}
+        <div className="relative flex h-14 items-center justify-around">
+          {/* Animated Sliding Pill Track Indicator (Exact 20% per tab) */}
           <div
-            className="pointer-events-none absolute top-1.5 left-2 flex h-7 items-center justify-center transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"
+            className="pointer-events-none absolute top-1.5 left-0 flex h-7 items-center justify-center transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"
             style={{
-              width: "calc((100% - 16px) / 5)",
+              width: "20%",
               transform: `translateX(${activeIndex * 100}%)`,
             }}
             aria-hidden="true"
@@ -120,7 +122,7 @@ export function MobileTabBar() {
                 onClick={() => handleTabClick(tab)}
                 className="native-tap relative z-10 flex flex-1 flex-col items-center justify-center gap-1 py-1 text-center transition-transform duration-150 active:scale-95 focus:outline-none"
               >
-                <div className="flex h-7 w-12 items-center justify-center rounded-full">
+                <div className="relative flex h-7 w-12 items-center justify-center rounded-full">
                   <Icon
                     size={18}
                     strokeWidth={isActive ? 2.4 : 1.8}
@@ -130,6 +132,11 @@ export function MobileTabBar() {
                         : "text-text-muted hover:text-text"
                     }`}
                   />
+                  {tab.id === "library" && count > 0 && (
+                    <span className="absolute -top-1 right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-emerald-500 px-1 text-[9px] font-bold text-white shadow-xs">
+                      {count}
+                    </span>
+                  )}
                 </div>
                 <span
                   className={`text-[10.5px] font-medium leading-none tracking-tight transition-colors duration-200 ${
@@ -150,19 +157,6 @@ export function MobileTabBar() {
         open={showInstallSheet}
         onClose={() => {
           setShowInstallSheet(false);
-          const scrollY = window.scrollY;
-          const platformsEl = document.getElementById("platforms");
-          const howEl = document.getElementById("how-it-works");
-          const faqEl = document.getElementById("faq");
-          if (faqEl && scrollY >= faqEl.offsetTop - 200) {
-            setActiveTab("faq");
-          } else if (howEl && scrollY >= howEl.offsetTop - 200) {
-            setActiveTab("how-it-works");
-          } else if (platformsEl && scrollY >= platformsEl.offsetTop - 200) {
-            setActiveTab("platforms");
-          } else {
-            setActiveTab("downloader");
-          }
         }}
       />
     </>
