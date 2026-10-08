@@ -5,6 +5,7 @@ const config: CapacitorConfig = {
   appName: "Link2Video",
   webDir: ".output/public",
   server: {
+    url: "https://link2download.vercel.app",
     androidScheme: "https",
     cleartext: true,
   },
