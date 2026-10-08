@@ -52,10 +52,6 @@ class Settings(BaseSettings):
     INSTAGRAM_API_KEY: str = ""
     TWITTER_API_KEY: str = ""
 
-    # YouTube Anti-Blocking & Cloud Extraction Settings
-    YOUTUBE_COOKIES: str = ""       # Raw Netscape format or Base64-encoded Netscape cookies
-    YOUTUBE_PROXY: str = ""         # HTTP/HTTPS/SOCKS5 proxy URL for datacenter bypass
-    YOUTUBE_PO_TOKEN: str = ""      # Optional Proof-of-Origin token (e.g. web.gvs+...)
 
     @computed_field
     @property
@@ -82,37 +78,5 @@ class Settings(BaseSettings):
     @property
     def is_production(self) -> bool:
         return self.APP_ENV.lower() == "production"
-
-    def get_youtube_cookie_file(self) -> Optional[str]:
-        """
-        If YOUTUBE_COOKIES is provided (raw Netscape or base64), write to a persistent
-        temp file for yt-dlp to consume, and return its path.
-        """
-        raw = (self.YOUTUBE_COOKIES or "").strip()
-        if not raw:
-            return None
-
-        # Check if already a valid filepath on disk
-        if os.path.isfile(raw):
-            return raw
-
-        content = raw
-        # Check if Base64 encoded
-        if not raw.startswith("# Netscape") and not "\t" in raw:
-            try:
-                decoded = base64.b64decode(raw).decode("utf-8")
-                if "# Netscape" in decoded or "\t" in decoded:
-                    content = decoded
-            except Exception:
-                pass
-
-        cookie_path = os.path.join(tempfile.gettempdir(), "yt_cookies.txt")
-        try:
-            with open(cookie_path, "w", encoding="utf-8") as f:
-                f.write(content)
-            return cookie_path
-        except Exception:
-            return None
-
 
 settings = Settings()

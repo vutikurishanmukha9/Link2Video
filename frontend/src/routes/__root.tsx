@@ -82,12 +82,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Free online public media downloader. Save HD videos (1080p/4K), Instagram Reels, YouTube Shorts, X/Twitter clips, Facebook videos, and MP3 audio tracks directly with zero ads or watermarks.",
+          "Free online public media downloader. Save HD videos (1080p/4K), Instagram Reels, TikTok clips, X/Twitter clips, Facebook videos, and MP3 audio tracks directly with zero ads or watermarks.",
       },
       {
         name: "keywords",
         content:
-          "video downloader, youtube video downloader, instagram reel downloader, x video saver, twitter video downloader, reddit video with sound, facebook reel downloader, linkedin video downloader, download mp4, extract mp3 audio, media downloader online, free video saver, youtube shorts download",
+          "video downloader, instagram reel downloader, tiktok video downloader, x video saver, twitter video downloader, reddit video with sound, facebook reel downloader, linkedin video downloader, download mp4, extract mp3 audio, media downloader online, free video saver",
       },
       {
         name: "robots",
@@ -106,7 +106,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Save videos, reels, and original audio in 1080p Full HD from YouTube, Instagram, X, Facebook, LinkedIn & Reddit with zero quality loss.",
+          "Save videos, reels, and original audio in 1080p Full HD from Instagram, TikTok, X, Facebook, LinkedIn & Reddit with zero quality loss.",
       },
       { property: "og:url", content: "https://link2video.onrender.com/" },
       { property: "og:image", content: "https://link2video.onrender.com/logo.png" },
@@ -120,7 +120,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "twitter:description",
         content:
-          "Direct CDN streams for videos, reels, and MP3 tracks from YouTube, Instagram, X, Facebook, LinkedIn and Reddit.",
+          "Direct CDN streams for videos, reels, and MP3 tracks from Instagram, TikTok, X, Facebook, LinkedIn and Reddit.",
       },
       { name: "twitter:image", content: "https://link2video.onrender.com/logo.png" },
     ],

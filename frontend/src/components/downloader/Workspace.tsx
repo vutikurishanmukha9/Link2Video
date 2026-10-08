@@ -48,11 +48,7 @@ const WORKSPACE_PLATFORM_THEMES: Record<
     accentText: "text-[#fe2c55]",
     pillBg: "bg-[#fe2c55]/10 text-[#fe2c55]",
   },
-  youtube: {
-    btn: "bg-red-600 hover:bg-red-700 text-white shadow-xs",
-    accentText: "text-red-600",
-    pillBg: "bg-red-500/10 text-red-600",
-  },
+
   x: {
     btn: "bg-zinc-900 hover:bg-black text-white shadow-xs",
     accentText: "text-zinc-800 dark:text-zinc-200",

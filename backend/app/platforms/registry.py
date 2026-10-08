@@ -17,7 +17,6 @@ from app.platforms.tiktok import TikTokAdapter
 from app.platforms.twitch import TwitchAdapter
 from app.platforms.twitter import TwitterAdapter
 from app.platforms.universal import UniversalWebAdapter
-from app.platforms.youtube import YouTubeAdapter
 
 
 class PlatformRegistry:
@@ -25,7 +24,6 @@ class PlatformRegistry:
         self._specific_adapters: List[PlatformAdapter] = [
             InstagramAdapter(),
             TikTokAdapter(),
-            YouTubeAdapter(),
             TwitterAdapter(),
             FacebookAdapter(),
             PinterestAdapter(),

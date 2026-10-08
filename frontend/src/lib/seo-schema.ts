@@ -3,7 +3,7 @@ export const SITE_URL = "https://link2video.onrender.com";
 export const FAQS = [
   {
     q: "How do I download videos using Link 2 Download?",
-    a: "Simply copy the link of any public post from YouTube, Instagram, X (Twitter), Facebook, LinkedIn, or Reddit. Paste the link into the command bar above and click Analyze. Within seconds, Link 2 Download extracts all available video resolutions (up to 1080p/4K), original audio tracks, and album covers for direct download.",
+    a: "Simply copy the link of any public post from Instagram, TikTok, X (Twitter), Facebook, LinkedIn, or Reddit. Paste the link into the command bar above and click Analyze. Within seconds, Link 2 Download extracts all available video resolutions (up to 1080p/4K), original audio tracks, and album covers for direct download.",
   },
   {
     q: "Can I extract and download audio (MP3) tracks from videos?",
@@ -11,7 +11,7 @@ export const FAQS = [
   },
   {
     q: "Which social media platforms are supported?",
-    a: "Link 2 Download supports 6 major social and media platforms: YouTube (regular videos, Shorts, music), Instagram (Reels, Feed videos, photo carousels), X / Twitter (videos, GIFs), Facebook (public videos and Reels), LinkedIn (feed videos), and Reddit (videos merged with original sound).",
+    a: "Link 2 Download supports major social and media platforms: Instagram (Reels, Feed videos, photo carousels), TikTok (watermark-free clips), X / Twitter (videos, GIFs), Facebook (public videos and Reels), LinkedIn (feed videos), and Reddit (videos merged with original sound).",
   },
   {
     q: "Are the downloaded videos watermark-free and high quality?",
@@ -34,7 +34,7 @@ export const JSON_LD_WEBAPP = {
   alternateName: ["Link2Download", "Link2Video", "Link to Video Downloader"],
   url: SITE_URL,
   description:
-    "Universal public media and audio downloader for YouTube, Instagram, X (Twitter), Facebook, LinkedIn, and Reddit. 100% free, no watermarks, direct CDN streaming.",
+    "Universal public media and audio downloader for Instagram, TikTok, X (Twitter), Facebook, LinkedIn, and Reddit. 100% free, no watermarks, direct CDN streaming.",
   applicationCategory: "MultimediaApplication",
   operatingSystem: "All",
   browserRequirements: "Requires JavaScript. Requires HTML5.",
@@ -51,7 +51,7 @@ export const JSON_LD_WEBAPP = {
     worstRating: "1",
   },
   featureList: [
-    "YouTube 1080p Full HD Video & Shorts Extraction",
+    "TikTok Watermark-Free HD Video & Audio Extraction",
     "Instagram Reels, Videos, Photos, and Carousel Downloads",
     "X (Twitter) Video & Animated GIF Saver",
     "Facebook Reels & Public Video Downloader",
@@ -80,13 +80,13 @@ export const JSON_LD_HOWTO = {
   "@type": "HowTo",
   name: "How to Download Public Videos and Audio with Link 2 Download",
   description:
-    "Step-by-step guide to download public videos and extract MP3 audio from YouTube, Instagram, X, Facebook, LinkedIn, and Reddit.",
+    "Step-by-step guide to download public videos and extract MP3 audio from Instagram, TikTok, X, Facebook, LinkedIn, and Reddit.",
   step: [
     {
       "@type": "HowToStep",
       position: 1,
       name: "Copy Media Link",
-      text: "Open any public video, reel, or post on YouTube, Instagram, X, Facebook, LinkedIn, or Reddit and copy its URL.",
+      text: "Open any public video, reel, or post on Instagram, TikTok, X, Facebook, LinkedIn, or Reddit and copy its URL.",
     },
     {
       "@type": "HowToStep",

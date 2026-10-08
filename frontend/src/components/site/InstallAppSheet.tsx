@@ -7,14 +7,27 @@ interface Props {
   onClose: () => void;
 }
 
-const APK_DOWNLOAD_URL =
+export const APK_DOWNLOAD_URL =
   "https://github.com/vutikurishanmukha9/Link2Video/releases/download/v1.0/Link2Video-v1.0.apk";
 
 export function InstallAppSheet({ open, onClose }: Props) {
-  const { hasPrompt, isIOS, isInstalled, promptInstall, shareApp, canShare } = usePwaInstall();
+  const { hasPrompt, isIOS, isInstalled, promptInstall } = usePwaInstall();
   const [copiedLink, setCopiedLink] = useState(false);
+  const [downloadStarted, setDownloadStarted] = useState(false);
 
   if (!open) return null;
+
+  const handleDownloadClick = () => {
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      try {
+        navigator.vibrate(15);
+      } catch {
+        /* ignore */
+      }
+    }
+    setDownloadStarted(true);
+    setTimeout(() => setDownloadStarted(false), 3000);
+  };
 
   const handleInstallClick = async () => {
     if (typeof navigator !== "undefined" && navigator.vibrate) {
@@ -82,13 +95,13 @@ export function InstallAppSheet({ open, onClose }: Props) {
           <div className="flex items-center gap-3">
             <img
               src="/favicon.svg"
-              alt="Link 2 Download"
+              alt="Link2Video"
               className="h-12 w-12 rounded-xl border border-black/15 dark:border-white/15 object-contain shadow-xs select-none"
             />
             <div>
               <h3 className="text-[17px] font-semibold text-text">Link2Video Mobile App</h3>
               <p className="text-[13px] text-text-secondary">
-                Direct APK download & native home screen app
+                Direct Android APK & home screen app
               </p>
             </div>
           </div>
@@ -112,42 +125,55 @@ export function InstallAppSheet({ open, onClose }: Props) {
                 Direct Android APK (Recommended)
               </span>
               <span className="ml-auto rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10.5px] font-bold text-emerald-700 dark:text-emerald-300">
-                v1.0
+                v1.0 • 4.3 MB
               </span>
             </div>
             <p className="text-[12.5px] text-text-secondary leading-relaxed">
-              1-tap direct download for any Android device. No GitHub login required, no zip file,
-              runs fully offline.
+              1-tap direct download for any Android device. No app store needed, no ads, runs fast & offline.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-              <a
-                href={APK_DOWNLOAD_URL}
-                download="Link2Video-v1.0.apk"
-                className="native-tap flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 py-2.5 text-[13.5px] font-semibold text-white shadow-xs hover:bg-emerald-700 active:scale-[0.98]"
-              >
-                <Download size={16} />
-                <span>Download .APK</span>
-              </a>
+            {/* Prominent Direct APK Download CTA */}
+            <a
+              href={APK_DOWNLOAD_URL}
+              download="Link2Video-v1.0.apk"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleDownloadClick}
+              className="native-tap flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-3 text-[14px] font-bold text-white shadow-md active:scale-[0.98] transition-all"
+            >
+              <Download size={17} />
+              <span>{downloadStarted ? "Starting APK Download..." : "Download Link2Video (.apk)"}</span>
+            </a>
 
+            {/* Secondary actions: Copy link & Share */}
+            <div className="grid grid-cols-2 gap-2 pt-0.5">
               <button
                 type="button"
                 onClick={handleCopyLink}
-                className="native-tap flex items-center justify-center gap-1.5 rounded-xl border border-black/15 dark:border-white/15 bg-surface dark:bg-white/[0.08] px-3 py-2.5 text-[13px] font-medium text-text hover:bg-black/5 dark:hover:bg-white/10 active:scale-[0.98]"
+                className="native-tap flex items-center justify-center gap-1.5 rounded-xl border border-black/15 dark:border-white/15 bg-surface dark:bg-white/[0.06] px-3 py-2 text-[12.5px] font-medium text-text hover:bg-black/5 dark:hover:bg-white/10 active:scale-[0.98]"
               >
                 {copiedLink ? (
                   <>
-                    <CheckCircle2 size={15} className="text-emerald-500" />
+                    <CheckCircle2 size={14} className="text-emerald-500" />
                     <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
                       Link Copied!
                     </span>
                   </>
                 ) : (
                   <>
-                    <Copy size={15} />
-                    <span>Copy Share Link</span>
+                    <Copy size={14} />
+                    <span>Copy Link</span>
                   </>
                 )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleShareClick}
+                className="native-tap flex items-center justify-center gap-1.5 rounded-xl border border-black/15 dark:border-white/15 bg-surface dark:bg-white/[0.06] px-3 py-2 text-[12.5px] font-medium text-text hover:bg-black/5 dark:hover:bg-white/10 active:scale-[0.98]"
+              >
+                <Share2 size={14} />
+                <span>Share App Link</span>
               </button>
             </div>
           </div>
@@ -194,15 +220,6 @@ export function InstallAppSheet({ open, onClose }: Props) {
               </div>
             </div>
           ) : null}
-
-          {/* Share button */}
-          <button
-            onClick={handleShareClick}
-            className="native-tap flex w-full items-center justify-center gap-2 rounded-xl border border-black/15 dark:border-white/15 bg-surface dark:bg-white/[0.06] py-2.5 text-[13.5px] font-semibold text-text hover:bg-black/5 dark:hover:bg-white/10 active:scale-[0.98]"
-          >
-            <Share2 size={15} />
-            Share Link2Video With Friends
-          </button>
         </div>
       </div>
     </div>

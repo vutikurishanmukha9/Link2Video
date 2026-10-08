@@ -17,8 +17,6 @@ ALLOWED_PLATFORM_DOMAINS = [
     "lnkd.in",
     "reddit.com",
     "redd.it",
-    "youtube.com",
-    "youtu.be",
     "terabox.com",
     "1024tera.com",
     "teraboxapp.com",
@@ -91,6 +89,9 @@ def validate_and_guard_url(
         raise InvalidURLException("URLs with embedded credentials are not allowed.")
 
     # 2. Check direct IP address or localhost
+    if hostname in {"youtube.com", "youtu.be"} or hostname.endswith((".youtube.com", ".youtu.be")):
+        raise UnsupportedPlatformException("YouTube service is permanently disabled.")
+
     if hostname in {"localhost", "127.0.0.1", "::1", "0.0.0.0"}:
         raise InvalidURLException("Access to internal localhost addresses is forbidden.")
 

@@ -18,7 +18,7 @@ import {
 
 const TITLE = "Link2Download - Download Any Video, Anywhere";
 const DESCRIPTION =
-  "Free online public media downloader. Save HD videos (1080p/4K), Instagram Reels, YouTube Shorts, X/Twitter clips, Facebook videos, and MP3 audio tracks directly with zero ads or watermarks.";
+  "Free online public media downloader. Save HD videos (1080p/4K), Instagram Reels, TikTok clips, X/Twitter clips, Facebook videos, and MP3 audio tracks directly with zero ads or watermarks.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/")({
       {
         name: "keywords",
         content:
-          "video downloader, youtube video downloader, instagram reel downloader, x video saver, twitter video downloader, reddit video with sound, facebook reel downloader, linkedin video downloader, download mp4, extract mp3 audio, media downloader online, free video saver, youtube shorts download, 1080p video downloader",
+          "video downloader, instagram reel downloader, tiktok video downloader, x video saver, twitter video downloader, reddit video with sound, facebook reel downloader, linkedin video downloader, download mp4, extract mp3 audio, media downloader online, free video saver, 1080p video downloader",
       },
       {
         name: "robots",

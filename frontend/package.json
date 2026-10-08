@@ -12,7 +12,7 @@
     "cap:build": "npm run build && npx cap sync android",
     "preview": "vite preview",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "vitest run --pool=threads",
     "format": "prettier --write ."
   },
   "overrides": {

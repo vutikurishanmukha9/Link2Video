@@ -149,24 +149,7 @@ const PLATFORM_DETAILS: Record<string, PlatformDetail> = {
     btnLabel: "Try TikTok Clip",
     sampleUrl: "https://www.tiktok.com/@creator/video/71234567890",
   },
-  youtube: {
-    cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
-    badgeBg: "bg-zinc-800/10",
-    badgeText: "text-zinc-900 dark:text-zinc-100",
-    badgeBorder: "border-zinc-300 dark:border-zinc-700",
-    hoverBorder: "hover:border-zinc-500",
-    cardBg: "bg-surface",
-    tags: ["Shorts", "1080p HD", "720p", "Audio Track"],
-    tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
-    description:
-      "High-speed video stream resolution for Shorts & full videos with audio track extraction.",
-    qualityBadge: "Up to 1080p",
-    qualityBadgeStyle:
-      "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
-    btnStyle: "bg-zinc-900 text-white hover:bg-black shadow-xs",
-    btnLabel: "Try YouTube Shorts",
-    sampleUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-  },
+
   x: {
     cardBorder: "border-black ring-1 ring-black/15 hover:ring-black/30",
     badgeBg: "bg-zinc-800/10",
@@ -471,7 +454,6 @@ export function Platforms() {
     }
     if (filter === "video") {
       return [
-        "youtube",
         "tiktok",
         "instagram",
         "x",

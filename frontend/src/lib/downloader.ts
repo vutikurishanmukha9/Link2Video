@@ -6,7 +6,6 @@
 export type PlatformId =
   | "instagram"
   | "tiktok"
-  | "youtube"
   | "x"
   | "facebook"
   | "pinterest"
@@ -76,12 +75,7 @@ export const PLATFORMS: Platform[] = [
     media: "Watermark-Free Video · Audio",
     hosts: ["tiktok.com", "vm.tiktok.com", "vt.tiktok.com"],
   },
-  {
-    id: "youtube",
-    name: "YouTube",
-    media: "Shorts · Videos · 1080p · 720p",
-    hosts: ["youtube.com", "youtu.be"],
-  },
+
   {
     id: "x",
     name: "X",
@@ -208,6 +202,16 @@ export function detect(raw: string): Detection {
   const url = parse(raw);
   if (!url || !url.hostname.includes(".")) return { status: "invalid" };
   const host = url.hostname.replace(/^www\./, "");
+
+  // Explicitly reject YouTube as permanently unsupported
+  if (
+    host === "youtube.com" ||
+    host.endsWith(".youtube.com") ||
+    host === "youtu.be" ||
+    host.endsWith(".youtu.be")
+  ) {
+    return { status: "unsupported", host };
+  }
 
   // 1. Check known social media platforms
   const platform = PLATFORMS.find((p) => p.hosts.some((h) => host === h || host.endsWith(`.${h}`)));

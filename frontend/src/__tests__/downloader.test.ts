@@ -35,20 +35,14 @@ describe("detect()", () => {
     }
   });
 
-  it("detects YouTube URLs (youtube.com)", () => {
+  it("rejects YouTube URLs as unsupported (youtube.com)", () => {
     const result = detect("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
-    expect(result.status).toBe("detected");
-    if (result.status === "detected") {
-      expect(result.platform.id).toBe("youtube");
-    }
+    expect(result.status).toBe("unsupported");
   });
 
-  it("detects YouTube short URLs (youtu.be)", () => {
+  it("rejects YouTube short URLs as unsupported (youtu.be)", () => {
     const result = detect("https://youtu.be/dQw4w9WgXcQ");
-    expect(result.status).toBe("detected");
-    if (result.status === "detected") {
-      expect(result.platform.id).toBe("youtube");
-    }
+    expect(result.status).toBe("unsupported");
   });
 
   it("detects X/Twitter URLs", () => {

@@ -4,7 +4,7 @@ Link 2 Download is a high-performance, production-grade media downloader applica
 
 Supported platforms:
 - Instagram (Reels, Carousels, Posts)
-- YouTube (Shorts, Standard Videos, MP4)
+- TikTok (Watermark-Free Video, Audio)
 - X / Twitter (Videos, Photos, GIFs)
 - Facebook (Public Videos and Watch content)
 - LinkedIn (Public Video updates and Slides)
@@ -329,7 +329,7 @@ When `REDIS_URL` is **not configured**, rate limiting falls back to an in-memory
 **Production recommendation**: Always set `REDIS_URL` to a real Redis instance (Upstash, ElastiCache, etc.). The app now logs a prominent warning at startup if running in production mode without Redis.
 
 ### Ephemeral Disk Usage
-Temporary video files (HLS muxing, YouTube assembly) are cached on disk with:
+Temporary video files (HLS muxing) are cached on disk with:
 - **Time-based cleanup**: Files older than 2 hours are swept on each new download.
 - **Size cap**: Total temp directory usage is capped at 2 GB; oldest files are evicted when exceeded.
 - **Per-file limit**: Individual downloads are capped at 500 MB.
@@ -337,7 +337,7 @@ Temporary video files (HLS muxing, YouTube assembly) are cached on disk with:
 On hosts with very small ephemeral storage (< 1 GB), consider reducing `max_filesize` in the downloader configuration.
 
 ### Thread Pool for Long-Running Downloads
-Video muxing (HLS/YouTube) runs on a **dedicated 4-thread pool** separate from the asyncio default executor. This prevents large concurrent downloads from starving other async work. For higher concurrency under real load, consider migrating to a proper task queue (Celery/arq/Dramatiq).
+Video muxing (HLS) runs on a **dedicated 4-thread pool** separate from the asyncio default executor. This prevents large concurrent downloads from starving other async work. For higher concurrency under real load, consider migrating to a proper task queue (Celery/arq/Dramatiq).
 
 ---
 

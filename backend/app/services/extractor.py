@@ -95,7 +95,7 @@ class RealMediaExtractor:
 
             if "confirm you're not a bot" in clean_err or "not a bot" in clean_err or "bot detection" in clean_err:
                 raise ExtractionFailedException(
-                    message="YouTube bot protection detected. Please configure YOUTUBE_COOKIES in Render environment settings to authenticate."
+                    message="Upstream bot protection detected. Please try again later."
                 )
             if any(k in clean_err for k in ["private account", "this account is private", "login required", "members-only", "age-restricted"]):
                 raise PrivateContentException(
@@ -198,9 +198,7 @@ class RealMediaExtractor:
                     f for f in video_formats
                     if f.get("acodec") not in (None, "none") and f.get("vcodec") not in (None, "none")
                 ]
-                # For YouTube, DownloaderService merges best video and audio via ffmpeg,
-                # so prioritize highest quality video stream (up to 1080p/720p).
-                candidates = video_formats if platform_slug == "youtube" else (progressive if progressive else video_formats)
+                candidates = progressive if progressive else video_formats
                 best_video = max(
                     candidates,
                     key=lambda f: (

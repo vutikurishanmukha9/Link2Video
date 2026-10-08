@@ -87,9 +87,6 @@ class DownloaderService:
         clean_token = re.sub(r"[^a-zA-Z0-9_-]", "_", media_id)[:24]
         return os.path.join(tempfile.gettempdir(), f"dl_{clean_token}_{clean_token}.mp4")
 
-    def _get_youtube_temp_path(self, media_id: str) -> str:
-        clean_token = re.sub(r"[^a-zA-Z0-9_-]", "_", media_id)[:32]
-        return os.path.join(tempfile.gettempdir(), f"dl_yt_{clean_token}.mp4")
 
     async def ensure_hls_assembled(self, media_id: str, stream_url: str) -> str:
         """
@@ -138,98 +135,6 @@ class DownloaderService:
 
                 if not os.path.exists(temp_path) or os.path.getsize(temp_path) < 1024:
                     raise ExtractionFailedException("Unable to assemble video fragments into a playable MP4 file.")
-
-                return temp_path
-            finally:
-                self._active_downloads.pop(media_id, None)
-
-        task = asyncio.create_task(_do_download())
-        self._active_downloads[media_id] = task
-        return await task
-
-    async def ensure_youtube_assembled(self, media_id: str, original_url: str) -> str:
-        """
-        Thread-safe and single-flight YouTube downloader & muxer.
-        Downloads the best video and audio streams, solving JS challenges via Node.js
-        and muxing into a single high-definition MP4 file.
-        """
-        temp_path = self._get_youtube_temp_path(media_id)
-
-        # 1. If already assembled and valid on disk, return immediately
-        if os.path.exists(temp_path) and os.path.getsize(temp_path) > 1024:
-            return temp_path
-
-        # 2. If already being assembled by pre-warm or another request, join and wait for it
-        if media_id in self._active_downloads:
-            logger.info(f"Joining existing in-flight YouTube download for {media_id}")
-            return await self._active_downloads[media_id]
-
-        # 3. Create a single active download task
-        loop = asyncio.get_running_loop()
-
-        async def _do_download() -> str:
-            try:
-                _cleanup_old_temp_files()
-                ffmpeg_bin = _get_ffmpeg_path()
-                node_bin = shutil.which("node")
-
-                ydl_opts: dict[str, Any] = {
-                    "outtmpl": temp_path,
-                    "format": "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=1080]+bestaudio/best[height<=1080]/best",
-                    "quiet": True,
-                    "no_warnings": True,
-                    "max_filesize": 524_288_000,
-                    "socket_timeout": 30,
-                    "retries": 3,
-                    "fragment_retries": 3,
-                }
-
-                if node_bin:
-                    ydl_opts["remote_components"] = ["ejs:github"]
-                    ydl_opts["js_runtimes"] = {"node": {}}
-                elif shutil.which("deno"):
-                    ydl_opts["remote_components"] = ["ejs:github"]
-                    ydl_opts["js_runtimes"] = {"deno": {}}
-
-                if ffmpeg_bin:
-                    ydl_opts["ffmpeg_location"] = ffmpeg_bin
-                    ydl_opts["postprocessors"] = [{
-                        "key": "FFmpegVideoConvertor",
-                        "preferedformat": "mp4",
-                    }]
-
-                cookie_file = settings.get_youtube_cookie_file()
-                if cookie_file:
-                    ydl_opts["cookiefile"] = cookie_file
-                    ydl_opts["extractor_args"] = {
-                        "youtube": {
-                            "player_client": ["web", "tv", "android", "ios"],
-                        }
-                    }
-                else:
-                    ydl_opts["extractor_args"] = {
-                        "youtube": {
-                            "player_client": ["android", "ios"],
-                            "player_skip": ["webpage", "configs", "initial_data"],
-                        }
-                    }
-
-                if settings.YOUTUBE_PROXY:
-                    ydl_opts["proxy"] = settings.YOUTUBE_PROXY
-
-                if settings.YOUTUBE_PO_TOKEN:
-                    if "youtube" not in ydl_opts.get("extractor_args", {}):
-                        ydl_opts.setdefault("extractor_args", {})["youtube"] = {}
-                    ydl_opts["extractor_args"]["youtube"]["po_token"] = [settings.YOUTUBE_PO_TOKEN]
-
-                def _sync_worker():
-                    with YoutubeDL(ydl_opts) as ydl:
-                        ydl.download([original_url])
-
-                await loop.run_in_executor(_download_executor, _sync_worker)
-
-                if not os.path.exists(temp_path) or os.path.getsize(temp_path) < 1024:
-                    raise ExtractionFailedException("Unable to assemble YouTube video into a playable MP4 file.")
 
                 return temp_path
             finally:
@@ -374,53 +279,6 @@ class DownloaderService:
                 headers=hls_headers,
             )
 
-        # 4. Special handling for YouTube streams: assemble crisp HD video with full audio
-        is_youtube = (
-            "googlevideo.com" in target.direct_url
-            or "youtube.com" in target.direct_url
-            or "youtu.be" in target.direct_url
-        )
-        if not is_cover and is_youtube:
-            safe_mp4_name = safe_filename if safe_filename.endswith(".mp4") else f"{safe_filename}.mp4"
-            source_url = target.direct_url
-            try:
-                req_stmt = select(ExtractionRequestModel).where(ExtractionRequestModel.request_id == item.request_id)
-                req_res = await db.execute(req_stmt)
-                ext_req = req_res.scalars().first()
-                if ext_req and ext_req.source_url:
-                    source_url = ext_req.source_url
-            except Exception:
-                pass
-
-            try:
-                temp_path = await self.ensure_youtube_assembled(media_id, source_url)
-                file_size = os.path.getsize(temp_path)
-
-                async def yt_stream_generator() -> AsyncGenerator[bytes, None]:
-                    async with await anyio.open_file(temp_path, "rb") as f:
-                        while chunk := await f.read(65536):
-                            yield chunk
-
-                yt_headers = {
-                    "Content-Disposition": f'attachment; filename="{safe_mp4_name}"',
-                    "Content-Type": "video/mp4",
-                    "Content-Length": str(file_size),
-                    "X-Content-Type-Options": "nosniff",
-                }
-
-                return StreamingResponse(
-                    yt_stream_generator(),
-                    media_type="video/mp4",
-                    headers=yt_headers,
-                )
-            except Exception as e:
-                # YouTube assembly failed (likely bot detection on datacenter IP).
-                # Redirect user to the YouTube watch page so their browser can play/download.
-                logger.warning(f"YouTube assembly failed for {media_id}, redirecting to YouTube: {e}")
-                yt_watch_url = source_url if "youtube.com/watch" in source_url or "youtu.be/" in source_url else target.direct_url
-                from fastapi.responses import RedirectResponse
-                return RedirectResponse(url=yt_watch_url, status_code=307)
-
         # 5. Direct progressive streams (MP4/Images from Instagram, Twitter, etc.)
         async def on_redirect_response(response: httpx.Response) -> None:
             if response.is_redirect and response.has_redirect_location and response.next_request:
@@ -486,13 +344,6 @@ class DownloaderService:
         except Exception as e:
             logger.debug(f"Pre-warming HLS stream deferred: {e}")
 
-    async def prewarm_youtube_download(self, media_id: str, original_url: str) -> None:
-        """Pre-download and mux YouTube video in background so download is instantaneous when clicked."""
-        try:
-            await self.ensure_youtube_assembled(media_id, original_url)
-            logger.info(f"Pre-warmed YouTube video ready for media_id: {media_id}")
-        except Exception as e:
-            logger.debug(f"Pre-warming YouTube video deferred: {e}")
 
 
 downloader_service = DownloaderService()

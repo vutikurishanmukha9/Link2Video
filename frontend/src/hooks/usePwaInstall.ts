@@ -61,7 +61,7 @@ export function usePwaInstall() {
       try {
         await navigator.share({
           title: "Link 2 Download",
-          text: "Fast, ad-free video downloader for Instagram, YouTube, X, Facebook, and Reddit.",
+          text: "Fast, ad-free video downloader for Instagram, TikTok, X, Facebook, and Reddit.",
           url: window.location.origin,
         });
         return true;

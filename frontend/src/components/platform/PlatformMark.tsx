@@ -73,21 +73,6 @@ export function PlatformMark({
         </svg>
       );
 
-    case "youtube":
-      return (
-        <svg
-          width={size}
-          height={size}
-          viewBox="0 0 24 24"
-          fill="none"
-          className={className}
-          aria-hidden="true"
-        >
-          <rect x="2" y="4" width="20" height="16" rx="4.5" fill="#FF0000" />
-          <polygon points="10,8.5 16,12 10,15.5" fill="#FFFFFF" />
-        </svg>
-      );
-
     case "x":
       return (
         <svg

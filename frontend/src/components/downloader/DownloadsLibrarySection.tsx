@@ -168,8 +168,8 @@ export function DownloadsLibrarySection() {
             Your Media Library is Empty
           </h3>
           <p className="mt-2 max-w-[460px] text-[13.5px] leading-relaxed text-text-secondary">
-            Whenever you extract and download videos, clips, or photos from Instagram, YouTube,
-            TikTok, or X, they will appear here for 1-tap re-downloading and playback.
+            Whenever you extract and download videos, clips, or photos from Instagram, TikTok, or X,
+            they will appear here for 1-tap re-downloading and playback.
           </p>
           <button
             type="button"

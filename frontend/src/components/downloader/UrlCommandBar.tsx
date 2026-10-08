@@ -33,12 +33,7 @@ const PLATFORM_BUTTON_STYLES: Record<
     shadow: "shadow-xs",
     text: "text-white",
   },
-  youtube: {
-    bg: "bg-red-600 hover:bg-red-700",
-    border: "border-transparent",
-    shadow: "shadow-xs",
-    text: "text-white",
-  },
+
   x: {
     bg: "bg-zinc-900 hover:bg-black",
     border: "border-zinc-700/60",
@@ -188,7 +183,7 @@ export function UrlCommandBar({ value, detection, busy, onChange, onSubmit, onCl
             inputMode="url"
             autoComplete="off"
             spellCheck={false}
-            placeholder="Paste Instagram, TikTok, YouTube, X, Pinterest, Threads or Twitch URL"
+            placeholder="Paste Instagram, TikTok, X, Pinterest, Threads, Twitch or media URL"
             className="h-11 w-full min-w-0 bg-transparent text-[16px] text-text outline-none placeholder:text-text-muted sm:h-full sm:text-[15px]"
           />
 

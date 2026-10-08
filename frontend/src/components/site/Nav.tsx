@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { useDownloadHistory } from "@/hooks/useDownloadHistory";
-import { InstallAppSheet } from "./InstallAppSheet";
+import { InstallAppSheet, APK_DOWNLOAD_URL } from "./InstallAppSheet";
 
 const LINKS = [
   { label: "Downloader", href: "#downloader" },
@@ -45,7 +45,7 @@ const NAV_ITEMS: MobileNavItem[] = [
   {
     id: "platforms",
     label: "Supported Platforms",
-    sublabel: "Instagram, TikTok, YouTube, Reddit & 20+",
+    sublabel: "Instagram, TikTok, X, Reddit & 20+",
     href: "#platforms",
     icon: Layers,
     badgeClass:
@@ -224,15 +224,17 @@ export function Nav() {
               </span>
             )}
           </a>
-          <button
-            type="button"
-            onClick={() => setShowInstallSheet(true)}
+          <a
+            href={APK_DOWNLOAD_URL}
+            download="Link2Video-v1.0.apk"
+            target="_blank"
+            rel="noopener noreferrer"
             className="native-tap flex h-9 items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 text-[13px] font-semibold text-emerald-600 dark:text-emerald-400 shadow-xs transition-all hover:bg-emerald-500/20 active:scale-[0.98]"
-            title="Download native Android APK or install app"
+            title="Download native Android APK directly (v1.0)"
           >
             <Smartphone size={15} />
             <span>App (.apk)</span>
-          </button>
+          </a>
           <a
             href="#downloader"
             onClick={(e) => handleScrollTo(e, "#downloader")}
@@ -353,17 +355,17 @@ export function Nav() {
                 <span>Open Downloader & Paste URL</span>
               </a>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setOpen(false);
-                  setShowInstallSheet(true);
-                }}
+              <a
+                href={APK_DOWNLOAD_URL}
+                download="Link2Video-v1.0.apk"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(false)}
                 className="native-tap flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-[13.5px] font-semibold text-emerald-600 dark:text-emerald-400 shadow-xs active:scale-[0.99] hover:bg-emerald-500/20 transition-all"
               >
-                <Smartphone size={16} />
+                <Download size={16} />
                 <span>Download Android App (.apk)</span>
-              </button>
+              </a>
 
               <div className="flex items-center justify-center gap-1.5 pt-0.5 text-[11px] text-text-muted">
                 <ShieldCheck size={13} className="text-emerald-500 shrink-0" />
