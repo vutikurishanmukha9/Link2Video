@@ -50,41 +50,7 @@
   --color-ring: var(--accent);
 }
 
-:root {
-  /* Visibly distinct Cool Slate canvas — 85% brightness for unmistakable contrast against white cards */
-  --canvas: #d8e2ec;
-  --surface: #ffffff;
-  --surface-sunken: #c7d5e4;
-
-  /* Dark product panel hierarchy */
-  --surface-dark: #0f172a;
-  --surface-dark-elevated: #1e293b;
-  --surface-dark-raised: #334155;
-  --border-dark: #334155;
-
-  /* High-contrast crisp typography */
-  --text: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --text-on-dark: #f8fafc;
-  --text-on-dark-muted: #94a3b8;
-
-  /* Modern crisp hairlines */
-  --border: #b8c9dc;
-  --border-strong: #8da4be;
-
-  /* Vibrant functional electric blue */
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-foreground: #ffffff;
-  --accent-soft: #eff6ff;
-
-  /* Functional status colors */
-  --positive: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-}
-
+:root,
 .dark {
   /* Battery-saving OLED AMOLED Pitch Black Canvas (#000000) */
   --canvas: #000000;

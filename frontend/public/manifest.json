@@ -6,8 +6,8 @@
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui", "window-controls-overlay"],
-  "background_color": "#101A2E",
-  "theme_color": "#101A2E",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "orientation": "portrait",
   "categories": ["utilities", "multimedia", "productivity"],
   "share_target": {

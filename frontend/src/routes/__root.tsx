@@ -93,7 +93,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         name: "robots",
         content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
       },
-      { name: "theme-color", content: "#d8e2ec" },
+      { name: "theme-color", content: "#000000" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
@@ -150,7 +150,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3" />
         <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg?v=3" />
@@ -162,21 +162,16 @@ function RootShell({ children }: { children: ReactNode }) {
               try {
                 var l = document.querySelector("link[rel*='icon']");
                 if (l) { l.href = '/favicon.svg?v=' + Date.now(); }
-                var theme = localStorage.getItem('link2download-theme');
-                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (theme === 'dark' || (!theme && prefersDark)) {
-                  document.documentElement.classList.add('dark');
-                  var meta = document.querySelector('meta[name="theme-color"]');
-                  if (meta) meta.setAttribute('content', '#000000');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('link2download-theme', 'dark');
+                var meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', '#000000');
               } catch(e) {}
             `,
           }}
         />
       </head>
-      <body>
+      <body className="bg-black text-[#f4f4f5]">
         {children}
         <Scripts />
       </body>

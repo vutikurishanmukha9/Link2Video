@@ -3,17 +3,17 @@ import {
   Menu,
   X,
   FolderOpen,
-  Sun,
-  Moon,
   Download,
   Layers,
   Compass,
   HelpCircle,
   ChevronRight,
   ShieldCheck,
+  Smartphone,
 } from "lucide-react";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { useDownloadHistory } from "@/hooks/useDownloadHistory";
+import { InstallAppSheet } from "./InstallAppSheet";
 
 const LINKS = [
   { label: "Downloader", href: "#downloader" },
@@ -83,49 +83,17 @@ const NAV_ITEMS: MobileNavItem[] = [
 export function Nav() {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("downloader");
-  const [isDark, setIsDark] = useState(false);
+  const [showInstallSheet, setShowInstallSheet] = useState(false);
   const { count } = useDownloadHistory();
 
-  // Initialize and sync AMOLED Dark Theme
+  // Enforce permanent AMOLED Dark Theme
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const saved = localStorage.getItem("link2download-theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initialDark = saved === "dark" || (!saved && prefersDark);
-    setIsDark(initialDark);
-    if (initialDark) {
-      document.documentElement.classList.add("dark");
-      const metaTheme = document.querySelector('meta[name="theme-color"]');
-      if (metaTheme) metaTheme.setAttribute("content", "#000000");
-    } else {
-      document.documentElement.classList.remove("dark");
-      const metaTheme = document.querySelector('meta[name="theme-color"]');
-      if (metaTheme) metaTheme.setAttribute("content", "#d8e2ec");
-    }
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("link2download-theme", "dark");
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) metaTheme.setAttribute("content", "#000000");
   }, []);
-
-  const toggleTheme = () => {
-    if (typeof navigator !== "undefined" && navigator.vibrate) {
-      try {
-        navigator.vibrate(8);
-      } catch {
-        /* ignore */
-      }
-    }
-    const next = !isDark;
-    setIsDark(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("link2download-theme", "dark");
-      const metaTheme = document.querySelector('meta[name="theme-color"]');
-      if (metaTheme) metaTheme.setAttribute("content", "#000000");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("link2download-theme", "light");
-      const metaTheme = document.querySelector('meta[name="theme-color"]');
-      if (metaTheme) metaTheme.setAttribute("content", "#d8e2ec");
-    }
-  };
 
   // Track active section for navigation highlight
   useEffect(() => {
@@ -242,20 +210,6 @@ export function Nav() {
 
         {/* Right action */}
         <div className="hidden items-center gap-2 md:flex">
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="native-tap flex h-9 w-9 items-center justify-center rounded-xl border border-black/20 dark:border-white/20 bg-surface text-text shadow-xs transition-all hover:bg-black/5 dark:hover:bg-white/10 active:scale-[0.98]"
-            title={isDark ? "Switch to Light Mode" : "Switch to AMOLED Dark Mode"}
-            aria-label={isDark ? "Switch to Light Mode" : "Switch to AMOLED Dark Mode"}
-          >
-            {isDark ? (
-              <Sun size={16} className="text-amber-400" />
-            ) : (
-              <Moon size={16} className="text-zinc-700" />
-            )}
-          </button>
-
           <a
             href="#library"
             onClick={(e) => handleScrollTo(e, "#library")}
@@ -270,6 +224,15 @@ export function Nav() {
               </span>
             )}
           </a>
+          <button
+            type="button"
+            onClick={() => setShowInstallSheet(true)}
+            className="native-tap flex h-9 items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 text-[13px] font-semibold text-emerald-600 dark:text-emerald-400 shadow-xs transition-all hover:bg-emerald-500/20 active:scale-[0.98]"
+            title="Download native Android APK or install app"
+          >
+            <Smartphone size={15} />
+            <span>App (.apk)</span>
+          </button>
           <a
             href="#downloader"
             onClick={(e) => handleScrollTo(e, "#downloader")}
@@ -281,20 +244,6 @@ export function Nav() {
 
         {/* Mobile top-right actions */}
         <div className="flex items-center gap-1.5 md:hidden">
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="native-tap flex h-9 w-9 items-center justify-center rounded-xl border border-black/15 dark:border-white/20 bg-surface text-text shadow-xs transition-all hover:bg-black/5 dark:hover:bg-white/10 active:scale-95"
-            title={isDark ? "Switch to Light Mode" : "Switch to AMOLED Dark Mode"}
-            aria-label={isDark ? "Switch to Light Mode" : "Switch to AMOLED Dark Mode"}
-          >
-            {isDark ? (
-              <Sun size={15} className="text-amber-400" />
-            ) : (
-              <Moon size={15} className="text-zinc-700" />
-            )}
-          </button>
-
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -329,34 +278,8 @@ export function Nav() {
                 </span>
               </div>
 
-              {/* Segmented Dual Theme Switch */}
-              <div className="flex items-center gap-1 p-0.5 rounded-lg bg-black/[0.06] dark:bg-white/[0.08] border border-black/10 dark:border-white/10">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (isDark) toggleTheme();
-                  }}
-                  className={`native-tap flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
-                    !isDark ? "bg-white text-zinc-950 shadow-xs" : "text-text-muted hover:text-text"
-                  }`}
-                >
-                  <Sun size={12} className={!isDark ? "text-amber-500" : ""} />
-                  <span>Light</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!isDark) toggleTheme();
-                  }}
-                  className={`native-tap flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
-                    isDark
-                      ? "bg-[#18181b] text-emerald-400 shadow-xs border border-emerald-500/30"
-                      : "text-text-muted hover:text-text"
-                  }`}
-                >
-                  <Moon size={12} />
-                  <span>AMOLED</span>
-                </button>
+              <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold">
+                <span>AMOLED Dark Engine</span>
               </div>
             </div>
 
@@ -430,6 +353,18 @@ export function Nav() {
                 <span>Open Downloader & Paste URL</span>
               </a>
 
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  setShowInstallSheet(true);
+                }}
+                className="native-tap flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-[13.5px] font-semibold text-emerald-600 dark:text-emerald-400 shadow-xs active:scale-[0.99] hover:bg-emerald-500/20 transition-all"
+              >
+                <Smartphone size={16} />
+                <span>Download Android App (.apk)</span>
+              </button>
+
               <div className="flex items-center justify-center gap-1.5 pt-0.5 text-[11px] text-text-muted">
                 <ShieldCheck size={13} className="text-emerald-500 shrink-0" />
                 <span>Zero telemetry • Watermark-free downloads • 100% Free</span>
@@ -438,6 +373,8 @@ export function Nav() {
           </div>
         </div>
       )}
+
+      <InstallAppSheet open={showInstallSheet} onClose={() => setShowInstallSheet(false)} />
     </header>
   );
 }

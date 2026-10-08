@@ -10,6 +10,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   build-apk:
     name: Build & Package Android APK
@@ -72,10 +75,20 @@ jobs:
           path: frontend/android/app/build/outputs/apk/debug/Link2Video-v1.0.apk
           retention-days: 30
 
-      - name: Attach APK to GitHub Release (if release created)
-        if: github.event_name == 'release'
+      - name: Publish Direct APK to GitHub Releases (Public 1-Click Download)
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: "v1.0"
+          name: "Link2Video Android App v1.0"
+          body: |
+            ### 📱 Link2Video Android App (Direct Download)
+
+            **Direct 1-Click APK Download (No GitHub login required, no zip file):**
+            Tap `Link2Video-v1.0.apk` below to download directly to your Android device and install!
+          draft: false
+          prerelease: false
+          make_latest: true
+          target_commitish: ${{ github.sha }}
           files: frontend/android/app/build/outputs/apk/debug/Link2Video-v1.0.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
