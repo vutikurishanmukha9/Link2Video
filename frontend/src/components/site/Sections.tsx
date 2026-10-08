@@ -3,27 +3,6 @@ import { Link2, Layers, DownloadCloud } from "lucide-react";
 import { PlatformMark } from "@/components/platform/PlatformMark";
 import { PLATFORMS } from "@/lib/downloader";
 
-const PLATFORM_BRAND_COLORS: Record<string, string> = {
-  instagram: "text-[#e1306c]",
-  tiktok: "text-[#fe2c55] dark:text-[#ff3b68]",
-  youtube: "text-red-600 dark:text-red-500",
-  x: "text-zinc-900 dark:text-zinc-100",
-  facebook: "text-[#1877f2]",
-  pinterest: "text-[#e60023]",
-  threads: "text-purple-600 dark:text-purple-400",
-  soundcloud: "text-[#ff5500]",
-  bandcamp: "text-[#1da0c3]",
-  twitch: "text-[#9146ff]",
-  linkedin: "text-[#0a66c2]",
-  reddit: "text-[#ff4500]",
-  terabox: "text-[#0086ff]",
-  mega: "text-[#d9272e]",
-  gdrive: "text-[#34a853]",
-  mediafire: "text-[#1299f3]",
-  dropbox: "text-[#0061fe]",
-  web: "text-emerald-600 dark:text-emerald-400",
-};
-
 const FEATURES = [
   {
     n: "01",
@@ -592,8 +571,8 @@ export function Platforms() {
         })}
       </div>
 
-      {/* Sleek Ultra-Compact Micro Logo Cards */}
-      <ul className="mt-4 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+      {/* Sleek Branded Platform Logo Cards */}
+      <ul className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
         {filteredPlatforms.map((p) => {
           const meta = PLATFORM_DETAILS[p.id];
           const displayName =
@@ -627,20 +606,16 @@ export function Platforms() {
                     }
                   }
                 }}
-                className="native-tap group flex h-[54px] w-[62px] sm:h-[58px] sm:w-[68px] flex-col items-center justify-center rounded-xl border border-black/15 dark:border-white/15 bg-surface p-1 shadow-2xs transition-all duration-150 hover:-translate-y-0.5 hover:shadow-xs hover:border-black dark:hover:border-white/30 active:scale-95 text-center text-text"
+                className="native-tap group flex h-[66px] w-[74px] sm:h-[72px] sm:w-[82px] flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#0d0d10] p-1 shadow-2xs transition-all duration-200 hover:-translate-y-1 hover:border-white/25 hover:bg-[#16161b] hover:shadow-lg hover:shadow-black/60 active:scale-95 text-center"
                 title={`Extract media from ${p.name} (${p.hosts[0]})`}
               >
                 {/* Centered Brand Logo Mark */}
-                <div className="flex h-6.5 w-6.5 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-black/[0.04] dark:bg-white/[0.08] border border-black/10 dark:border-white/15 transition-transform duration-150 group-hover:scale-110 shadow-2xs">
-                  <PlatformMark
-                    platform={p.id}
-                    size={15}
-                    className={PLATFORM_BRAND_COLORS[p.id] ?? "text-text"}
-                  />
+                <div className="flex h-8 w-8 sm:h-8.5 sm:w-8.5 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08] transition-transform duration-200 group-hover:scale-110 shadow-xs">
+                  <PlatformMark platform={p.id} size={22} />
                 </div>
 
                 {/* Platform Name */}
-                <span className="mt-0.5 text-[9.5px] sm:text-[10px] font-semibold text-text tracking-tight truncate max-w-[95%]">
+                <span className="mt-1 text-[10px] sm:text-[10.5px] font-medium tracking-tight text-zinc-300 transition-colors duration-150 leading-none truncate max-w-[94%] group-hover:text-white">
                   {displayName}
                 </span>
               </button>
