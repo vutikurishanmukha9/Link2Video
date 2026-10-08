@@ -140,9 +140,7 @@ export function MobileTabBar() {
                 </div>
                 <span
                   className={`text-[10.5px] font-medium leading-none tracking-tight transition-colors duration-200 ${
-                    isActive
-                      ? "text-zinc-900 dark:text-white font-semibold"
-                      : "text-text-muted"
+                    isActive ? "text-zinc-900 dark:text-white font-semibold" : "text-text-muted"
                   }`}
                 >
                   {tab.label}

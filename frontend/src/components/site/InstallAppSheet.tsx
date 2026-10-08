@@ -117,8 +117,8 @@ export function InstallAppSheet({ open, onClose }: Props) {
           ) : (
             <div className="space-y-3">
               <p className="text-[13.5px] leading-relaxed text-text-secondary">
-                To install, open your browser menu (<span className="font-mono font-bold">⋮</span>) and select{" "}
-                <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong>.
+                To install, open your browser menu (<span className="font-mono font-bold">⋮</span>)
+                and select <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong>.
               </p>
             </div>
           )}

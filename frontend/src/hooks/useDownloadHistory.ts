@@ -62,26 +62,23 @@ export function useDownloadHistory() {
     () => EMPTY_HISTORY,
   );
 
-  const addHistoryItem = useCallback(
-    (item: MediaItem, platform: PlatformId, caption?: string) => {
-      const current = getStoredHistory();
-      const filtered = current.filter((entry) => entry.mediaId !== item.id);
-      const newEntry: DownloadHistoryEntry = {
-        id: `${item.id}-${Date.now()}`,
-        mediaId: item.id,
-        title: item.title || caption || `${platform.toUpperCase()} Media`,
-        platform,
-        previewUrl: item.previewUrl,
-        videoUrl: item.videoUrl,
-        format: item.format,
-        bytes: item.bytes,
-        kind: item.kind,
-        downloadedAt: Date.now(),
-      };
-      setStoredHistory([newEntry, ...filtered].slice(0, MAX_HISTORY_ITEMS));
-    },
-    [],
-  );
+  const addHistoryItem = useCallback((item: MediaItem, platform: PlatformId, caption?: string) => {
+    const current = getStoredHistory();
+    const filtered = current.filter((entry) => entry.mediaId !== item.id);
+    const newEntry: DownloadHistoryEntry = {
+      id: `${item.id}-${Date.now()}`,
+      mediaId: item.id,
+      title: item.title || caption || `${platform.toUpperCase()} Media`,
+      platform,
+      previewUrl: item.previewUrl,
+      videoUrl: item.videoUrl,
+      format: item.format,
+      bytes: item.bytes,
+      kind: item.kind,
+      downloadedAt: Date.now(),
+    };
+    setStoredHistory([newEntry, ...filtered].slice(0, MAX_HISTORY_ITEMS));
+  }, []);
 
   const removeHistoryItem = useCallback((id: string) => {
     const current = getStoredHistory();

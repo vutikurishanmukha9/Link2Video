@@ -294,7 +294,9 @@ export function MediaFrame({ item, compact = false }: Props) {
                   type="button"
                   onClick={toggleLoop}
                   className={`native-tap rounded-md p-2 sm:p-1 transition-colors active:scale-95 ${
-                    isLooping ? "text-[#00c853] bg-white/10" : "text-panel-muted hover:text-panel-text"
+                    isLooping
+                      ? "text-[#00c853] bg-white/10"
+                      : "text-panel-muted hover:text-panel-text"
                   }`}
                   title={isLooping ? "Loop enabled" : "Loop disabled"}
                   aria-label={isLooping ? "Disable video loop" : "Enable video loop"}

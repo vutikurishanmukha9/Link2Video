@@ -46,7 +46,9 @@ export function FaqSection() {
                   </span>
                   <span
                     className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-black/10 dark:border-white/15 bg-zinc-800/5 dark:bg-white/5 text-text transition-all duration-200 group-hover:bg-zinc-800/10 dark:group-hover:bg-white/10 ${
-                      isOpen ? "rotate-180 bg-zinc-900 text-white dark:bg-white dark:text-zinc-900" : ""
+                      isOpen
+                        ? "rotate-180 bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
+                        : ""
                     }`}
                   >
                     <ChevronDown size={14} strokeWidth={2.2} />

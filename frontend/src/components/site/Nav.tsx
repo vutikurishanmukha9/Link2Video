@@ -39,7 +39,8 @@ const NAV_ITEMS: MobileNavItem[] = [
     sublabel: "4K video, Reels & high-bitrate MP3",
     href: "#downloader",
     icon: Download,
-    badgeClass: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-500/20",
+    badgeClass:
+      "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-500/20",
   },
   {
     id: "platforms",
@@ -47,7 +48,8 @@ const NAV_ITEMS: MobileNavItem[] = [
     sublabel: "Instagram, TikTok, YouTube, Reddit & 20+",
     href: "#platforms",
     icon: Layers,
-    badgeClass: "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-500/20",
+    badgeClass:
+      "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-500/20",
   },
   {
     id: "library",
@@ -55,7 +57,8 @@ const NAV_ITEMS: MobileNavItem[] = [
     sublabel: "Offline saved files & media history",
     href: "#library",
     icon: FolderOpen,
-    badgeClass: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-500/20",
+    badgeClass:
+      "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-500/20",
   },
   {
     id: "how-it-works",
@@ -63,7 +66,8 @@ const NAV_ITEMS: MobileNavItem[] = [
     sublabel: "3-step link extraction guide",
     href: "#how-it-works",
     icon: Compass,
-    badgeClass: "bg-violet-500/10 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400 border border-violet-500/20",
+    badgeClass:
+      "bg-violet-500/10 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400 border border-violet-500/20",
   },
   {
     id: "faq",
@@ -71,7 +75,8 @@ const NAV_ITEMS: MobileNavItem[] = [
     sublabel: "Watermarks, privacy & formats",
     href: "#faq",
     icon: HelpCircle,
-    badgeClass: "bg-slate-500/10 text-slate-600 dark:bg-slate-500/20 dark:text-slate-400 border border-slate-500/20",
+    badgeClass:
+      "bg-slate-500/10 text-slate-600 dark:bg-slate-500/20 dark:text-slate-400 border border-slate-500/20",
   },
 ];
 
@@ -244,7 +249,11 @@ export function Nav() {
             title={isDark ? "Switch to Light Mode" : "Switch to AMOLED Dark Mode"}
             aria-label={isDark ? "Switch to Light Mode" : "Switch to AMOLED Dark Mode"}
           >
-            {isDark ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} className="text-zinc-700" />}
+            {isDark ? (
+              <Sun size={16} className="text-amber-400" />
+            ) : (
+              <Moon size={16} className="text-zinc-700" />
+            )}
           </button>
 
           <a
@@ -279,7 +288,11 @@ export function Nav() {
             title={isDark ? "Switch to Light Mode" : "Switch to AMOLED Dark Mode"}
             aria-label={isDark ? "Switch to Light Mode" : "Switch to AMOLED Dark Mode"}
           >
-            {isDark ? <Sun size={15} className="text-amber-400" /> : <Moon size={15} className="text-zinc-700" />}
+            {isDark ? (
+              <Sun size={15} className="text-amber-400" />
+            ) : (
+              <Moon size={15} className="text-zinc-700" />
+            )}
           </button>
 
           <button
@@ -324,9 +337,7 @@ export function Nav() {
                     if (isDark) toggleTheme();
                   }}
                   className={`native-tap flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
-                    !isDark
-                      ? "bg-white text-zinc-950 shadow-xs"
-                      : "text-text-muted hover:text-text"
+                    !isDark ? "bg-white text-zinc-950 shadow-xs" : "text-text-muted hover:text-text"
                   }`}
                 >
                   <Sun size={12} className={!isDark ? "text-amber-500" : ""} />
@@ -392,9 +403,7 @@ export function Nav() {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        {isActive && (
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        )}
+                        {isActive && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
                         <ChevronRight
                           size={15}
                           className="text-text-muted/60 transition-transform group-hover:translate-x-0.5"

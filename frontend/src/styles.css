@@ -141,7 +141,11 @@
     overscroll-behavior-y: contain;
   }
 
-  button, a, input, select, textarea {
+  button,
+  a,
+  input,
+  select,
+  textarea {
     touch-action: manipulation;
   }
 

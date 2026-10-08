@@ -9,12 +9,7 @@ interface Props {
   onDownload: () => void;
 }
 
-export function FloatingDownloadFab({
-  item,
-  isDownloading,
-  isDownloaded,
-  onDownload,
-}: Props) {
+export function FloatingDownloadFab({ item, isDownloading, isDownloaded, onDownload }: Props) {
   const [dismissed, setDismissed] = useState(false);
 
   if (dismissed) return null;

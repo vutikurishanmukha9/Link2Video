@@ -129,21 +129,23 @@ export function DownloadsLibrarySection() {
       {/* Filter Chips (if items exist) */}
       {history.length > 0 && (
         <div className="mt-5 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-          {[
-            { id: "all", label: `All Files (${history.length})` },
-            {
-              id: "video",
-              label: `Videos (${history.filter((i) => i.kind === "video").length})`,
-            },
-            {
-              id: "image",
-              label: `Photos (${history.filter((i) => i.kind === "image").length})`,
-            },
-          ].map((f) => (
+          {(
+            [
+              { id: "all", label: `All Files (${history.length})` },
+              {
+                id: "video",
+                label: `Videos (${history.filter((i) => i.kind === "video").length})`,
+              },
+              {
+                id: "image",
+                label: `Photos (${history.filter((i) => i.kind === "image").length})`,
+              },
+            ] as const
+          ).map((f) => (
             <button
               key={f.id}
               type="button"
-              onClick={() => setFilter(f.id as any)}
+              onClick={() => setFilter(f.id)}
               className={`native-tap flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1 text-[12px] font-semibold transition-all duration-150 active:scale-95 ${
                 filter === f.id
                   ? "bg-zinc-900 text-white shadow-xs dark:bg-white dark:text-zinc-900"

@@ -1,0 +1,71 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch: # Allows one-click manual trigger from GitHub Actions tab
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/build-apk.yml'
+  release:
+    types: [published]
+
+jobs:
+  build-apk:
+    name: Build & Package Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17 (JDK)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Web Application
+        working-directory: frontend
+        run: |
+          npm run build
+          npx cap sync android
+
+      - name: Make Gradle Executable
+        working-directory: frontend/android
+        run: chmod +x gradlew
+
+      - name: Build Android Debug APK
+        working-directory: frontend/android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Rename APK Output
+        working-directory: frontend/android/app/build/outputs/apk/debug
+        run: |
+          cp app-debug.apk Link2Video-v1.0.apk
+
+      - name: Upload APK to GitHub Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Link2Video-Android-APK
+          path: frontend/android/app/build/outputs/apk/debug/Link2Video-v1.0.apk
+          retention-days: 30
+
+      - name: Attach APK to GitHub Release (if release created)
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: frontend/android/app/build/outputs/apk/debug/Link2Video-v1.0.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

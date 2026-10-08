@@ -406,8 +406,7 @@ const PLATFORM_DETAILS: Record<string, PlatformDetail> = {
     cardBg: "bg-surface",
     tags: ["Ad-Free", "Direct CDN", "Instant Stream", "Raw Bytes"],
     tagStyle: "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
-    description:
-      "Bypasses ad-heavy download landing pages for instant raw CDN byte streams.",
+    description: "Bypasses ad-heavy download landing pages for instant raw CDN byte streams.",
     qualityBadge: "Ad-Free CDN",
     qualityBadgeStyle:
       "border-zinc-300 bg-zinc-800/5 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200",
@@ -548,13 +547,15 @@ export function Platforms() {
 
       {/* Category Filter Pills (Horizontal chip scroll on mobile, wrap on desktop) */}
       <div className="mt-5 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar -mx-1 px-1 sm:mx-0 sm:px-0 sm:flex-wrap">
-        {[
-          { id: "all", label: "All Platforms", count: 18 },
-          { id: "cloud", label: "Cloud Storage", count: 5 },
-          { id: "video", label: "Video Streams", count: 14 },
-          { id: "social", label: "Social Media", count: 8 },
-          { id: "audio", label: "Hi-Res Audio", count: 2 },
-        ].map((cat) => {
+        {(
+          [
+            { id: "all", label: "All Platforms", count: 18 },
+            { id: "cloud", label: "Cloud Storage", count: 5 },
+            { id: "video", label: "Video Streams", count: 14 },
+            { id: "social", label: "Social Media", count: 8 },
+            { id: "audio", label: "Hi-Res Audio", count: 2 },
+          ] as const
+        ).map((cat) => {
           const isSelected = filter === cat.id;
           return (
             <button
@@ -568,7 +569,7 @@ export function Platforms() {
                     /* ignore */
                   }
                 }
-                setFilter(cat.id as any);
+                setFilter(cat.id);
               }}
               className={`native-tap flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1 text-[12px] font-semibold transition-all duration-150 active:scale-95 ${
                 isSelected
@@ -599,10 +600,10 @@ export function Platforms() {
             p.id === "twitch"
               ? "Twitch"
               : p.id === "web"
-              ? "Web"
-              : p.id === "gdrive"
-              ? "Drive"
-              : p.name;
+                ? "Web"
+                : p.id === "gdrive"
+                  ? "Drive"
+                  : p.name;
 
           return (
             <li key={p.id}>
